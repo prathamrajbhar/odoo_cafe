@@ -346,27 +346,27 @@
 ## **Module 10: Sessions**
 
 ### Database Layer (`/lib/db/sessions.ts`)
-- [ ] `create(userId)` → new session (opened_at = now, closed_at = null)
-- [ ] `getActive(userId)` → active session for user (where closed_at is null)
-- [ ] `close(sessionId, closingSaleAmount)` → set closed_at + closing_sale_amount
-- [ ] `getSummary(sessionId)` → totalOrders, totalRevenue, openedAt, closedAt
+- [x] `create(userId)` → new session (opened_at = now, closed_at = null)
+- [x] `getActive(userId)` → active session for user (where closed_at is null)
+- [x] `close(sessionId, closingSaleAmount)` → set closed_at + closing_sale_amount
+- [x] `getSummary(sessionId)` → totalOrders, totalRevenue, openedAt, closedAt
 
 ### API Routes
-- [ ] `POST /api/session/open` (Employee) — create session, return sessionId
-- [ ] `POST /api/session/close` (Employee) — close session, return summary
+- [x] `POST /api/session/open` (Employee) — create session, return sessionId
+- [x] `POST /api/session/close` (Employee) — close session, return summary
 
 ### Validation
-- [ ] User can only have one active session at a time
-- [ ] Cannot close already-closed session
-- [ ] closingSaleAmount provided on close
+- [x] User can only have one active session at a time
+- [x] Cannot close already-closed session
+- [x] closingSaleAmount provided on close
 
 ### Test Coverage
-- [ ] Employee opens session, gets sessionId
-- [ ] Session records opened_at timestamp
-- [ ] Employee closes session, gets summary
-- [ ] Summary includes totalOrders, totalRevenue, dates
-- [ ] Cannot open 2 sessions simultaneously
-- [ ] Session persists across requests
+- [x] Employee opens session, gets sessionId
+- [x] Session records opened_at timestamp
+- [x] Employee closes session, gets summary
+- [x] Summary includes totalOrders, totalRevenue, dates
+- [x] Cannot open 2 sessions simultaneously
+- [x] Session persists across requests
 
 ---
 
