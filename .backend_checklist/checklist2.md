@@ -273,73 +273,73 @@
 ## **Module 8: Tables**
 
 ### Zod Schemas
-- [ ] `tableCreateSchema` — floorId, number, seats, isActive (optional)
-- [ ] `tableUpdateSchema` — number, seats, isActive (all optional)
+- [x] `tableCreateSchema` — floorId, number, seats, isActive (optional)
+- [x] `tableUpdateSchema` — number, seats, isActive (all optional)
 
 ### Database Layer (`/lib/db/tables.ts`)
-- [ ] `getAll()` → all tables with floor + hasActiveOrder flag
-- [ ] `getById(id)` → table with floor + active order status
-- [ ] `getByFloor(floorId)` → tables in floor with active order
-- [ ] `create(floorId, number, seats, isActive)` → new table
-- [ ] `update(id, number?, seats?, isActive?)` → update fields
-- [ ] `delete(id)` → remove table
-- [ ] `hasActiveOrder(tableId)` → boolean check
+- [x] `getAll()` → all tables with floor + hasActiveOrder flag
+- [x] `getById(id)` → table with floor + active order status
+- [x] `getByFloor(floorId)` → tables in floor with active order
+- [x] `create(floorId, number, seats, isActive)` → new table
+- [x] `update(id, number?, seats?, isActive?)` → update fields
+- [x] `delete(id)` → remove table
+- [x] `hasActiveOrder(tableId)` → boolean check
 
 ### API Routes
-- [ ] `GET /api/tables` (Employee) — list with hasActiveOrder + activeOrderId
-- [ ] `POST /api/tables` (Admin) — create table
-- [ ] `PUT /api/tables/[id]` (Admin) — update table
-- [ ] `DELETE /api/tables/[id]` (Admin) — delete table
+- [x] `GET /api/tables` (Employee) — list with hasActiveOrder + activeOrderId
+- [x] `POST /api/tables` (Admin) — create table
+- [x] `PUT /api/tables/[id]` (Admin) — update table
+- [x] `DELETE /api/tables/[id]` (Admin) — delete table
 
 ### Validation
-- [ ] floorId exists
-- [ ] number > 0
-- [ ] seats > 0
-- [ ] Composite unique on (floor_id, number)
+- [x] floorId exists
+- [x] number > 0
+- [x] seats > 0
+- [x] Composite unique on (floor_id, number)
 
 ### Test Coverage
-- [ ] Employee can fetch all tables with active order status
-- [ ] Admin can create tables under floor
-- [ ] Admin can update table number/seats/active
-- [ ] Admin can delete table
-- [ ] hasActiveOrder calculated correctly
-- [ ] activeOrderId returned when order exists
-- [ ] Duplicate table numbers in same floor rejected
+- [x] Employee can fetch all tables with active order status
+- [x] Admin can create tables under floor
+- [x] Admin can update table number/seats/active
+- [x] Admin can delete table
+- [x] hasActiveOrder calculated correctly
+- [x] activeOrderId returned when order exists
+- [x] Duplicate table numbers in same floor rejected
 
 ---
 
 ## **Module 9: Customers**
 
 ### Zod Schemas
-- [ ] `customerCreateSchema` — name (required), email (optional), phone (optional)
-- [ ] `customerUpdateSchema` — name, email, phone (all optional)
-- [ ] `customerSearchSchema` — search (optional string)
+- [x] `customerCreateSchema` — name (required), email (optional), phone (optional)
+- [x] `customerUpdateSchema` — name, email, phone (all optional)
+- [x] `customerSearchSchema` — search (optional string)
 
 ### Database Layer (`/lib/db/customers.ts`)
-- [ ] `getAll(search?)` → all customers, filtered by name if search provided
-- [ ] `getById(id)` → single customer
-- [ ] `create(name, email?, phone?)` → new customer
-- [ ] `update(id, name?, email?, phone?)` → update fields
-- [ ] `delete(id)` → remove customer
+- [x] `getAll(search?)` → all customers, filtered by name if search provided
+- [x] `getById(id)` → single customer
+- [x] `create(name, email?, phone?)` → new customer
+- [x] `update(id, name?, email?, phone?)` → update fields
+- [x] `delete(id)` → remove customer
 
 ### API Routes
-- [ ] `GET /api/customers` (Employee, query: search?) — list with optional search
-- [ ] `POST /api/customers` (Employee) — create customer
-- [ ] `PUT /api/customers/[id]` (Employee) — update customer
-- [ ] `DELETE /api/customers/[id]` (Employee) — delete customer
+- [x] `GET /api/customers` (Employee, query: search?) — list with optional search
+- [x] `POST /api/customers` (Employee) — create customer
+- [x] `PUT /api/customers/[id]` (Employee) — update customer
+- [x] `DELETE /api/customers/[id]` (Employee) — delete customer
 
 ### Validation
-- [ ] name not empty
-- [ ] email valid format (if provided)
-- [ ] phone format (if provided)
+- [x] name not empty
+- [x] email valid format (if provided)
+- [x] phone format (if provided)
 
 ### Test Coverage
-- [ ] Employee can create customer
-- [ ] Employee can search customer by name
-- [ ] Search is case-insensitive
-- [ ] Employee can update customer
-- [ ] Employee can delete customer
-- [ ] Email optional but used for receipts
+- [x] Employee can create customer
+- [x] Employee can search customer by name
+- [x] Search is case-insensitive
+- [x] Employee can update customer
+- [x] Employee can delete customer
+- [x] Email optional but used for receipts
 
 ---
 
