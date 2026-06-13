@@ -68,24 +68,48 @@ export function getByEmail(email: string) {
   return getUserByEmail(email);
 }
 
-export async function create(data: {
-  name: string;
-  email: string;
-  password?: string;
-  passwordHash?: string;
-  role: Role;
-}) {
-  const passwordHash = data.passwordHash || (data.password ? await hashPassword(data.password) : "");
-  return createUser({
-    name: data.name,
-    email: data.email,
-    passwordHash,
-    role: data.role,
-  });
+export async function create(
+  nameOrData: string | { name: string; email: string; password?: string; passwordHash?: string; role: Role },
+  email?: string,
+  password?: string,
+  role?: Role
+) {
+  if (typeof nameOrData === "object" && nameOrData !== null) {
+    const passwordHash = nameOrData.passwordHash || (nameOrData.password ? await hashPassword(nameOrData.password) : "");
+    return createUser({
+      name: nameOrData.name,
+      email: nameOrData.email,
+      passwordHash,
+      role: nameOrData.role,
+    });
+  } else {
+    const passwordHash = password ? await hashPassword(password) : "";
+    return createUser({
+      name: nameOrData,
+      email: email!,
+      passwordHash,
+      role: role!,
+    });
+  }
 }
 
-export function update(id: string, data: { name?: string; email?: string; role?: Role; status?: Status }) {
-  return updateUser(id, data);
+export function update(
+  id: string,
+  dataOrName?: { name?: string; email?: string; role?: Role; status?: Status } | string,
+  email?: string,
+  role?: Role,
+  status?: Status
+) {
+  if (typeof dataOrName === "object" && dataOrName !== null) {
+    return updateUser(id, dataOrName);
+  } else {
+    const data: { name?: string; email?: string; role?: Role; status?: Status } = {};
+    if (dataOrName !== undefined) data.name = dataOrName;
+    if (email !== undefined) data.email = email;
+    if (role !== undefined) data.role = role;
+    if (status !== undefined) data.status = status;
+    return updateUser(id, data);
+  }
 }
 
 async function _delete(id: string) {

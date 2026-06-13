@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { changePasswordSchema } from "@/schemas/auth";
-import { getUserById, updatePasswordHash } from "@/lib/db/users";
-import { hashPassword } from "@/lib/bcrypt";
+import { getById, updatePassword } from "@/lib/db/users";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -18,12 +17,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
-  const existing = await getUserById(id);
+  const existing = await getById(id);
   if (!existing) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const passwordHash = await hashPassword(parsed.data.password);
-  await updatePasswordHash(id, passwordHash);
+  await updatePassword(id, parsed.data.password);
   return NextResponse.json({ data: { success: true } });
 }

@@ -53,35 +53,35 @@
 ## **Module 2: User Management**
 
 ### Database Layer (`/lib/db/users.ts`)
-- [ ] `getAll()` → return all users with role/status/email (no password)
-- [ ] `getById(id)` → single user (no password)
-- [ ] `create(name, email, password, role)` → new user with hashed password
-- [ ] `update(id, name?, email?, role?, status?)` → update fields
-- [ ] `updatePassword(id, newPassword)` → hash password + save
-- [ ] `delete(id)` → remove user from database
+- [x] `getAll()` → return all users with role/status/email (no password)
+- [x] `getById(id)` → single user (no password)
+- [x] `create(name, email, password, role)` → new user with hashed password
+- [x] `update(id, name?, email?, role?, status?)` → update fields
+- [x] `updatePassword(id, newPassword)` → hash password + save
+- [x] `delete(id)` → remove user from database
 
 ### API Routes
-- [ ] `GET /api/users` (Admin) — list all users
-- [ ] `POST /api/users` (Admin) — create new user
-- [ ] `PUT /api/users/[id]` (Admin) — update user
-- [ ] `PUT /api/users/[id]/password` (Admin) — change password
-- [ ] `DELETE /api/users/[id]` (Admin) — delete user
+- [x] `GET /api/users` (Admin) — list all users
+- [x] `POST /api/users` (Admin) — create new user
+- [x] `PUT /api/users/[id]` (Admin) — update user
+- [x] `PUT /api/users/[id]/password` (Admin) — change password
+- [x] `DELETE /api/users/[id]` (Admin) — delete user
 
 ### Validation
-- [ ] Email unique across system
-- [ ] Password min 6 characters
-- [ ] Role must be ADMIN or EMPLOYEE
-- [ ] Status must be ACTIVE or DISABLED
-- [ ] Cannot update own role/status as Employee
+- [x] Email unique across system
+- [x] Password min 6 characters
+- [x] Role must be ADMIN or EMPLOYEE
+- [x] Status must be ACTIVE or DISABLED
+- [x] Cannot update own role/status as Employee
 
 ### Test Coverage
-- [ ] Admin can list all employees
-- [ ] Admin can create new employee
-- [ ] Admin can update user name/email/role/status
-- [ ] Admin can change password for any user
-- [ ] Admin can delete user
-- [ ] Cannot create user with duplicate email
-- [ ] Cannot create user with invalid role
+- [x] Admin can list all employees
+- [x] Admin can create new employee
+- [x] Admin can update user name/email/role/status
+- [x] Admin can change password for any user
+- [x] Admin can delete user
+- [x] Cannot create user with duplicate email
+- [x] Cannot create user with invalid role
 
 ---
 
