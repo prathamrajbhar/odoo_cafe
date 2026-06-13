@@ -447,40 +447,40 @@
 ## **Module 12: KDS (Kitchen Display System)**
 
 ### Database Layer (`/lib/db/kdsTickets.ts`)
-- [ ] `getById(id)` → ticket with all items + order lines
-- [ ] `advance(id)` → cycle to next stage (TO_COOK → PREPARING → COMPLETED)
-- [ ] `getByStatus(status)` → all tickets in status
+- [x] `getById(id)` → ticket with all items + order lines
+- [x] `advance(id)` → cycle to next stage (TO_COOK → PREPARING → COMPLETED)
+- [x] `getByStatus(status)` → all tickets in status
 
 ### Database Layer (`/lib/db/kdsTicketItems.ts`)
-- [ ] `toggle(itemId)` → flip isStruckThrough boolean
-- [ ] `getByTicket(ticketId)` → all items in ticket
+- [x] `toggle(itemId)` → flip isStruckThrough boolean
+- [x] `getByTicket(ticketId)` → all items in ticket
 
 ### API Routes
-- [ ] `POST /api/kds/tickets/[id]/advance` (Public) — advance stage
-  - [ ] Validate ticket exists
-  - [ ] Prevent advance if already COMPLETED (return 400)
-  - [ ] Update status to next stage
-  - [ ] **Emit `ticket:updated` event**
-- [ ] `POST /api/kds/tickets/[id]/items/[itemId]/toggle` (Public) — toggle item
-  - [ ] Validate ticket + item exist
-  - [ ] Flip isStruckThrough
-  - [ ] **Emit `ticket:updated` event**
+- [x] `POST /api/kds/tickets/[id]/advance` (Public) — advance stage
+  - [x] Validate ticket exists
+  - [x] Prevent advance if already COMPLETED (return 400)
+  - [x] Update status to next stage
+  - [x] **Emit `ticket:updated` event**
+- [x] `POST /api/kds/tickets/[id]/items/[itemId]/toggle` (Public) — toggle item
+  - [x] Validate ticket + item exist
+  - [x] Flip isStruckThrough
+  - [x] **Emit `ticket:updated` event**
 
 ### Socket.io Events
-- [ ] `ticket:new` — emitted on order creation
-  - [ ] Payload: `{ id, orderNumber, status, items: [{ id, name, qty, isStruckThrough }] }`
-- [ ] `ticket:updated` — emitted on advance + toggle
-  - [ ] Payload: `{ id, status?, items?: [{ id, isStruckThrough }] }`
-- [ ] Both events emit to `kds` room (public, no auth)
+- [x] `ticket:new` — emitted on order creation
+  - [x] Payload: `{ id, orderNumber, status, items: [{ id, name, qty, isStruckThrough }] }`
+- [x] `ticket:updated` — emitted on advance + toggle
+  - [x] Payload: `{ id, status?, items?: [{ id, isStruckThrough }] }`
+- [x] Both events emit to `kds` room (public, no auth)
 
 ### Test Coverage
-- [ ] Advance cycles through 3 stages correctly
-- [ ] Already COMPLETED cannot advance (400)
-- [ ] Toggle item updates isStruckThrough
-- [ ] Socket.io events fire on every mutation
-- [ ] All KDS clients receive real-time updates
-- [ ] Public access (no auth required)
-- [ ] Event payloads match schema
+- [x] Advance cycles through 3 stages correctly
+- [x] Already COMPLETED cannot advance (400)
+- [x] Toggle item updates isStruckThrough
+- [x] Socket.io events fire on every mutation
+- [x] All KDS clients receive real-time updates
+- [x] Public access (no auth required)
+- [x] Event payloads match schema
 
 ---
 
