@@ -40,7 +40,7 @@ export const LoginForm: React.FC = () => {
     try {
       const response: any = await api.post("/auth/login", { email, password });
       toast.success("Login successful! Redirecting...");
-      
+
       const role = response.data?.role;
       setTimeout(() => {
         if (role === "ADMIN") {
