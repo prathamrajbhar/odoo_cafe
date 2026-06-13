@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,252 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum Status {
+  ACTIVE
+  DISABLED
+}
+
+enum PaymentType {
+  CASH
+  CARD
+  UPI
+}
+
+enum PromoType {
+  COUPON
+  PRODUCT_BASED
+  ORDER_BASED
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+enum OrderStatus {
+  DRAFT
+  PAID
+  CANCELLED
+}
+
+enum KDSStatus {
+  TO_COOK
+  PREPARING
+  COMPLETED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         Role
+  status       Status    @default(ACTIVE)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  sessions Session[]
+  orders   Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  colorHex  String    @map("color_hex")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  categoryId  String   @map("category_id")
+  price       Decimal  @db.Decimal(10, 2)
+  taxRate     Int      @map("tax_rate")
+  description String?
+  isArchived  Boolean  @default(false) @map("is_archived")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orderLines OrderLine[]
+  promotions Promotion[]
+
+  @@index([categoryId])
+  @@index([isArchived])
+  @@map("products")
+}
+
+model PaymentMethod {
+  id        String      @id @default(uuid())
+  type      PaymentType @unique
+  isActive  Boolean     @default(false) @map("is_active")
+  upiId     String?     @map("upi_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  @@map("payment_methods")
+}
+
+model Promotion {
+  id             String       @id @default(uuid())
+  name           String
+  promoType      PromoType    @map("promo_type")
+  code           String?      @unique
+  productId      String?      @map("product_id")
+  minQty         Int?         @map("min_qty")
+  minOrderAmount Decimal?     @db.Decimal(10, 2) @map("min_order_amount")
+  discountValue  Decimal      @db.Decimal(10, 2) @map("discount_value")
+  discountType   DiscountType @map("discount_type")
+  isActive       Boolean      @default(true) @map("is_active")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  product    Product?    @relation(fields: [productId], references: [id])
+  orderLines OrderLine[]
+
+  @@index([productId])
+  @@index([isActive])
+  @@map("promotions")
+}
+
+model Floor {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tables Table[]
+
+  @@map("floors")
+}
+
+model Table {
+  id        String   @id @default(uuid())
+  floorId   String   @map("floor_id")
+  number    Int
+  seats     Int
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  floor  Floor   @relation(fields: [floorId], references: [id])
+  orders Order[]
+
+  @@unique([floorId, number])
+  @@map("tables")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  orders Order[]
+
+  @@map("customers")
+}
+
+model Session {
+  id                 String    @id @default(uuid())
+  openedByUserId     String    @map("opened_by_user_id")
+  openedAt           DateTime  @default(now()) @map("opened_at")
+  closedAt           DateTime? @map("closed_at")
+  closingSaleAmount  Decimal?  @db.Decimal(10, 2) @map("closing_sale_amount")
+
+  openedBy User    @relation(fields: [openedByUserId], references: [id])
+  orders   Order[]
+
+  @@index([openedByUserId])
+  @@map("sessions")
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  orderNumber    String      @unique @map("order_number")
+  sessionId      String      @map("session_id")
+  tableId        String?     @map("table_id")
+  customerId     String?     @map("customer_id")
+  employeeId     String      @map("employee_id")
+  status         OrderStatus @default(DRAFT)
+  subtotal       Decimal     @db.Decimal(10, 2)
+  taxAmount      Decimal     @db.Decimal(10, 2) @map("tax_amount")
+  discountAmount Decimal     @default(0) @db.Decimal(10, 2) @map("discount_amount")
+  total          Decimal     @db.Decimal(10, 2)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  session    Session     @relation(fields: [sessionId], references: [id])
+  table      Table?      @relation(fields: [tableId], references: [id])
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  employee   User        @relation(fields: [employeeId], references: [id])
+  orderLines OrderLine[]
+  kdsTicket  KdsTicket?
+
+  @@index([sessionId])
+  @@index([tableId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderLine {
+  id             String   @id @default(uuid())
+  orderId        String   @map("order_id")
+  productId      String   @map("product_id")
+  qty            Int
+  unitPrice      Decimal  @db.Decimal(10, 2) @map("unit_price")
+  lineTotal      Decimal  @db.Decimal(10, 2) @map("line_total")
+  appliedPromoId String?  @map("applied_promo_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  order        Order          @relation(fields: [orderId], references: [id])
+  product      Product        @relation(fields: [productId], references: [id])
+  appliedPromo Promotion?     @relation(fields: [appliedPromoId], references: [id])
+  kdsItem      KdsTicketItem?
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_lines")
+}
+
+model KdsTicket {
+  id        String    @id @default(uuid())
+  orderId   String    @unique @map("order_id")
+  status    KDSStatus @default(TO_COOK)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  order Order           @relation(fields: [orderId], references: [id])
+  items KdsTicketItem[]
+
+  @@map("kds_tickets")
+}
+
+model KdsTicketItem {
+  id             String  @id @default(uuid())
+  ticketId       String  @map("ticket_id")
+  orderLineId    String  @unique @map("order_line_id")
+  isStruckThrough Boolean @default(false) @map("is_struck_through")
+
+  ticket    KdsTicket @relation(fields: [ticketId], references: [id])
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+
+  @@index([ticketId])
+  @@map("kds_ticket_items")
 }
