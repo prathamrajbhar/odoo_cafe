@@ -123,38 +123,38 @@
 ## **Module 4: Products**
 
 ### Zod Schemas
-- [ ] `productCreateSchema` — name, categoryId, price, taxRate (5/18/28), description (optional)
-- [ ] `productUpdateSchema` — all fields optional
+- [x] `productCreateSchema` — name, categoryId, price, taxRate (5/18/28), description (optional)
+- [x] `productUpdateSchema` — all fields optional
 
 ### Database Layer (`/lib/db/products.ts`)
-- [ ] `getAll(archived=false)` → non-archived products with category
-- [ ] `getById(id)` → product with category
-- [ ] `getByCategory(categoryId)` → all products in category
-- [ ] `create(name, categoryId, price, taxRate, description)` → new product
-- [ ] `update(id, name?, categoryId?, price?, taxRate?, description?)` → update fields
-- [ ] `archive(id)` → set is_archived = true (soft delete)
-- [ ] `delete(id)` → hard delete (if needed)
+- [x] `getAll(archived=false)` → non-archived products with category
+- [x] `getById(id)` → product with category
+- [x] `getByCategory(categoryId)` → all products in category
+- [x] `create(name, categoryId, price, taxRate, description)` → new product
+- [x] `update(id, name?, categoryId?, price?, taxRate?, description?)` → update fields
+- [x] `archive(id)` → set is_archived = true (soft delete)
+- [x] `delete(id)` → hard delete (if needed)
 
 ### API Routes
-- [ ] `GET /api/products` (Employee) — list non-archived with category
-- [ ] `POST /api/products` (Admin) — create product
-- [ ] `PUT /api/products/[id]` (Admin) — update product
-- [ ] `DELETE /api/products/[id]` (Admin) — soft-delete (archive)
+- [x] `GET /api/products` (Employee) — list non-archived with category
+- [x] `POST /api/products` (Admin) — create product
+- [x] `PUT /api/products/[id]` (Admin) — update product
+- [x] `DELETE /api/products/[id]` (Admin) — soft-delete (archive)
 
 ### Validation
-- [ ] price > 0 and max 2 decimals
-- [ ] taxRate must be 5, 18, or 28
-- [ ] categoryId must exist
-- [ ] name not empty
+- [x] price > 0 and max 2 decimals
+- [x] taxRate must be 5, 18, or 28
+- [x] categoryId must exist
+- [x] name not empty
 
 ### Test Coverage
-- [ ] Employee can fetch all products
-- [ ] Products include category info
-- [ ] Archived products don't appear in list
-- [ ] Admin can create product with different tax rates
-- [ ] Admin can update product
-- [ ] Admin delete archives (not hard delete)
-- [ ] Cannot create product without category
+- [x] Employee can fetch all products
+- [x] Products include category info
+- [x] Archived products don't appear in list
+- [x] Admin can create product with different tax rates
+- [x] Admin can update product
+- [x] Admin delete archives (not hard delete)
+- [x] Cannot create product without category
 
 ---
 

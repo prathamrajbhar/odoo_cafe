@@ -1,17 +1,33 @@
 import { z } from "zod";
 
-export const createProductSchema = z.object({
-  name: z.string().min(1),
-  categoryId: z.string().uuid(),
-  price: z.number().positive(),
-  taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)]),
-  description: z.string().optional(),
+const priceSchema = z.number().positive("Price must be greater than 0").refine(
+  (val) => {
+    const parts = val.toString().split(".");
+    return parts.length === 1 || parts[1].length <= 2;
+  },
+  { message: "Price must have at most 2 decimal places" }
+);
+
+export const productCreateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  categoryId: z.string().uuid("Invalid category ID"),
+  price: priceSchema,
+  taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)], {
+    errorMap: () => ({ message: "Tax rate must be 5, 18, or 28" })
+  }),
+  description: z.string().optional().nullable(),
 });
 
-export const updateProductSchema = z.object({
-  name: z.string().min(1).optional(),
-  categoryId: z.string().uuid().optional(),
-  price: z.number().positive().optional(),
-  taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)]).optional(),
-  description: z.string().optional(),
+export const productUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required").optional(),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
+  price: priceSchema.optional(),
+  taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)], {
+    errorMap: () => ({ message: "Tax rate must be 5, 18, or 28" })
+  }).optional(),
+  description: z.string().optional().nullable(),
 });
+
+// Alias for compatibility
+export const createProductSchema = productCreateSchema;
+export const updateProductSchema = productUpdateSchema;
