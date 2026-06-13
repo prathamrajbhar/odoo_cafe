@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const parsed = reportFilterSchema.safeParse(rawQuery);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
   const filters = parsed.data;
