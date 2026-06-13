@@ -162,12 +162,26 @@ export default function KdsPage() {
   const allTickets = useMemo(() => Array.from(tickets.values()), [tickets]);
 
   const categories = useMemo(() => {
+    const counts = new Map<string, number>();
     const seen = new Map<string, string>();
-    for (const t of allTickets)
-      for (const i of t.items)
-        if (i.categoryId && !seen.has(i.categoryId))
+    for (const t of allTickets) {
+      if (t.status === "COMPLETED") continue;
+      for (const i of t.items) {
+        if (i.categoryId) {
           seen.set(i.categoryId, i.categoryName);
-    return Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
+          if (!i.isStruckThrough) {
+            counts.set(i.categoryId, (counts.get(i.categoryId) || 0) + i.qty);
+          }
+        }
+      }
+    }
+    return Array.from(seen.entries())
+      .map(([id, name]) => ({
+        id,
+        name,
+        count: counts.get(id) || 0,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [allTickets]);
 
   const counts = useMemo(

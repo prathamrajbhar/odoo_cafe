@@ -79,6 +79,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
     cartLines, updateQty, removeFromCart, setActiveModal,
     setAppliedPromos, appliedPromos, subtotal, taxAmount, discountAmount, total,
     customerName, sessionId, activeTable, customerId, couponCode, clearCart,
+    currentOrderId,
   } = usePOS();
 
   const [promotions, setPromotions] = React.useState<Promotion[]>([]);
@@ -96,7 +97,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
 
     setSendingToKitchen(true);
     try {
-      await api.post("/orders", {
+      const payload = {
         sessionId,
         tableId: activeTable?.id ?? null,
         customerId: customerId ?? null,
@@ -105,17 +106,25 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
           productId: l.productId,
           qty: l.qty,
           unitPrice: l.unitPrice,
+          discountPercent: l.discountPercent || 0,
           appliedPromoId: appliedPromos.find((p) => p.scope === "LINE" && p.productId === l.productId)?.promoId ?? null,
         })),
-      });
+      };
+
+      if (currentOrderId) {
+        await api.put(`/orders/${currentOrderId}`, payload);
+      } else {
+        await api.post("/orders", payload);
+      }
+      
       clearCart();
-      toast.success("Order sent to kitchen!");
+      toast.success(currentOrderId ? "Order updated in kitchen!" : "Order sent to kitchen!");
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to send to kitchen");
+      toast.error(err instanceof Error ? err.message : "Failed to save order");
     } finally {
       setSendingToKitchen(false);
     }
-  }, [cartLines, sessionId, activeTable, customerId, couponCode, appliedPromos, clearCart]);
+  }, [cartLines, sessionId, activeTable, customerId, couponCode, appliedPromos, clearCart, currentOrderId]);
 
   const runPromoEval = useCallback(() => {
     if (cartLines.length === 0) {
@@ -140,7 +149,9 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
         <div className="h-14 px-4 border-b border-outline-variant flex items-center justify-between shrink-0 bg-surface-container-lowest">
           <div className="flex items-center gap-2">
             <span className="text-label-lg font-bold text-on-surface">Current Order</span>
-            <span className="bg-surface-container-high text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded tracking-wider">#NEW</span>
+            <span className="bg-surface-container-high text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded tracking-wider">
+              {currentOrderId ? "#EDIT" : "#NEW"}
+            </span>
           </div>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center gap-2 text-on-surface-variant">
@@ -168,7 +179,9 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
       <div className="h-14 px-4 border-b border-outline-variant flex items-center justify-between shrink-0 bg-surface-container-lowest">
         <div className="flex items-center gap-2">
           <span className="text-label-lg font-bold text-on-surface">Current Order</span>
-          <span className="bg-surface-container-high text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded tracking-wider">#NEW</span>
+          <span className="bg-surface-container-high text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded tracking-wider">
+            {currentOrderId ? "#EDIT" : "#NEW"}
+          </span>
         </div>
         {customerName && (
           <button
@@ -224,7 +237,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
 
                 <div className="flex items-center gap-3">
                   <span className="text-body-sm text-on-surface-variant/80">
-                    ₹{line.unitPrice.toFixed(2)} ea
+                    ₹{Number(line.unitPrice).toFixed(2)} ea
                   </span>
                   <button
                     onClick={(e) => { e.stopPropagation(); removeFromCart(line.productId); }}
@@ -245,6 +258,18 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
                   </span>
                   <span className="text-[11px] text-success font-semibold">
                     -{promo.discountType === "PERCENT" ? `${promo.discountValue}%` : `₹${promo.discountValue}`}
+                  </span>
+                </div>
+              )}
+
+              {line.discountPercent !== undefined && line.discountPercent > 0 && (
+                <div className="flex items-center justify-between mt-2 pl-1">
+                  <span className="text-[11px] text-success flex items-center gap-1 font-medium">
+                    <span className="material-symbols-outlined text-[13px] text-success shrink-0">percent</span>
+                    Manual Discount
+                  </span>
+                  <span className="text-[11px] text-success font-semibold">
+                    -{line.discountPercent}%
                   </span>
                 </div>
               )}

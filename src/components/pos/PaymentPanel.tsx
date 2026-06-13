@@ -61,6 +61,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({ selectedProductId, o
   const {
     cartLines, updateQty, total, sessionId, activeTable,
     customerId, couponCode, appliedPromos, setCurrentOrderId, setActiveModal,
+    updateLineDiscount, updateLinePrice, currentOrderId,
   } = usePOS();
 
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
@@ -101,9 +102,13 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({ selectedProductId, o
 
     if (numpadMode === "qty") {
       updateQty(selectedProductId, Math.max(0, Math.floor(val)));
+    } else if (numpadMode === "disc") {
+      updateLineDiscount(selectedProductId, val);
+    } else if (numpadMode === "price") {
+      updateLinePrice(selectedProductId, val);
     }
     setNumBuffer("");
-  }, [numBuffer, selectedProductId, numpadMode, updateQty]);
+  }, [numBuffer, selectedProductId, numpadMode, updateQty, updateLineDiscount, updateLinePrice]);
 
   const handleKeyPress = (key: string) => {
     if (focusedInput === "reference") {
@@ -136,8 +141,9 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({ selectedProductId, o
 
     setSending(true);
     try {
-      // 1. Create order
-      const orderRes = await api.post<{ data: { order: { id: string } } }>("/orders", {
+      // 1. Create or update order
+      let orderId = currentOrderId;
+      const orderPayload = {
         sessionId,
         tableId: activeTable?.id ?? null,
         customerId: customerId ?? null,
@@ -146,11 +152,18 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({ selectedProductId, o
           productId: l.productId,
           qty: l.qty,
           unitPrice: l.unitPrice,
+          discountPercent: l.discountPercent || 0,
           appliedPromoId: appliedPromos.find((p) => p.scope === "LINE" && p.productId === l.productId)?.promoId ?? null,
         })),
-      });
-      const orderId = orderRes.data.order.id;
-      setCurrentOrderId(orderId);
+      };
+
+      if (orderId) {
+        await api.put(`/orders/${orderId}`, orderPayload);
+      } else {
+        const orderRes = await api.post<{ data: { order: { id: string } } }>("/orders", orderPayload);
+        orderId = orderRes.data.order.id;
+        setCurrentOrderId(orderId);
+      }
 
       // 2. Validate/pay order immediately
       const payBody: Record<string, unknown> = { method: selectedMethod };

@@ -18,7 +18,10 @@ export default function PosPage() {
       <div className="flex flex-1 h-[calc(100vh-3.5rem)] overflow-hidden">
         {/* Left — Products (fills remaining space) */}
         <div className="flex-1 overflow-hidden">
-          <ProductPanel onProductSelect={setSelectedProductId} />
+          <ProductPanel
+            selectedProductId={selectedProductId}
+            onProductSelect={setSelectedProductId}
+          />
         </div>
 
         {/* Middle — Cart (fixed width) */}

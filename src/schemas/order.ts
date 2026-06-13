@@ -5,6 +5,7 @@ export const orderLineSchema = z.object({
   qty: z.number().int().positive("Quantity must be positive"),
   unitPrice: z.number().positive("Unit price must be positive"),
   appliedPromoId: z.string().uuid("Invalid promo ID").optional().nullable(),
+  discountPercent: z.number().nonnegative().max(100).optional().nullable(),
 });
 
 export const orderCreateSchema = z.object({

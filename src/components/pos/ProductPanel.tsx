@@ -21,6 +21,7 @@ interface Product {
 }
 
 interface ProductPanelProps {
+  selectedProductId?: string | null;
   onProductSelect?: (productId: string) => void;
 }
 
@@ -79,7 +80,7 @@ function StockIndicator({ stock }: { stock: number }) {
   );
 }
 
-export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) => {
+export const ProductPanel: React.FC<ProductPanelProps> = ({ selectedProductId, onProductSelect }) => {
   const { addToCart } = usePOS();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -154,11 +155,10 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
       <div className="flex gap-2.5 px-4 pb-3 pt-1.5 overflow-x-auto shrink-0 bg-surface-container-lowest border-b border-outline-variant scrollbar-none">
         <button
           onClick={() => setSelectedCategoryId(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${
-            selectedCategoryId === null
+          className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${selectedCategoryId === null
               ? "bg-primary text-on-primary shadow-sm"
               : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface active:scale-95"
-          }`}
+            }`}
         >
           All Products
         </button>
@@ -167,11 +167,10 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
             key={cat.id}
             onClick={() => setSelectedCategoryId(cat.id)}
             style={selectedCategoryId === cat.id ? { backgroundColor: cat.colorHex, color: "#fff" } : {}}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${
-              selectedCategoryId === cat.id
+            className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${selectedCategoryId === cat.id
                 ? "shadow-sm"
                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface active:scale-95"
-            }`}
+              }`}
           >
             {cat.name}
           </button>
@@ -195,6 +194,7 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
               const imageUrl = PRODUCT_IMAGES[product.name];
               const outOfStock = product.stock === 0;
               const lowStock = product.stock > 0 && product.stock <= 5;
+              const isSelected = selectedProductId === product.id;
 
               return (
                 <button
@@ -202,12 +202,14 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
                   onClick={() => handleAdd(product)}
                   disabled={outOfStock}
                   className={`group flex flex-col items-start bg-surface-container-lowest border rounded-2xl overflow-hidden text-left transition-all duration-200 w-full ${
-                    outOfStock
-                      ? "opacity-50 cursor-not-allowed border-outline-variant/40"
-                      : lowStock
-                      ? "border-warning/60 hover:border-warning hover:shadow-md active:scale-[0.97] cursor-pointer"
-                      : "border-outline-variant hover:border-primary hover:shadow-md active:scale-[0.97] cursor-pointer"
-                  }`}
+                    isSelected
+                      ? "border-primary ring-2 ring-primary bg-primary-container/10 hover:shadow-md active:scale-[0.97] cursor-pointer"
+                      : outOfStock
+                        ? "opacity-50 cursor-not-allowed border-outline-variant/40"
+                        : lowStock
+                          ? "border-warning/60 hover:border-warning hover:shadow-md active:scale-[0.97] cursor-pointer"
+                          : "border-outline-variant hover:border-primary hover:shadow-md active:scale-[0.97] cursor-pointer"
+                    }`}
                 >
                   {/* Image */}
                   <div className="relative w-full aspect-video bg-surface-container flex items-center justify-center overflow-hidden border-b border-outline-variant/40">

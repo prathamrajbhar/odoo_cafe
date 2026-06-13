@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 interface OrderLine {
   id: string;
-  product: { id: string; name: string };
+  product: { id: string; name: string; taxRate: number };
   qty: number;
   unitPrice: number;
   lineTotal: number;
@@ -26,7 +26,7 @@ interface OrderFull {
   total: number;
   createdAt: string;
   customer: { id: string; name: string; email: string | null } | null;
-  table: { id: string; number: number } | null;
+  table: { id: string; number: number; floorId: string } | null;
   lines: OrderLine[];
 }
 
@@ -89,15 +89,21 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onClose, onDe
   const handleEdit = () => {
     if (!order) return;
     const cartLines: CartLine[] = order.lines.map((l) => ({
-      productId: l.product.id,
-      name: l.product.name,
-      unitPrice: l.unitPrice,
-      taxRate: 0, // tax is already baked into order totals; use 0 to avoid double-counting
+      productId: l.product?.id ?? "",
+      name: l.product?.name ?? "Unknown Product",
+      unitPrice: Number(l.unitPrice),
+      taxRate: l.product ? Number(l.product.taxRate) : 0,
       qty: l.qty,
       appliedPromoId: l.appliedPromo?.id ?? null,
       promoDiscount: 0,
     }));
-    loadOrderIntoCart(cartLines, order.id);
+    loadOrderIntoCart(
+      cartLines,
+      order.id,
+      order.customer?.id ?? null,
+      order.customer?.name ?? null,
+      order.table ? { id: order.table.id, number: order.table.number, floorId: order.table.floorId } : null
+    );
     onClose();
     setActiveModal(null);
     router.push("/pos");
@@ -186,39 +192,38 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onClose, onDe
             </div>
           </div>
 
-          {/* Actions — DRAFT only */}
-          {order.status === "DRAFT" && (
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-error/40 text-error hover:bg-error/10 transition-colors font-semibold text-label-md disabled:opacity-50"
-                >
-                  {deleting
-                    ? <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                    : <span className="material-symbols-outlined text-[18px]">delete</span>
-                  }
-                  Delete
-                </button>
-                <button
-                  onClick={handleEdit}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-all font-semibold text-label-md"
-                >
-                  <span className="material-symbols-outlined text-[18px]">edit</span>
-                  Edit Order
-                </button>
-              </div>
+          {/* Actions */}
+          {order.status === "PAID" && (
+            <div>
               <button
-                onClick={handleCancel}
-                disabled={cancelling}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors font-semibold text-label-md disabled:opacity-50"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this order?")) {
+                    handleDelete();
+                  }
+                }}
+                disabled={deleting}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-error text-error hover:bg-error/10 transition-colors font-semibold text-label-md disabled:opacity-50"
               >
-                {cancelling
-                  ? <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                  : <span className="material-symbols-outlined text-[18px]">cancel</span>
-                }
-                Cancel Order
+                {deleting ? (
+                  <span className="material-symbols-outlined animate-spin text-[18px]">
+                    progress_activity
+                  </span>
+                ) : (
+                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                )}
+                Delete Order
+              </button>
+            </div>
+          )}
+
+          {order.status === "DRAFT" && (
+            <div>
+              <button
+                onClick={handleEdit}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-all font-semibold text-label-md"
+              >
+                <span className="material-symbols-outlined text-[18px]">edit</span>
+                Edit Order
               </button>
             </div>
           )}

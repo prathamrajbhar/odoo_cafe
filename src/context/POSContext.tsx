@@ -10,6 +10,7 @@ export interface CartLine {
   qty: number;
   appliedPromoId: string | null;
   promoDiscount: number; // line-level discount amount
+  discountPercent?: number; // custom line percentage discount
 }
 
 export interface AppliedPromo {
@@ -60,8 +61,16 @@ interface POSContextType extends POSState {
   setCouponCode: (code: string | null) => void;
   setAppliedPromos: (promos: AppliedPromo[], discountAmount: number) => void;
   setActiveModal: (modal: ActiveModal) => void;
-  loadOrderIntoCart: (lines: CartLine[], orderId: string) => void;
+  loadOrderIntoCart: (
+    lines: CartLine[],
+    orderId: string,
+    customerId?: string | null,
+    customerName?: string | null,
+    table?: ActiveTable | null
+  ) => void;
   clearCart: () => void;
+  updateLineDiscount: (productId: string, percent: number) => void;
+  updateLinePrice: (productId: string, price: number) => void;
   subtotal: number;
   taxAmount: number;
   discountAmount: number;
@@ -111,7 +120,7 @@ export const POSProvider: React.FC<{ children: ReactNode; initialSessionId: stri
           ...s,
           cartLines: [
             ...s.cartLines,
-            { ...item, qty: 1, appliedPromoId: null, promoDiscount: 0 },
+            { ...item, qty: 1, appliedPromoId: null, promoDiscount: 0, discountPercent: 0 },
           ],
         };
       });
@@ -155,11 +164,20 @@ export const POSProvider: React.FC<{ children: ReactNode; initialSessionId: stri
     setState((s) => ({ ...s, activeModal: modal }));
   }, []);
 
-  const loadOrderIntoCart = useCallback((lines: CartLine[], orderId: string) => {
+  const loadOrderIntoCart = useCallback((
+    lines: CartLine[],
+    orderId: string,
+    customerId?: string | null,
+    customerName?: string | null,
+    table?: ActiveTable | null
+  ) => {
     setState((s) => ({
       ...s,
       cartLines: lines,
       currentOrderId: orderId,
+      customerId: customerId ?? null,
+      customerName: customerName ?? null,
+      activeTable: table ?? null,
       appliedPromos: [],
       orderDiscountAmount: 0,
       couponCode: null,
@@ -180,12 +198,35 @@ export const POSProvider: React.FC<{ children: ReactNode; initialSessionId: stri
     }));
   }, []);
 
+  const updateLineDiscount = useCallback((productId: string, percent: number) => {
+    setState((s) => ({
+      ...s,
+      cartLines: s.cartLines.map((l) =>
+        l.productId === productId ? { ...l, discountPercent: Math.min(100, Math.max(0, percent)) } : l
+      ),
+    }));
+  }, []);
+
+  const updateLinePrice = useCallback((productId: string, price: number) => {
+    setState((s) => ({
+      ...s,
+      cartLines: s.cartLines.map((l) =>
+        l.productId === productId ? { ...l, unitPrice: Math.max(0, price) } : l
+      ),
+    }));
+  }, []);
+
   // Derived totals
-  const subtotal = state.cartLines.reduce((sum, l) => sum + l.unitPrice * l.qty - l.promoDiscount, 0);
-  const taxAmount = state.cartLines.reduce(
-    (sum, l) => sum + (l.unitPrice * l.qty - l.promoDiscount) * (l.taxRate / 100),
-    0
-  );
+  const subtotal = state.cartLines.reduce((sum, l) => {
+    const lineDiscount = l.promoDiscount + (l.unitPrice * l.qty * ((l.discountPercent || 0) / 100));
+    return sum + l.unitPrice * l.qty - lineDiscount;
+  }, 0);
+
+  const taxAmount = state.cartLines.reduce((sum, l) => {
+    const lineDiscount = l.promoDiscount + (l.unitPrice * l.qty * ((l.discountPercent || 0) / 100));
+    return sum + (l.unitPrice * l.qty - lineDiscount) * (l.taxRate / 100);
+  }, 0);
+
   const discountAmount = state.orderDiscountAmount;
   const total = subtotal + taxAmount - discountAmount;
 
@@ -205,6 +246,8 @@ export const POSProvider: React.FC<{ children: ReactNode; initialSessionId: stri
         setActiveModal,
         loadOrderIntoCart,
         clearCart,
+        updateLineDiscount,
+        updateLinePrice,
         subtotal,
         taxAmount,
         discountAmount,
