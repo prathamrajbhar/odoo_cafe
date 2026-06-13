@@ -487,50 +487,50 @@
 ## **Module 13: Reports & Analytics**
 
 ### Zod Schemas
-- [ ] `reportFilterSchema` — period (today/week/month/custom), from?, to?, employeeId?, sessionId?, productId?
+- [x] `reportFilterSchema` — period (today/week/month/custom), from?, to?, employeeId?, sessionId?, productId?
 
 ### Period Calculation (`/lib/reports.ts`)
-- [ ] `getPeriodRange(period, from?, to?)` → date range for query
-- [ ] `getPreviousPeriodRange(period)` → previous period for % change calculation
+- [x] `getPeriodRange(period, from?, to?)` → date range for query
+- [x] `getPreviousPeriodRange(period)` → previous period for % change calculation
 
 ### Database Layer (`/lib/db/reports.ts`)
-- [ ] `getKPIs(filters)` → totalOrders, revenue, avgOrder + previous period values
-- [ ] `getSalesTrend(filters)` → hourly or daily revenue breakdown
-- [ ] `getTopCategories(filters)` → category revenue + percent
-- [ ] `getTopProducts(filters)` → product qty + revenue
-- [ ] `getTopOrders(filters)` → top 10 orders by value
+- [x] `getKPIs(filters)` → totalOrders, revenue, avgOrder + previous period values
+- [x] `getSalesTrend(filters)` → hourly or daily revenue breakdown
+- [x] `getTopCategories(filters)` → category revenue + percent
+- [x] `getTopProducts(filters)` → product qty + revenue
+- [x] `getTopOrders(filters)` → top 10 orders by value
 
 ### Calculations
-- [ ] % change = ((current - previous) / previous) × 100
-- [ ] Sales trend: group by hour/day, sum revenue
-- [ ] Top categories: sum revenue by category
-- [ ] Top products: sum qty + revenue by product
-- [ ] Top orders: sort by total descending, limit 10
+- [x] % change = ((current - previous) / previous) × 100
+- [x] Sales trend: group by hour/day, sum revenue
+- [x] Top categories: sum revenue by category
+- [x] Top products: sum qty + revenue by product
+- [x] Top orders: sort by total descending, limit 10
 
 ### API Routes
-- [ ] `GET /api/reports` (Admin, query: period, from?, to?, employeeId?, sessionId?, productId?)
-  - [ ] Fetch KPIs + trends + tops
-  - [ ] Calculate % changes
-  - [ ] Apply all filters
-- [ ] `GET /api/reports/export` (Admin, query: same + format: pdf|xls)
-  - [ ] Generate PDF with all data
-  - [ ] Generate XLS with multiple sheets
-  - [ ] Return as file download
+- [x] `GET /api/reports` (Admin, query: period, from?, to?, employeeId?, sessionId?, productId?)
+  - [x] Fetch KPIs + trends + tops
+  - [x] Calculate % changes
+  - [x] Apply all filters
+- [x] `GET /api/reports/export` (Admin, query: same + format: pdf|xls)
+  - [x] Generate PDF with all data
+  - [x] Generate XLS with multiple sheets
+  - [x] Return as file download
 
 ### Export Formats
-- [ ] **PDF**: formatted table with KPIs, charts, tops
-- [ ] **XLS**: multiple sheets (KPI, Sales, Categories, Products, Orders)
+- [x] **PDF**: formatted table with KPIs, charts, tops
+- [x] **XLS**: multiple sheets (KPI, Sales, Categories, Products, Orders)
 
 ### Test Coverage
-- [ ] Fetch today's KPIs
-- [ ] Fetch week's KPIs with % change
-- [ ] Fetch custom date range
-- [ ] Apply employee filter
-- [ ] Apply product filter
-- [ ] Export to PDF
-- [ ] Export to XLS
-- [ ] All calculations accurate
-- [ ] Date range calculations correct
+- [x] Fetch today's KPIs
+- [x] Fetch week's KPIs with % change
+- [x] Fetch custom date range
+- [x] Apply employee filter
+- [x] Apply product filter
+- [x] Export to PDF
+- [x] Export to XLS
+- [x] All calculations accurate
+- [x] Date range calculations correct
 
 ---
 
