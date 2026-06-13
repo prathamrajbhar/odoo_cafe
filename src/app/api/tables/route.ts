@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createTableSchema } from "@/schemas/table";
-import { listTables, createTable } from "@/lib/db/tables";
+import { getAll, create } from "@/lib/db/tables";
 
 export async function GET(req: NextRequest) {
   const role = req.headers.get("x-user-role");
@@ -8,11 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const rawTables = await listTables();
-  const tables = rawTables.map(({ orders, ...t }) => ({
-    ...t,
-    hasActiveOrder: orders.length > 0,
-  }));
+  const tables = await getAll();
   return NextResponse.json({ data: { tables } });
 }
 
@@ -29,15 +25,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const table = await createTable(parsed.data);
+    const table = await create(parsed.data);
     return NextResponse.json({ data: { table } }, { status: 201 });
-  } catch (e: unknown) {
-    if (e instanceof Error && "code" in e && (e as { code: string }).code === "P2002") {
-      return NextResponse.json(
-        { error: "Table number already exists on this floor" },
-        { status: 400 }
-      );
-    }
-    throw e;
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
 }
+
