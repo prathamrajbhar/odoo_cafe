@@ -37,9 +37,9 @@ async function request<T>(
   try {
     const response = await fetch(url, config);
 
-    // Auto redirect client-side requests on 401 unauthorized to login page
-    if (response.status === 401 && !isServer) {
-      // Clear token cookie if possible by calling logout API or deleting directly
+    // Auto redirect client-side requests on 401 unauthorized to login page,
+    // but not for auth endpoints themselves (login/signup) — let them surface errors.
+    if (response.status === 401 && !isServer && !endpoint.includes("/auth/")) {
       document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       window.location.href = "/login";
       throw new ApiError("Session expired. Redirecting to login...", 401);

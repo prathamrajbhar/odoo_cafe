@@ -97,13 +97,6 @@ export const AdminNavbar: React.FC = () => {
             KDS
             <span className="material-symbols-outlined text-[14px] ml-auto opacity-50">open_in_new</span>
           </Link>
-          <Link
-            href="/pos"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all"
-          >
-            <span className="material-symbols-outlined text-[20px]">point_of_sale</span>
-            POS Terminal
-          </Link>
           <button
             onClick={handleLogout}
             disabled={loggingOut}
@@ -125,9 +118,7 @@ export const AdminNavbar: React.FC = () => {
           <span className="material-symbols-outlined">menu</span>
         </button>
         <span className="text-headline-sm font-black text-primary">Odoo POS</span>
-        <Link href="/pos" className="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg">
-          <span className="material-symbols-outlined">point_of_sale</span>
-        </Link>
+        <div className="w-10" />
       </header>
 
       {/* Mobile drawer overlay */}

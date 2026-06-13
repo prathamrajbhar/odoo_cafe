@@ -123,3 +123,34 @@
     linear-gradient(to bottom, var(--outline-variant) 1px, transparent 1px);
 }
 
+/* Print Styling for Realistic Thermal Receipt */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #receipt-print-area, #receipt-print-area * {
+    visibility: visible !important;
+  }
+  #receipt-print-area {
+    position: fixed !important;
+    left: 50% !important;
+    top: 0 !important;
+    transform: translateX(-50%) !important;
+    width: 76mm !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  html, body {
+    background: #ffffff !important;
+    height: auto !important;
+  }
+}
+

@@ -64,8 +64,50 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  // Fetch fresh user status and role from the database to check if disabled or if role has changed
+  let userStatus = "ACTIVE";
+  let userRole = payload.role;
+
+  try {
+    const statusRes = await fetch(`${req.nextUrl.origin}/api/auth/status`, {
+      headers: {
+        Cookie: `token=${token}`,
+      },
+    });
+
+    if (!statusRes.ok) {
+      if (isApiRoute) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const res = NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.delete("token");
+      return res;
+    }
+
+    const { data } = await statusRes.json();
+    userStatus = data.status;
+    userRole = data.role;
+  } catch (error) {
+    console.error("Failed to verify user status in middleware:", error);
+    if (isApiRoute) {
+      return NextResponse.json({ error: "Authentication check failed" }, { status: 500 });
+    }
+    const res = NextResponse.redirect(new URL("/login", req.url));
+    res.cookies.delete("token");
+    return res;
+  }
+
+  if (userStatus === "DISABLED") {
+    if (isApiRoute) {
+      return NextResponse.json({ error: "Account disabled" }, { status: 403 });
+    }
+    const res = NextResponse.redirect(new URL("/login", req.url));
+    res.cookies.delete("token");
+    return res;
+  }
+
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    if (payload.role !== "ADMIN") {
+    if (userRole !== "ADMIN") {
       if (isApiRoute) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
@@ -76,7 +118,7 @@ export async function middleware(req: NextRequest) {
   if (isApiRoute) {
     const reqHeaders = new Headers(req.headers);
     reqHeaders.set("x-user-id", payload.userId);
-    reqHeaders.set("x-user-role", payload.role);
+    reqHeaders.set("x-user-role", userRole);
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
 
