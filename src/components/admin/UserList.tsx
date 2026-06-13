@@ -8,7 +8,7 @@ import Select from "@/components/shared/Select";
 import { api } from "@/lib/api";
 import { toast } from "@/lib/toast";
 
-type Role = "ADMIN" | "EMPLOYEE";
+type Role = "ADMIN" | "EMPLOYEE" | "KITCHEN";
 type Status = "ACTIVE" | "DISABLED";
 
 interface User {
@@ -169,7 +169,7 @@ export const UserList: React.FC<Props> = ({ users, onRefresh }) => {
           />
         </div>
         <div className="flex gap-2">
-          {(["ALL", "ADMIN", "EMPLOYEE"] as const).map((r) => (
+          {(["ALL", "ADMIN", "EMPLOYEE", "KITCHEN"] as const).map((r) => (
             <button
               key={r}
               onClick={() => setRoleFilter(r)}
@@ -316,6 +316,7 @@ export const UserList: React.FC<Props> = ({ users, onRefresh }) => {
               label="Role"
               options={[
                 { value: "EMPLOYEE", label: "Employee" },
+                { value: "KITCHEN", label: "Kitchen" },
                 { value: "ADMIN", label: "Administrator" },
               ]}
               value={form.role}

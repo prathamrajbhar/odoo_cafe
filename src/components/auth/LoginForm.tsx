@@ -45,6 +45,8 @@ export const LoginForm: React.FC = () => {
       setTimeout(() => {
         if (role === "ADMIN") {
           window.location.href = "/admin/products";
+        } else if (role === "KITCHEN") {
+          window.location.href = "/kds";
         } else {
           window.location.href = "/pos";
         }

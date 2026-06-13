@@ -5,7 +5,17 @@ import POSNavbar from "@/components/pos/POSNavbar";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/jwt";
 
-async function getOrCreateSession(userId: string): Promise<string> {
+async function getOrCreateSession(userId: string): Promise<string | null> {
+  // Verify that the user actually exists in the database first
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!userExists) {
+    return null;
+  }
+
   // Return existing open session
   const existing = await prisma.session.findFirst({
     where: { openedByUserId: userId, closedAt: null },
@@ -14,16 +24,21 @@ async function getOrCreateSession(userId: string): Promise<string> {
   if (existing) return existing.id;
 
   // Auto-open a new session on first POS visit (PRD: "Login → POS session opens directly")
-  const session = await prisma.session.create({
-    data: { openedByUserId: userId },
-    select: { id: true },
-  });
-  return session.id;
+  try {
+    const session = await prisma.session.create({
+      data: { openedByUserId: userId },
+      select: { id: true },
+    });
+    return session.id;
+  } catch (error) {
+    console.error("Failed to create session:", error);
+    return null;
+  }
 }
 
 export default async function POSLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("access_token")?.value;
 
   if (!token) redirect("/login");
 
@@ -36,6 +51,9 @@ export default async function POSLayout({ children }: { children: React.ReactNod
   if (!payload) redirect("/login");
 
   const sessionId = await getOrCreateSession(payload.userId);
+  if (!sessionId) {
+    redirect("/login");
+  }
 
   return (
     <POSProvider initialSessionId={sessionId}>

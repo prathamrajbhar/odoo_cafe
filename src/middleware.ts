@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PREFIXES = ["/api/auth/", "/api/kds/"];
+const PUBLIC_PREFIXES = ["/api/auth/"];
 
 function b64urlDecode(str: string): Uint8Array<ArrayBuffer> {
   const b64 = str.replace(/-/g, "+").replace(/_/g, "/");
@@ -83,6 +83,19 @@ export async function middleware(req: NextRequest) {
     payload = await verifyJwt(newAccessToken, process.env.JWT_SECRET as string);
     if (!payload) return clearAuthAndRedirect(req, isApiRoute);
 
+    // Role guards — must run here too since we return early from the refresh path
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+      if (payload.role !== "ADMIN") {
+        if (isApiRoute) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        return NextResponse.redirect(new URL("/pos", req.url));
+      }
+    }
+    if (pathname.startsWith("/api/kds/")) {
+      if (payload.role !== "KITCHEN" && payload.role !== "ADMIN") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
+
     // Forward with new tokens set
     const reqHeaders = new Headers(req.headers);
     reqHeaders.set("x-user-id", payload.userId);
@@ -101,6 +114,12 @@ export async function middleware(req: NextRequest) {
     if (payload.role !== "ADMIN") {
       if (isApiRoute) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       return NextResponse.redirect(new URL("/pos", req.url));
+    }
+  }
+
+  if (pathname.startsWith("/api/kds/")) {
+    if (payload.role !== "KITCHEN" && payload.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
 
