@@ -88,35 +88,35 @@
 ## **Module 3: Categories**
 
 ### Zod Schemas
-- [ ] `categoryCreateSchema` — name (string, required), colorHex (hex string, required)
-- [ ] `categoryUpdateSchema` — name (optional), colorHex (optional)
+- [x] `categoryCreateSchema` — name (string, required), colorHex (hex string, required)
+- [x] `categoryUpdateSchema` — name (optional), colorHex (optional)
 
 ### Database Layer (`/lib/db/categories.ts`)
-- [ ] `getAll()` → all categories sorted by name
-- [ ] `getById(id)` → single category
-- [ ] `create(name, colorHex)` → new category
-- [ ] `update(id, name?, colorHex?)` → update fields
-- [ ] `delete(id)` → remove category
-- [ ] `getWithProductCount(id)` → category + product count
+- [x] `getAll()` → all categories sorted by name
+- [x] `getById(id)` → single category
+- [x] `create(name, colorHex)` → new category
+- [x] `update(id, name?, colorHex?)` → update fields
+- [x] `delete(id)` → remove category
+- [x] `getWithProductCount(id)` → category + product count
 
 ### API Routes
-- [ ] `GET /api/categories` (Employee) — list all
-- [ ] `POST /api/categories` (Admin) — create new
-- [ ] `PUT /api/categories/[id]` (Admin) — update
-- [ ] `DELETE /api/categories/[id]` (Admin) — delete
+- [x] `GET /api/categories` (Employee) — list all
+- [x] `POST /api/categories` (Admin) — create new
+- [x] `PUT /api/categories/[id]` (Admin) — update
+- [x] `DELETE /api/categories/[id]` (Admin) — delete
 
 ### Validation
-- [ ] colorHex valid hex format (#RRGGBB)
-- [ ] name not empty
-- [ ] Cannot delete category if products exist (or cascade soft-delete products)
+- [x] colorHex valid hex format (#RRGGBB)
+- [x] name not empty
+- [x] Cannot delete category if products exist (or cascade soft-delete products)
 
 ### Test Coverage
-- [ ] Employee can fetch categories
-- [ ] Admin can create category with color
-- [ ] Admin can update category
-- [ ] Admin can delete category
-- [ ] Invalid hex color rejected
-- [ ] Duplicate names allowed (different IDs)
+- [x] Employee can fetch categories
+- [x] Admin can create category with color
+- [x] Admin can update category
+- [x] Admin can delete category
+- [x] Invalid hex color rejected
+- [x] Duplicate names allowed (different IDs)
 
 ---
 

@@ -1,11 +1,17 @@
 import { z } from "zod";
 
-export const createCategorySchema = z.object({
-  name: z.string().min(1),
-  colorHex: z.string().min(1),
+const hexColorRegex = /^#[0-9A-Fa-f]{6}$/;
+
+export const categoryCreateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  colorHex: z.string().regex(hexColorRegex, "Invalid hex color format (must be #RRGGBB)"),
 });
 
-export const updateCategorySchema = z.object({
-  name: z.string().min(1).optional(),
-  colorHex: z.string().min(1).optional(),
+export const categoryUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required").optional(),
+  colorHex: z.string().regex(hexColorRegex, "Invalid hex color format (must be #RRGGBB)").optional(),
 });
+
+// Alias for compatibility
+export const createCategorySchema = categoryCreateSchema;
+export const updateCategorySchema = categoryUpdateSchema;
