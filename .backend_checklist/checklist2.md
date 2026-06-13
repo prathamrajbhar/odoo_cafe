@@ -161,80 +161,80 @@
 ## **Module 5: Payment Methods**
 
 ### Database Layer (`/lib/db/paymentMethods.ts`)
-- [ ] `getAll()` → all 3 payment methods
-- [ ] `getById(id)` → single method
-- [ ] `update(id, isActive?, upiId?)` → toggle/update UPI ID
-- [ ] Seed function: insert CASH, CARD, UPI (inactive, null upiId)
+- [x] `getAll()` → all 3 payment methods
+- [x] `getById(id)` → single method
+- [x] `update(id, isActive?, upiId?)` → toggle/update UPI ID
+- [x] `seedPaymentMethods()` → insert CASH, CARD, UPI (inactive, null upiId)
 
 ### API Routes
-- [ ] `GET /api/payment-methods` (Admin) — list all 3
-- [ ] `PUT /api/payment-methods/[id]` (Admin) — update isActive/upiId
+- [x] `GET /api/payment-methods` (Admin) — list all 3
+- [x] `PUT /api/payment-methods/[id]` (Admin) — update isActive/upiId
 
 ### Validation
-- [ ] Only CASH, CARD, UPI allowed (enum)
-- [ ] upiId only settable on UPI record
-- [ ] Cannot create/delete payment methods (only seed + toggle)
-- [ ] Only one record per payment type (unique constraint)
+- [x] Only CASH, CARD, UPI allowed (enum)
+- [x] upiId only settable on UPI record
+- [x] Cannot create/delete payment methods (only seed + toggle)
+- [x] Only one record per payment type (unique constraint)
 
 ### Test Coverage
-- [ ] Exactly 3 payment methods exist after seed
-- [ ] Admin can toggle isActive
-- [ ] Admin can set upiId for UPI
-- [ ] Cannot add upiId to CASH or CARD
-- [ ] Only active methods appear in POS terminal
+- [x] Exactly 3 payment methods exist after seed
+- [x] Admin can toggle isActive
+- [x] Admin can set upiId for UPI
+- [x] Cannot add upiId to CASH or CARD
+- [x] Only active methods appear in POS terminal
 
 ---
 
 ## **Module 6: Promotions**
 
 ### Zod Schemas
-- [ ] `promotionBaseSchema` — name, discountValue, discountType (PERCENT/FIXED), isActive
-- [ ] `couponSchema` — extends base + code (unique, required)
-- [ ] `productPromoSchema` — extends base + productId, minQty (required)
-- [ ] `orderPromoSchema` — extends base + minOrderAmount (required)
-- [ ] `validatePromosSchema` — code (optional), subtotal, lines[]
+- [x] `promotionBaseSchema` — name, discountValue, discountType (PERCENT/FIXED), isActive
+- [x] `couponSchema` — extends base + code (unique, required)
+- [x] `productPromoSchema` — extends base + productId, minQty (required)
+- [x] `orderPromoSchema` — extends base + minOrderAmount (required)
+- [x] `validatePromosSchema` — code (optional), subtotal, lines[]
 
 ### Promo Logic (`/lib/promo.ts`)
-- [ ] `evaluateProductPromos(cartLines, activePromos)` → matching product-based promos
-- [ ] `evaluateOrderPromos(subtotal, activePromos)` → matching order-based promos
-- [ ] `validateCoupon(code, activePromos)` → verify code exists + active or throw
-- [ ] `calculateDiscount(discountValue, discountType, amount)` → discount in rupees
-- [ ] `applyPromos(cartLines, subtotal, code, activePromos)` → all applicable promos
+- [x] `evaluateProductPromos(cartLines, activePromos)` → matching product-based promos
+- [x] `evaluateOrderPromos(subtotal, activePromos)` → matching order-based promos
+- [x] `validateCoupon(code, activePromos)` → verify code exists + active or throw
+- [x] `calculateDiscount(discountValue, discountType, amount)` → discount in rupees
+- [x] `applyPromos(cartLines, subtotal, code, activePromos)` → all applicable promos
 
 ### Database Layer (`/lib/db/promotions.ts`)
-- [ ] `getAll(activeOnly=true)` → all promotions
-- [ ] `getById(id)` → single promotion
-- [ ] `getByCode(code)` → coupon by code
-- [ ] `create(type, data)` → validate type-specific fields + create
-- [ ] `update(id, data)` → update promo
-- [ ] `delete(id)` → remove promotion
+- [x] `getAll(activeOnly=true)` → all promotions
+- [x] `getById(id)` → single promotion
+- [x] `getByCode(code)` → coupon by code
+- [x] `create(type, data)` → validate type-specific fields + create
+- [x] `update(id, data)` → update promo
+- [x] `delete(id)` → remove promotion
 
 ### API Routes
-- [ ] `GET /api/promotions` (Employee) — list all active
-- [ ] `POST /api/promotions` (Admin) — create (coupon/product/order)
-- [ ] `PUT /api/promotions/[id]` (Admin) — update
-- [ ] `DELETE /api/promotions/[id]` (Admin) — delete
-- [ ] `POST /api/promotions/validate` (Employee) — validate code + auto-fire
+- [x] `GET /api/promotions` (Employee) — list all active
+- [x] `POST /api/promotions` (Admin) — create (coupon/product/order)
+- [x] `PUT /api/promotions/[id]` (Admin) — update
+- [x] `DELETE /api/promotions/[id]` (Admin) — delete
+- [x] `POST /api/promotions/validate` (Employee) — validate code + auto-fire
 
 ### Validation
-- [ ] Coupon code unique (if creating COUPON)
-- [ ] productId exists (if PRODUCT_BASED)
-- [ ] minQty > 0 (if PRODUCT_BASED)
-- [ ] minOrderAmount > 0 (if ORDER_BASED)
-- [ ] discountValue > 0
-- [ ] discountType in [PERCENT, FIXED]
-- [ ] For PERCENT: max 100%
-- [ ] For FIXED: value in rupees
+- [x] Coupon code unique (if creating COUPON)
+- [x] productId exists (if PRODUCT_BASED)
+- [x] minQty > 0 (if PRODUCT_BASED)
+- [x] minOrderAmount > 0 (if ORDER_BASED)
+- [x] discountValue > 0
+- [x] discountType in [PERCENT, FIXED]
+- [x] For PERCENT: max 100%
+- [x] For FIXED: value in rupees
 
 ### Test Coverage
-- [ ] Create coupon, validate code, apply discount
-- [ ] Create product promo, fire at qty threshold
-- [ ] Create order promo, fire at subtotal threshold
-- [ ] Inactive promos don't fire
-- [ ] Client-side tampering prevented by server revalidation
-- [ ] Multiple promos can apply simultaneously
-- [ ] Discount calculations correct for PERCENT vs FIXED
-- [ ] Invalid coupon returns 400
+- [x] Create coupon, validate code, apply discount
+- [x] Create product promo, fire at qty threshold
+- [x] Create order promo, fire at subtotal threshold
+- [x] Inactive promos don't fire
+- [x] Client-side tampering prevented by server revalidation
+- [x] Multiple promos can apply simultaneously
+- [x] Discount calculations correct for PERCENT vs FIXED
+- [x] Invalid coupon returns 400
 
 ---
 

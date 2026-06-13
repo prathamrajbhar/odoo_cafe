@@ -1,5 +1,59 @@
 import { z } from "zod";
 
+const promotionBaseObject = z.object({
+  name: z.string().min(1),
+  discountValue: z.number().positive(),
+  discountType: z.enum(["PERCENT", "FIXED"]),
+  isActive: z.boolean().default(true).optional(),
+});
+
+export const promotionBaseSchema = promotionBaseObject.superRefine((data, ctx) => {
+  if (data.discountType === "PERCENT" && data.discountValue > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discountValue"],
+    });
+  }
+});
+
+export const couponSchema = promotionBaseObject.extend({
+  code: z.string().min(1),
+}).superRefine((data, ctx) => {
+  if (data.discountType === "PERCENT" && data.discountValue > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discountValue"],
+    });
+  }
+});
+
+export const productPromoSchema = promotionBaseObject.extend({
+  productId: z.string().uuid(),
+  minQty: z.number().int().positive(),
+}).superRefine((data, ctx) => {
+  if (data.discountType === "PERCENT" && data.discountValue > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discountValue"],
+    });
+  }
+});
+
+export const orderPromoSchema = promotionBaseObject.extend({
+  minOrderAmount: z.number().positive(),
+}).superRefine((data, ctx) => {
+  if (data.discountType === "PERCENT" && data.discountValue > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discountValue"],
+    });
+  }
+});
+
 export const createPromotionSchema = z.object({
   name: z.string().min(1),
   promoType: z.enum(["COUPON", "PRODUCT_BASED", "ORDER_BASED"]),
@@ -9,7 +63,47 @@ export const createPromotionSchema = z.object({
   minOrderAmount: z.number().positive().optional(),
   discountValue: z.number().positive(),
   discountType: z.enum(["PERCENT", "FIXED"]),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true).optional(),
+}).superRefine((data, ctx) => {
+  if (data.discountType === "PERCENT" && data.discountValue > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discountValue"],
+    });
+  }
+  if (data.promoType === "COUPON") {
+    if (!data.code || data.code.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Coupon code is required for COUPON type",
+        path: ["code"],
+      });
+    }
+  } else if (data.promoType === "PRODUCT_BASED") {
+    if (!data.productId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "productId is required for PRODUCT_BASED type",
+        path: ["productId"],
+      });
+    }
+    if (data.minQty === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "minQty is required for PRODUCT_BASED type",
+        path: ["minQty"],
+      });
+    }
+  } else if (data.promoType === "ORDER_BASED") {
+    if (data.minOrderAmount === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "minOrderAmount is required for ORDER_BASED type",
+        path: ["minOrderAmount"],
+      });
+    }
+  }
 });
 
 export const updatePromotionSchema = z.object({
@@ -21,10 +115,20 @@ export const updatePromotionSchema = z.object({
   discountValue: z.number().positive().optional(),
   discountType: z.enum(["PERCENT", "FIXED"]).optional(),
   isActive: z.boolean().optional(),
+}).superRefine((data, ctx) => {
+  if (data.discountValue !== undefined) {
+    if (data.discountType === "PERCENT" && data.discountValue > 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Percentage discount cannot exceed 100%",
+        path: ["discountValue"],
+      });
+    }
+  }
 });
 
-export const validatePromoSchema = z.object({
-  code: z.string().optional(),
+export const validatePromosSchema = z.object({
+  code: z.string().optional().nullable(),
   subtotal: z.number().nonnegative(),
   lines: z.array(
     z.object({
@@ -33,3 +137,6 @@ export const validatePromoSchema = z.object({
     })
   ),
 });
+
+export const validatePromoSchema = validatePromosSchema;
+

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updatePromotionSchema } from "@/schemas/promotion";
-import { getPromotionById, updatePromotion, deletePromotion } from "@/lib/db/promotions";
+import { getById, update, deletePromo } from "@/lib/db/promotions";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -17,13 +17,17 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
-  const existing = await getPromotionById(id);
+  const existing = await getById(id);
   if (!existing) {
     return NextResponse.json({ error: "Promotion not found" }, { status: 404 });
   }
 
-  const promotion = await updatePromotion(id, parsed.data);
-  return NextResponse.json({ data: { promotion } });
+  try {
+    const promotion = await update(id, parsed.data);
+    return NextResponse.json({ data: { promotion } });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
@@ -33,11 +37,16 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 
   const { id } = await params;
-  const existing = await getPromotionById(id);
+  const existing = await getById(id);
   if (!existing) {
     return NextResponse.json({ error: "Promotion not found" }, { status: 404 });
   }
 
-  await deletePromotion(id);
-  return NextResponse.json({ data: { success: true } });
+  try {
+    await deletePromo(id);
+    return NextResponse.json({ data: { success: true } });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
 }
+
