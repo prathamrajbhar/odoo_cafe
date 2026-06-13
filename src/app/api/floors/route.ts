@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFloorSchema } from "@/schemas/floor";
+import { createFloorSchema } from "@/schemas/table";
 import { getAll, create } from "@/lib/db/floors";
 
 export async function GET(req: NextRequest) {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const priceSchema = z.number().positive("Price must be greater than 0").refine(
+const priceSchema = z.number({ required_error: "Price is required", invalid_type_error: "Price must be a number" }).positive("Price must be greater than 0").refine(
   (val) => {
     const parts = val.toString().split(".");
     return parts.length === 1 || parts[1].length <= 2;
@@ -31,3 +31,6 @@ export const productUpdateSchema = z.object({
 // Alias for compatibility
 export const createProductSchema = productCreateSchema;
 export const updateProductSchema = productUpdateSchema;
+
+export type ProductCreateInput = z.infer<typeof productCreateSchema>;
+export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;

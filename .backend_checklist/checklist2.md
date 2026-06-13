@@ -569,22 +569,22 @@
 ## **Module 15: Zod Validation Schemas**
 
 ### Location: `/schemas/`
-- [ ] `auth.ts` — loginSchema, signupSchema
-- [ ] `user.ts` — userCreateSchema, userUpdateSchema
-- [ ] `category.ts` — categoryCreateSchema, categoryUpdateSchema
-- [ ] `product.ts` — productCreateSchema, productUpdateSchema
-- [ ] `promotion.ts` — couponSchema, productPromoSchema, orderPromoSchema, validatePromosSchema
-- [ ] `table.ts` — floorSchema, tableCreateSchema, tableUpdateSchema
-- [ ] `customer.ts` — customerCreateSchema, customerUpdateSchema
-- [ ] `order.ts` — orderLineSchema, orderCreateSchema, orderPaySchema
-- [ ] `report.ts` — reportFilterSchema
+- [x] `auth.ts` — loginSchema, signupSchema
+- [x] `user.ts` — userCreateSchema, userUpdateSchema
+- [x] `category.ts` — categoryCreateSchema, categoryUpdateSchema
+- [x] `product.ts` — productCreateSchema, productUpdateSchema
+- [x] `promotion.ts` — couponSchema, productPromoSchema, orderPromoSchema, validatePromosSchema
+- [x] `table.ts` — floorSchema, tableCreateSchema, tableUpdateSchema
+- [x] `customer.ts` — customerCreateSchema, customerUpdateSchema
+- [x] `order.ts` — orderLineSchema, orderCreateSchema, orderPaySchema
+- [x] `report.ts` — reportFilterSchema
 
 ### Each Schema Should
-- [ ] Use TypeScript `.ts` extension (not `.ts` with runtime validation only)
-- [ ] Export `z.object()` or `z.infer<>` for types
-- [ ] Include field descriptions (for error messages)
-- [ ] Be shared between client + server
-- [ ] Have proper error messages for validation failures
+- [x] Use TypeScript `.ts` extension (not `.ts` with runtime validation only)
+- [x] Export `z.object()` or `z.infer<>` for types
+- [x] Include field descriptions (for error messages)
+- [x] Be shared between client + server
+- [x] Have proper error messages for validation failures
 
 ---
 

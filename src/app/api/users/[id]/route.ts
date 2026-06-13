@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateUserSchema } from "@/schemas/auth";
+import { updateUserSchema } from "@/schemas/user";
 import { getById, update, delete as deleteUserHelper, getByEmail } from "@/lib/db/users";
 
 type Params = { params: Promise<{ id: string }> };

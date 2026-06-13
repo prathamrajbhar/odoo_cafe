@@ -15,3 +15,7 @@ export const customerUpdateSchema = z.object({
 export const customerSearchSchema = z.object({
   search: z.string().optional(),
 });
+
+export type CustomerCreateInput = z.infer<typeof customerCreateSchema>;
+export type CustomerUpdateInput = z.infer<typeof customerUpdateSchema>;
+export type CustomerSearchInput = z.infer<typeof customerSearchSchema>;

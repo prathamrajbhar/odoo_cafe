@@ -15,3 +15,6 @@ export const categoryUpdateSchema = z.object({
 // Alias for compatibility
 export const createCategorySchema = categoryCreateSchema;
 export const updateCategorySchema = categoryUpdateSchema;
+
+export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
+export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;

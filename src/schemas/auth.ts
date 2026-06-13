@@ -1,41 +1,20 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const signupSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-export const createUserSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(6),
-  role: z.enum(["ADMIN", "EMPLOYEE"]),
-});
-
-export const updateUserSchema = z.object({
-  name: z.string().min(1).optional(),
-  email: z.string().email().optional(),
-  role: z.enum(["ADMIN", "EMPLOYEE"]).optional(),
-  status: z.enum(["ACTIVE", "DISABLED"]).optional(),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export const changePasswordSchema = z.object({
-  password: z.string().min(6),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export const userSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1),
-  email: z.string().email(),
-  role: z.enum(["ADMIN", "EMPLOYEE"]),
-  status: z.enum(["ACTIVE", "DISABLED"]),
-  createdAt: z.date().or(z.string()),
-  updatedAt: z.date().or(z.string()),
-});
-
+export type LoginInput = z.infer<typeof loginSchema>;
+export type SignupInput = z.infer<typeof signupSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

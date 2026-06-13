@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const reportFilterSchema = z
   .object({
-    period: z.enum(["today", "week", "month", "custom"]),
+    period: z.enum(["today", "week", "month", "custom"], { errorMap: () => ({ message: "Invalid period" }) }),
     from: z.string().optional().nullable(),
     to: z.string().optional().nullable(),
-    employeeId: z.string().uuid().optional().nullable(),
-    sessionId: z.string().uuid().optional().nullable(),
-    productId: z.string().uuid().optional().nullable(),
+    employeeId: z.string().uuid("Invalid employee ID").optional().nullable(),
+    sessionId: z.string().uuid("Invalid session ID").optional().nullable(),
+    productId: z.string().uuid("Invalid product ID").optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.period === "custom") {
@@ -27,3 +27,5 @@ export const reportFilterSchema = z
       }
     }
   });
+
+export type ReportFilterInput = z.infer<typeof reportFilterSchema>;

@@ -140,3 +140,6 @@ export const validatePromosSchema = z.object({
 
 export const validatePromoSchema = validatePromosSchema;
 
+export type CreatePromotionInput = z.infer<typeof createPromotionSchema>;
+export type UpdatePromotionInput = z.infer<typeof updatePromotionSchema>;
+export type ValidatePromosInput = z.infer<typeof validatePromosSchema>;

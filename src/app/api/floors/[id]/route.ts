@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateFloorSchema } from "@/schemas/floor";
+import { updateFloorSchema } from "@/schemas/table";
 import { getById, update, deleteFloor } from "@/lib/db/floors";
 
 type Params = { params: Promise<{ id: string }> };
