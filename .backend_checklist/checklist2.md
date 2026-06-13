@@ -9,44 +9,44 @@
 ## **Module 1: Authentication**
 
 ### Zod Schemas
-- [ ] `loginSchema` — email (string), password (string)
-- [ ] `signupSchema` — name (string), email (string), password (min 6)
-- [ ] `userSchema` — full user object structure
+- [x] `loginSchema` — email (string), password (string)
+- [x] `signupSchema` — name (string), email (string), password (min 6)
+- [x] `userSchema` — full user object structure
 
 ### Utilities (`/lib`)
-- [ ] `jwt.ts`: `sign(payload)` → JWT token string
-- [ ] `jwt.ts`: `verify(token)` → decoded payload or throw
-- [ ] `bcrypt.ts`: `hashPassword(plain)` → bcrypt hash
-- [ ] `bcrypt.ts`: `comparePassword(plain, hash)` → boolean
+- [x] `jwt.ts`: `sign(payload)` → JWT token string
+- [x] `jwt.ts`: `verify(token)` → decoded payload or throw
+- [x] `bcrypt.ts`: `hashPassword(plain)` → bcrypt hash
+- [x] `bcrypt.ts`: `comparePassword(plain, hash)` → boolean
 
 ### Middleware
-- [ ] `middleware.ts`: read JWT from `token` cookie
-- [ ] `middleware.ts`: verify JWT signature with `JWT_SECRET`
-- [ ] `middleware.ts`: inject userId + role into request headers
-- [ ] `middleware.ts`: block non-Admin from `/admin/*` routes
-- [ ] `middleware.ts`: allow public routes: `/api/auth/*`, `/api/kds/*`, `/(auth)/*`
+- [x] `middleware.ts`: read JWT from `token` cookie
+- [x] `middleware.ts`: verify JWT signature with `JWT_SECRET`
+- [x] `middleware.ts`: inject userId + role into request headers
+- [x] `middleware.ts`: block non-Admin from `/admin/*` routes
+- [x] `middleware.ts`: allow public routes: `/api/auth/*`, `/api/kds/*`, `/(auth)/*`
 
 ### Database Layer (`/lib/db/users.ts`)
-- [ ] `getAll()` → all users without passwordHash
-- [ ] `getById(id)` → user without passwordHash
-- [ ] `getByEmail(email)` → user (for login)
-- [ ] `create(data)` → new user with hashed password
-- [ ] `update(id, data)` → updated user
-- [ ] `delete(id)` → remove user
-- [ ] `updatePassword(id, newPassword)` → hash + save
+- [x] `getAll()` → all users without passwordHash
+- [x] `getById(id)` → user without passwordHash
+- [x] `getByEmail(email)` → user (for login)
+- [x] `create(data)` → new user with hashed password
+- [x] `update(id, data)` → updated user
+- [x] `delete(id)` → remove user
+- [x] `updatePassword(id, newPassword)` → hash + save
 
 ### API Routes
-- [ ] `POST /api/auth/login` (Public) — validate + return JWT + role
-- [ ] `POST /api/auth/signup` (Public) — first user = Admin, rest = Employee
-- [ ] `POST /api/auth/logout` (Employee) — clear token cookie
+- [x] `POST /api/auth/login` (Public) — validate + return JWT + role
+- [x] `POST /api/auth/signup` (Public) — first user = Admin, rest = Employee
+- [x] `POST /api/auth/logout` (Employee) — clear token cookie
 
 ### Test Coverage
-- [ ] First signup creates Admin
-- [ ] Subsequent signups create Employee
-- [ ] Login returns JWT in httpOnly cookie
-- [ ] Invalid credentials return 401
-- [ ] Middleware blocks unauthenticated access to `/admin/*`
-- [ ] Logout clears cookie
+- [x] First signup creates Admin
+- [x] Subsequent signups create Employee
+- [x] Login returns JWT in httpOnly cookie
+- [x] Invalid credentials return 401
+- [x] Middleware blocks unauthenticated access to `/admin/*`
+- [x] Logout clears cookie
 
 ---
 

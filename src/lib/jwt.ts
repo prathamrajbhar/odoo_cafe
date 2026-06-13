@@ -18,3 +18,12 @@ export async function verifyToken(token: string): Promise<JwtPayload> {
   const { payload } = await jwtVerify(token, SECRET);
   return payload as unknown as JwtPayload;
 }
+
+export async function sign(payload: JwtPayload): Promise<string> {
+  return signToken(payload);
+}
+
+export async function verify(token: string): Promise<JwtPayload> {
+  return verifyToken(token);
+}
+

@@ -28,3 +28,14 @@ export const updateUserSchema = z.object({
 export const changePasswordSchema = z.object({
   password: z.string().min(6),
 });
+
+export const userSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  email: z.string().email(),
+  role: z.enum(["ADMIN", "EMPLOYEE"]),
+  status: z.enum(["ACTIVE", "DISABLED"]),
+  createdAt: z.date().or(z.string()),
+  updatedAt: z.date().or(z.string()),
+});
+

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Role, Status } from "@/generated/prisma/client";
+import { hashPassword } from "@/lib/bcrypt";
 
 export function getUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email } });
@@ -53,3 +54,47 @@ export function updatePasswordHash(id: string, passwordHash: string) {
 export function deleteUser(id: string) {
   return prisma.user.delete({ where: { id } });
 }
+
+// Checklist-specific exports
+export function getAll() {
+  return listUsers();
+}
+
+export function getById(id: string) {
+  return getUserById(id);
+}
+
+export function getByEmail(email: string) {
+  return getUserByEmail(email);
+}
+
+export async function create(data: {
+  name: string;
+  email: string;
+  password?: string;
+  passwordHash?: string;
+  role: Role;
+}) {
+  const passwordHash = data.passwordHash || (data.password ? await hashPassword(data.password) : "");
+  return createUser({
+    name: data.name,
+    email: data.email,
+    passwordHash,
+    role: data.role,
+  });
+}
+
+export function update(id: string, data: { name?: string; email?: string; role?: Role; status?: Status }) {
+  return updateUser(id, data);
+}
+
+async function _delete(id: string) {
+  return deleteUser(id);
+}
+export { _delete as delete };
+
+export async function updatePassword(id: string, newPassword: string) {
+  const passwordHash = await hashPassword(newPassword);
+  return updatePasswordHash(id, passwordHash);
+}
+
