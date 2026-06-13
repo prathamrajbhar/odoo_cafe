@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateFloorSchema } from "@/schemas/floor";
-import { getFloorById, updateFloor, deleteFloor } from "@/lib/db/floors";
+import { getById, update, deleteFloor } from "@/lib/db/floors";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -17,13 +17,17 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
-  const existing = await getFloorById(id);
+  const existing = await getById(id);
   if (!existing) {
     return NextResponse.json({ error: "Floor not found" }, { status: 404 });
   }
 
-  const floor = await updateFloor(id, parsed.data);
-  return NextResponse.json({ data: { floor } });
+  try {
+    const floor = await update(id, parsed.data);
+    return NextResponse.json({ data: { floor } });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
@@ -33,18 +37,16 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 
   const { id } = await params;
-  const existing = await getFloorById(id);
+  const existing = await getById(id);
   if (!existing) {
     return NextResponse.json({ error: "Floor not found" }, { status: 404 });
   }
 
   try {
     await deleteFloor(id);
-  } catch (e: unknown) {
-    if (e instanceof Error && "code" in e && (e as { code: string }).code === "P2003") {
-      return NextResponse.json({ error: "Floor has tables — remove them first" }, { status: 400 });
-    }
-    throw e;
+    return NextResponse.json({ data: { success: true } });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  return NextResponse.json({ data: { success: true } });
 }
+

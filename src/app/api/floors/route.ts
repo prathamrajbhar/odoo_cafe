@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createFloorSchema } from "@/schemas/floor";
-import { listFloors, createFloor } from "@/lib/db/floors";
+import { getAll, create } from "@/lib/db/floors";
 
 export async function GET(req: NextRequest) {
   const role = req.headers.get("x-user-role");
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const floors = await listFloors();
+  const floors = await getAll();
   return NextResponse.json({ data: { floors } });
 }
 
@@ -24,6 +24,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
-  const floor = await createFloor(parsed.data);
-  return NextResponse.json({ data: { floor } }, { status: 201 });
+  try {
+    const floor = await create(parsed.data);
+    return NextResponse.json({ data: { floor } }, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
 }
+

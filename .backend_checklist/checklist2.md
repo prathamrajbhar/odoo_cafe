@@ -241,32 +241,32 @@
 ## **Module 7: Floors**
 
 ### Zod Schemas
-- [ ] `floorCreateSchema` — name (string, required)
-- [ ] `floorUpdateSchema` — name (optional)
+- [x] `floorCreateSchema` — name (string, required)
+- [x] `floorUpdateSchema` — name (optional)
 
 ### Database Layer (`/lib/db/floors.ts`)
-- [ ] `getAll()` → all floors with tables included
-- [ ] `getById(id)` → floor with all its tables
-- [ ] `create(name)` → new floor
-- [ ] `update(id, name)` → update name
-- [ ] `delete(id)` → remove floor (cascade delete tables)
+- [x] `getAll()` → all floors with tables included
+- [x] `getById(id)` → floor with all its tables
+- [x] `create(name)` → new floor
+- [x] `update(id, name)` → update name
+- [x] `delete(id)` → remove floor (cascade delete tables)
 
 ### API Routes
-- [ ] `GET /api/floors` (Admin) — list all with tables
-- [ ] `POST /api/floors` (Admin) — create new floor
-- [ ] `PUT /api/floors/[id]` (Admin) — update floor name
-- [ ] `DELETE /api/floors/[id]` (Admin) — delete floor
+- [x] `GET /api/floors` (Admin) — list all with tables
+- [x] `POST /api/floors` (Admin) — create new floor
+- [x] `PUT /api/floors/[id]` (Admin) — update floor name
+- [x] `DELETE /api/floors/[id]` (Admin) — delete floor
 
 ### Validation
-- [ ] floor name not empty
-- [ ] floor name not duplicate (optional)
+- [x] floor name not empty
+- [x] floor name not duplicate (optional)
 
 ### Test Coverage
-- [ ] Admin can create multiple floors
-- [ ] Admin can list floors with all tables
-- [ ] Admin can update floor name
-- [ ] Admin can delete floor (removes tables)
-- [ ] Floor order preserved (by creation)
+- [x] Admin can create multiple floors
+- [x] Admin can list floors with all tables
+- [x] Admin can update floor name
+- [x] Admin can delete floor (removes tables)
+- [x] Floor order preserved (by creation)
 
 ---
 

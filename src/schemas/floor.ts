@@ -1,9 +1,13 @@
 import { z } from "zod";
 
-export const createFloorSchema = z.object({
+export const floorCreateSchema = z.object({
   name: z.string().min(1),
 });
 
-export const updateFloorSchema = z.object({
+export const floorUpdateSchema = z.object({
   name: z.string().min(1).optional(),
 });
+
+export const createFloorSchema = floorCreateSchema;
+export const updateFloorSchema = floorUpdateSchema;
+
