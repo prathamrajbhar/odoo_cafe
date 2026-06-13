@@ -1,0 +1,361 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1.5rem 1rem; max-width: 720px; }
+h1 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.65rem; text-align: center; }
+.stat-num { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.stat-label { font-size: 10px; color: var(--color-text-secondary); margin-top: 2px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.tab { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); }
+.tab.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.user-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 0.85rem; background: var(--color-background-primary); }
+.user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 0.6rem; }
+.badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.b-admin { background: #FAECE7; color: #993C1D; }
+.b-emp { background: #E3F0FF; color: #0C3F7C; }
+.b-cust { background: #E8F7EF; color: #0A5C38; }
+.b-kitchen { background: #FFF3CD; color: #7A5000; }
+.user-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.user-desc { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
+.page-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.page-row:last-child { border-bottom: none; }
+.pg-num { font-size: 11px; font-weight: 500; min-width: 50px; color: var(--color-text-secondary); padding-top: 2px; }
+.pg-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.pg-simple { font-size: 11px; color: var(--color-accent); font-style: italic; margin-bottom: 3px; }
+.pg-feat { font-size: 12px; color: var(--color-text-secondary); line-height: 1.55; }
+.flow-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 0.75rem; background: var(--color-background-primary); }
+.flow-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+.flow-wrap { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.flow-step { font-size: 11px; font-weight: 500; background: var(--color-background-secondary); color: var(--color-text-primary); border-radius: var(--border-radius-md); padding: 3px 9px; border: 0.5px solid var(--color-border-tertiary); }
+.flow-arr { color: var(--color-text-secondary); font-size: 13px; }
+.unique-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.85rem 1.1rem; margin-bottom: 0.6rem; }
+.unique-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.unique-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.55; }
+.note { font-size: 12px; background: #E1F5EE; color: #085041; border-radius: var(--border-radius-md); padding: 8px 12px; margin-top: 0.5rem; }
+.warn { font-size: 12px; background: #FFF3CD; color: #7A5000; border-radius: var(--border-radius-md); padding: 8px 12px; margin-top: 0.5rem; }
+</style>
+
+<div class="wrap">
+  <h1>Odoo Cafe POS — Full Breakdown</h1>
+  <p class="sub">Odoo Hackathon · Restaurant Point-of-Sale System · 27 Screens</p>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">User roles</div></div>
+    <div class="stat"><div class="stat-num">27</div><div class="stat-label">Total screens</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Backend pages</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">POS terminal pages</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="sw('users',this)">Users & Pages</div>
+    <div class="tab" onclick="sw('workflow',this)">Workflow</div>
+    <div class="tab" onclick="sw('unique',this)">Stand Out 🚀</div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div class="tab-content active" id="tab-users">
+
+    <!-- ADMIN -->
+    <div class="user-card">
+      <div class="user-header">
+        <span class="badge b-admin">User 1</span>
+        <span class="user-title">Admin (User/Owner)</span>
+      </div>
+      <p class="user-desc">Logs into the backend. Configures everything before the POS opens — products, tables, payments, promotions, staff.</p>
+
+      <div class="page-row">
+        <div class="pg-num">Pg 1</div>
+        <div>
+          <div class="pg-name">Login & Signup</div>
+          <div class="pg-simple">→ "Sign In / Sign Up"</div>
+          <div class="pg-feat">Email + Password login. Signup: Name, Email, Password. On success → POS session opens directly.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 2</div>
+        <div>
+          <div class="pg-name">Product Management</div>
+          <div class="pg-simple">→ "Manage Menu Items"</div>
+          <div class="pg-feat">List all products. Create/Edit/Delete. Fields: Name, Category, Price, Tax (5/18/28% dropdown), Description. Category can be created on-the-fly from the same form.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 3</div>
+        <div>
+          <div class="pg-name">Product Category Management</div>
+          <div class="pg-simple">→ "Menu Categories with Colors"</div>
+          <div class="pg-feat">List of categories (e.g. Food, Drink). Each has a Name + Color. Color shows on product cards in POS automatically. Inline row editing — "New" button adds a row at bottom.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 4</div>
+        <div>
+          <div class="pg-name">Payment Method Setup</div>
+          <div class="pg-simple">→ "Turn On/Off Payment Options"</div>
+          <div class="pg-feat">3 methods: Cash, Card, UPI. Each has Activate toggle. UPI type shows extra field: UPI ID (e.g. abc@upi.com) + live QR preview. Cash and Card have no extra fields.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 5</div>
+        <div>
+          <div class="pg-name">Coupon & Promotion Management</div>
+          <div class="pg-simple">→ "Discount Rules Setup"</div>
+          <div class="pg-feat">
+            <b>Coupon type:</b> Code (e.g. "Summer20") + Discount % or ₹ amount. Employee enters manually at POS.<br>
+            <b>Automated Promo — Product based:</b> Select product, set Min Qty, set discount. Auto-fires when qty reached.<br>
+            <b>Automated Promo — Order based:</b> Set Min Order amount (e.g. ₹500), set discount %. Auto-fires when cart crosses amount.
+          </div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 6</div>
+        <div>
+          <div class="pg-name">Floor Plan & Table Management</div>
+          <div class="pg-simple">→ "Set Up Tables"</div>
+          <div class="pg-feat">Create floors. Add tables under each floor. Table fields: Number, Seats, Active status. These appear in the POS floor grid.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 7</div>
+        <div>
+          <div class="pg-name">User / Employee Management</div>
+          <div class="pg-simple">→ "Manage Staff Accounts"</div>
+          <div class="pg-feat">List all accounts with Name, Role (User/Employee), Status (Active/Disabled). Select any record → action menu: Delete / Archive / Change Password. Change Password shows popup with new password field.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 8</div>
+        <div>
+          <div class="pg-name">Reports / Analytics Dashboard</div>
+          <div class="pg-simple">→ "Sales Reports"</div>
+          <div class="pg-feat">Filters: Period (Today/Week/Month/Custom), Employee, Session, Product. Metrics: Total Orders, Revenue, Avg Order. Charts: Sales trend line, Top Category pie chart. Tables: Top Orders, Top Products (name, qty, revenue), Top Categories. Export as PDF or XLS.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">Pg 9</div>
+        <div>
+          <div class="pg-name">POS Terminal & Session Control</div>
+          <div class="pg-simple">→ "Open/Close POS Shift"</div>
+          <div class="pg-feat">Shows last open session date + last closing sale amount. "Open Session" button launches POS. Closing session shows summary of the shift.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEE -->
+    <div class="user-card">
+      <div class="user-header">
+        <span class="badge b-emp">User 2</span>
+        <span class="user-title">Employee (Cashier)</span>
+      </div>
+      <p class="user-desc">Uses the POS terminal. Takes orders, manages tables, processes payments. Does NOT access the backend config pages.</p>
+
+      <div class="page-row">
+        <div class="pg-num">POS 1</div>
+        <div>
+          <div class="pg-name">Floor Pop-up (Table Selection)</div>
+          <div class="pg-simple">→ "Pick a Table"</div>
+          <div class="pg-feat">Appears on session start or when tapping Table View. Grid of all tables with numbers. Tables with active orders are highlighted (pink/red in wireframe). Tap a table → opens that table's Order View.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 2</div>
+        <div>
+          <div class="pg-name">Order View (Main POS Screen)</div>
+          <div class="pg-simple">→ "Take Order Screen" — the BIG one, 3 columns</div>
+          <div class="pg-feat">
+            <b>Left — Product section:</b> Category tabs (color-coded). Product cards with price. Click = add to cart.<br>
+            <b>Middle — Cart section:</b> Each line: Product name, qty (adjustable), unit price, line total. Product promo shows discount under the item. Order discount shows as separate line.<br>
+            Bottom: Customer | Discount | Send buttons. Subtotal, GST 5%, Total.<br>
+            <b>Right — Payment section:</b> Cash, UPI, Card buttons. Amount display. Numpad (0-9, +/-, ×, Qty). "Send to Kitchen" button.
+          </div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 3</div>
+        <div>
+          <div class="pg-name">Discount Popup</div>
+          <div class="pg-simple">→ "Enter Coupon Code"</div>
+          <div class="pg-feat">Opened via "Discount" button. Text field to enter coupon code. Also shows list of available automated promotions as radio buttons (e.g. "30% Discount", "25% Discount"). Select one → applies to order.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 4</div>
+        <div>
+          <div class="pg-name">Payment & Receipt Screen</div>
+          <div class="pg-simple">→ "Collect Payment"</div>
+          <div class="pg-feat">
+            Cash: Enter amount received → shows change due.<br>
+            UPI: Auto-generated QR code from UPI ID + total amount shown. "Confirmed" or "Cancel".<br>
+            Card: Enter transaction reference.<br>
+            After payment: Print receipt OR Send to email popup.
+          </div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 5</div>
+        <div>
+          <div class="pg-name">Orders List</div>
+          <div class="pg-simple">→ "All Orders This Session"</div>
+          <div class="pg-feat">Table: Date, Order#, Customer, Amount, Status (Draft/Paid/Cancelled). Search by customer name, order number, or date. Click order → Order Detail popup.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 6</div>
+        <div>
+          <div class="pg-name">Order Detail View</div>
+          <div class="pg-simple">→ "View/Edit a Specific Order"</div>
+          <div class="pg-feat">Shows Order#, Date, Customer, Amount, Status, Products. Draft order: shows Delete + Edit Order buttons. Edit Order → loads order back into cart. Paid order: view only.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 7</div>
+        <div>
+          <div class="pg-name">Customer Management</div>
+          <div class="pg-simple">→ "Search or Add Customer"</div>
+          <div class="pg-feat">Search customers by name. Create new customer (Name, Email, Phone). Edit via popup. Delete. Select customer → linked to current order, email used for receipt.</div>
+        </div>
+      </div>
+      <div class="page-row">
+        <div class="pg-num">POS 8</div>
+        <div>
+          <div class="pg-name">Table View</div>
+          <div class="pg-simple">→ "See All Tables Status"</div>
+          <div class="pg-feat">Shows all floors and tables. Occupied tables visually different from free ones. Tap any table → opens its order.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KITCHEN -->
+    <div class="user-card">
+      <div class="user-header">
+        <span class="badge b-kitchen">User 3</span>
+        <span class="user-title">Kitchen Staff (KDS Screen)</span>
+      </div>
+      <p class="user-desc">Opens a fixed URL (localhost:0000/KDS) on a separate screen/tab. Receives orders in real-time. No login required.</p>
+
+      <div class="page-row">
+        <div class="pg-num">KDS 1</div>
+        <div>
+          <div class="pg-name">Kitchen Display System (KDS)</div>
+          <div class="pg-simple">→ "Kitchen Order Board"</div>
+          <div class="pg-feat">
+            Tabs at top: All | To Cook (7) | Preparing (3) | Completed (2).<br>
+            Each order = a ticket card showing Order# (same as POS order#), items + quantities.<br>
+            Click entire card → moves whole order to next stage (To Cook → Preparing → Completed).<br>
+            Click individual item inside card → strikethrough that item only (partial completion).<br>
+            Left sidebar: Filter by Product and Category. Search bar available.
+          </div>
+        </div>
+      </div>
+      <div class="note">⚡ KDS is a separate URL, no login. Real-time updates via WebSocket or polling. This is the most technically impressive screen — nail this and judges will notice.</div>
+    </div>
+
+    <!-- CUSTOMER -->
+    <div class="user-card">
+      <div class="user-header">
+        <span class="badge b-cust">User 4*</span>
+        <span class="user-title">Customer (Passive role)</span>
+      </div>
+      <p class="user-desc">Not a login user. Managed by the Employee from within the POS. No separate pages for customer to access.</p>
+      <div class="page-row">
+        <div class="pg-num">—</div>
+        <div>
+          <div class="pg-feat">Customer comes in → Employee searches/creates them in Customer screen → links to order → receives receipt via email or print. That's it. Customer has zero screens of their own.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW TAB -->
+  <div class="tab-content" id="tab-workflow">
+    <div class="flow-card">
+      <div class="flow-title">Admin setup (before shift)</div>
+      <div class="flow-wrap">
+        <span class="flow-step">Signup/Login</span><span class="flow-arr">→</span>
+        <span class="flow-step">Add Categories</span><span class="flow-arr">→</span>
+        <span class="flow-step">Add Products</span><span class="flow-arr">→</span>
+        <span class="flow-step">Set Payment Methods</span><span class="flow-arr">→</span>
+        <span class="flow-step">Create Tables/Floors</span><span class="flow-arr">→</span>
+        <span class="flow-step">Set Coupons/Promos</span><span class="flow-arr">→</span>
+        <span class="flow-step">Add Employees</span><span class="flow-arr">→</span>
+        <span class="flow-step">Open POS Session</span>
+      </div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-title">Employee takes an order</div>
+      <div class="flow-wrap">
+        <span class="flow-step">Floor popup → Pick table</span><span class="flow-arr">→</span>
+        <span class="flow-step">Add products to cart</span><span class="flow-arr">→</span>
+        <span class="flow-step">Assign customer (optional)</span><span class="flow-arr">→</span>
+        <span class="flow-step">Apply discount/coupon</span><span class="flow-arr">→</span>
+        <span class="flow-step">Send to Kitchen (KDS)</span><span class="flow-arr">→</span>
+        <span class="flow-step">Collect payment</span><span class="flow-arr">→</span>
+        <span class="flow-step">Print/Email receipt</span>
+      </div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-title">Kitchen workflow</div>
+      <div class="flow-wrap">
+        <span class="flow-step">Order appears on KDS (To Cook)</span><span class="flow-arr">→</span>
+        <span class="flow-step">Click card → Preparing</span><span class="flow-arr">→</span>
+        <span class="flow-step">Strike items as done</span><span class="flow-arr">→</span>
+        <span class="flow-step">Click card → Completed</span>
+      </div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-title">Admin end-of-shift</div>
+      <div class="flow-wrap">
+        <span class="flow-step">Close POS session</span><span class="flow-arr">→</span>
+        <span class="flow-step">View closing summary</span><span class="flow-arr">→</span>
+        <span class="flow-step">Check Reports dashboard</span><span class="flow-arr">→</span>
+        <span class="flow-step">Export PDF/XLS</span>
+      </div>
+    </div>
+    <div class="warn">⚠️ Tricky name: "KDS" = Kitchen Display System. "Booking" appears in the hamburger menu but is NOT described in the PDF — likely a table reservation feature you can add as a bonus.</div>
+  </div>
+
+  <!-- UNIQUE TAB -->
+  <div class="tab-content" id="tab-unique">
+    <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem;">Same PDF goes to 100 teams. Here's how Traveloop team wins this one 👇</p>
+
+    <div class="unique-card">
+      <div class="unique-title">📱 QR Scan to Select Table (You mentioned this!)</div>
+      <div class="unique-desc">Each physical table has a QR code. Customer scans it → automatically opens that table's order on employee's screen OR lets customer self-order. PDF has no QR on table anywhere. This is your instant wow moment — printable QR per table, one scan, table selected. Zero typing.</div>
+    </div>
+    <div class="unique-card">
+      <div class="unique-title">🪑 Visual Floor Map (not just a number grid)</div>
+      <div class="unique-desc">PDF wireframe shows tables as numbered squares in a grid. You upgrade it to a drag-and-drop floor layout where tables are positioned like a real restaurant. Green = free, Red = occupied, Yellow = order sent to kitchen. This is what judges see in 5 seconds and remember.</div>
+    </div>
+    <div class="unique-card">
+      <div class="unique-title">🔴 Live KDS with Real-time Sound Alert</div>
+      <div class="unique-desc">When employee hits "Send to Kitchen", KDS plays a notification sound + the new ticket flashes briefly. PDF mentions real-time updates but no alert system. Simple to implement with a browser Audio API + WebSocket ping. Kitchen staff loves it.</div>
+    </div>
+    <div class="unique-card">
+      <div class="unique-title">📅 "Booking" Tab (Missing from PDF!)</div>
+      <div class="unique-desc">The hamburger menu shows "Booking" but the PDF never explains it. Every team will skip it. You build a simple table reservation system: customer name, date/time, table number, party size. Shows as "Reserved" on the floor map. This alone completes the feature set in a way no other team will.</div>
+    </div>
+    <div class="unique-card">
+      <div class="unique-title">📊 Live Dashboard Widget on POS Home</div>
+      <div class="unique-desc">Small live stats bar at top of POS: "Today: ₹12,450 | 23 orders | Table 5 waiting 18 mins." Admin sees this without going to Reports. Not in the PDF at all.</div>
+    </div>
+    <div class="unique-card">
+      <div class="unique-title">🧾 WhatsApp Receipt (instead of just email)</div>
+      <div class="unique-desc">After payment, option to send receipt via WhatsApp number (wa.me link with pre-filled text). Customers in India use WhatsApp > email. Super easy to implement, huge practical value, zero API cost.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function sw(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
