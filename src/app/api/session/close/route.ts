@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getActive, close, getSummary } from "@/lib/db/sessions";
+import { getIO } from "@/lib/socket";
 
 export async function POST(req: NextRequest) {
   const role = req.headers.get("x-user-role");
@@ -12,26 +13,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "x-user-id header is missing" }, { status: 400 });
   }
 
-  const body = await req.json().catch(() => null);
-  const closingSaleAmount = body?.closingSaleAmount;
-
-  if (closingSaleAmount === undefined || closingSaleAmount === null) {
-    return NextResponse.json({ error: "closingSaleAmount is required" }, { status: 400 });
-  }
-
-  const numAmount = Number(closingSaleAmount);
-  if (isNaN(numAmount) || numAmount < 0) {
-    return NextResponse.json({ error: "closingSaleAmount must be a non-negative number" }, { status: 400 });
-  }
-
   const activeSession = await getActive(userId);
   if (!activeSession) {
     return NextResponse.json({ error: "No active session found for this user" }, { status: 400 });
   }
 
   try {
-    await close(activeSession.id, numAmount);
+    await close(activeSession.id);
     const summary = await getSummary(activeSession.id);
+
+    try {
+      getIO().to("kds").emit("session:closed");
+    } catch {
+      // socket not initialized in test environments
+    }
+
     return NextResponse.json({ data: { summary } });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });

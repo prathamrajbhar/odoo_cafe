@@ -23,7 +23,7 @@ const METHOD_META = {
     description: "Standard cash drawer integration. Requires manual till counting.",
     detail: "Journal: CSJ",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <rect x="2" y="6" width="20" height="12" rx="2" />
         <circle cx="12" cy="12" r="2" />
         <path d="M6 12h.01M18 12h.01" />
@@ -35,7 +35,7 @@ const METHOD_META = {
     description: "Stripe Terminal integration. Supports tap, chip, and swipe.",
     detail: "Terminal ID: STR-982",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
         <line x1="1" y1="10" x2="23" y2="10" />
       </svg>
@@ -46,7 +46,7 @@ const METHOD_META = {
     description: "Dynamic QR code generation for customer screens.",
     detail: null,
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <rect x="3" y="3" width="7" height="7" rx="1" />
         <rect x="14" y="3" width="7" height="7" rx="1" />
         <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -58,6 +58,7 @@ const METHOD_META = {
 
 export const PaymentMethodList: React.FC<Props> = ({ methods, onRefresh }) => {
   const [toggling, setToggling] = useState<string | null>(null);
+  const [expandedUpi, setExpandedUpi] = useState<string | null>(null);
   const [upiId, setUpiId] = useState("");
   const [merchantName, setMerchantName] = useState("Odoo Cafe Downtown");
   const [customerDisplay, setCustomerDisplay] = useState("Screen 2 (Facing Customer)");
@@ -89,38 +90,63 @@ export const PaymentMethodList: React.FC<Props> = ({ methods, onRefresh }) => {
     }
   };
 
-  // Sync upiId from loaded data on first render
   React.useEffect(() => {
     const upi = methods.find((m) => m.type === "UPI");
     if (upi?.upiId) setUpiId(upi.upiId);
   }, [methods]);
 
+  if (!methods.length) {
+    return (
+      <div className="bg-surface-container-lowest border border-available-border rounded-xl px-5 py-10 text-center text-body-sm text-on-surface-variant/60 italic">
+        No payment methods configured.
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      {methods.map((method) => {
-        const meta = METHOD_META[method.type];
-        const isUpi = method.type === "UPI";
-        const isToggling = toggling === method.id;
+    <div className="bg-surface-container-lowest border border-available-border rounded-xl shadow-sm overflow-hidden">
+      <table className="w-full text-left">
+        <thead className="bg-surface-container-low border-b border-available-border">
+          <tr>
+            {["Payment Method", "Description", "Status", "Activate", ""].map((h) => (
+              <th key={h} className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-available-border">
+          {methods.map((method) => {
+            const meta = METHOD_META[method.type];
+            const isUpi = method.type === "UPI";
+            const isToggling = toggling === method.id;
+            const isExpanded = expandedUpi === method.id;
 
-        return (
-          <div
-            key={method.id}
-            className={`bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border transition-all ${
-              isUpi && method.isActive ? "border-primary border-2" : "border-available-border"
-            }`}
-          >
-            <div className="px-6 py-5">
-              <div className="flex items-start gap-4">
-                {/* Icon */}
-                <div className="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0 mt-0.5">
-                  {meta.icon}
-                </div>
+            return (
+              <React.Fragment key={method.id}>
+                <tr className="hover:bg-surface-container-low/40 transition-colors">
+                  {/* Method name */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+                        {meta.icon}
+                      </div>
+                      <div>
+                        <div className="text-body-sm font-semibold text-on-surface">{meta.label}</div>
+                        {meta.detail && (
+                          <div className="text-xs text-on-surface-variant/70 mt-0.5">{meta.detail}</div>
+                        )}
+                      </div>
+                    </div>
+                  </td>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-body-lg font-semibold text-on-surface">{meta.label}</div>
-                  <div className="text-body-sm text-on-surface-variant mt-0.5">{meta.description}</div>
-                  <div className="flex items-center gap-3 mt-2.5 flex-wrap">
+                  {/* Description */}
+                  <td className="px-5 py-4 text-body-sm text-on-surface-variant max-w-[260px]">
+                    {meta.description}
+                  </td>
+
+                  {/* Status badge */}
+                  <td className="px-5 py-4">
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-medium border ${
                         method.isActive
@@ -131,166 +157,167 @@ export const PaymentMethodList: React.FC<Props> = ({ methods, onRefresh }) => {
                       <span className={`w-1.5 h-1.5 rounded-full ${method.isActive ? "bg-[#2E7D32]" : "bg-outline"}`} />
                       {method.isActive ? "Active" : "Inactive"}
                     </span>
-                    {meta.detail && (
-                      <span className="text-label-sm text-on-surface-variant">{meta.detail}</span>
-                    )}
-                  </div>
-                </div>
+                  </td>
 
-                {/* Right: toggle + edit */}
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-label-md text-on-surface-variant hidden sm:inline">Activate</span>
-                  <button
-                    role="switch"
-                    aria-checked={method.isActive}
-                    onClick={() => handleToggle(method)}
-                    disabled={isToggling}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 ${
-                      method.isActive ? "bg-primary" : "bg-surface-container-highest"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                        method.isActive ? "translate-x-5" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-1.5 rounded-lg text-on-surface-variant/50 hover:text-on-surface hover:bg-surface-container transition-colors"
-                    title="Edit"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              {/* UPI expanded section */}
-              {isUpi && method.isActive && (
-                <div className="mt-6 pt-6 border-t border-available-border grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Fields */}
-                  <div className="space-y-4">
-                    {/* UPI ID */}
-                    <div>
-                      <label className="block text-label-md text-on-surface font-medium mb-1.5">
-                        Merchant UPI ID
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={upiId}
-                          onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="e.g. merchant@bank"
-                          className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors pr-10"
-                        />
-                        {upiId && (
-                          <span className="absolute right-3 top-2.5 text-[#2E7D32]">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                              <polyline points="22 4 12 14.01 9 11.01" />
-                            </svg>
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-body-sm text-on-surface-variant mt-1">Payments will be routed to this VPA.</p>
-                    </div>
-
-                    {/* Merchant Name */}
-                    <div>
-                      <label className="block text-label-md text-on-surface font-medium mb-1.5">
-                        Merchant Name
-                      </label>
-                      <input
-                        type="text"
-                        value={merchantName}
-                        onChange={(e) => setMerchantName(e.target.value)}
-                        className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                      />
-                    </div>
-
-                    {/* Customer Display */}
-                    <div>
-                      <label className="block text-label-md text-on-surface font-medium mb-1.5">
-                        Customer Display
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={customerDisplay}
-                          onChange={(e) => setCustomerDisplay(e.target.value)}
-                          className="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors pr-10"
-                        >
-                          <option>Screen 2 (Facing Customer)</option>
-                          <option>Screen 1 (Cashier)</option>
-                          <option>None</option>
-                        </select>
-                        <span className="pointer-events-none absolute right-3 top-2.5 text-on-surface-variant/60">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <polyline points="6 9 12 15 18 9" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-1">
+                  {/* Toggle */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-label-sm text-on-surface-variant">Activate</span>
                       <button
-                        onClick={() => handleSaveUpi(method)}
-                        disabled={savingUpi}
-                        className="bg-primary text-on-primary text-label-md font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                        role="switch"
+                        aria-checked={method.isActive}
+                        onClick={() => handleToggle(method)}
+                        disabled={isToggling}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 ${
+                          method.isActive ? "bg-primary" : "bg-surface-container-highest"
+                        }`}
                       >
-                        {savingUpi ? "Saving..." : "Save Changes"}
+                        <span
+                          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                            method.isActive ? "translate-x-5" : "translate-x-1"
+                          }`}
+                        />
                       </button>
+                    </div>
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-1">
+                      {isUpi && (
+                        <button
+                          type="button"
+                          onClick={() => setExpandedUpi(isExpanded ? null : method.id)}
+                          className="p-1.5 rounded-lg text-on-surface-variant/50 hover:text-on-surface hover:bg-surface-container transition-colors"
+                          title={isExpanded ? "Collapse" : "Configure UPI"}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <polyline points={isExpanded ? "18 15 12 9 6 15" : "6 9 12 15 18 9"} />
+                          </svg>
+                        </button>
+                      )}
                       <button
                         type="button"
-                        className="border border-available-border text-on-surface text-label-md font-semibold px-4 py-2 rounded-lg hover:bg-surface-container transition-colors"
+                        className="p-1.5 rounded-lg text-on-surface-variant/50 hover:text-on-surface hover:bg-surface-container transition-colors"
+                        title="Edit"
                       >
-                        Test Connection
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
                       </button>
                     </div>
-                  </div>
+                  </td>
+                </tr>
 
-                  {/* QR preview */}
-                  <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant">
-                    <h4 className="text-label-lg font-semibold text-on-surface mb-4 pb-3 border-b border-outline-variant">
-                      Live Customer Preview
-                    </h4>
-                    <div className="flex justify-center">
-                      <div className="bg-white rounded-2xl shadow-sm border border-available-border p-5 flex flex-col items-center w-[200px]">
-                        {upiId ? (
-                          <QRCodeSVG
-                            value={`upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(merchantName || "Odoo Cafe")}&cu=INR`}
-                            size={120}
-                            bgColor="#ffffff"
-                            fgColor="#1a1a1a"
-                            level="M"
-                            className="mb-3"
-                          />
-                        ) : (
-                          <div className="w-[120px] h-[120px] mb-3 flex items-center justify-center border-2 border-dashed border-outline-variant rounded-lg">
-                            <span className="text-xs text-on-surface-variant/50 text-center px-2">Enter UPI ID to generate QR</span>
+                {/* UPI expanded config row */}
+                {isUpi && isExpanded && (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-6 bg-surface-container-low/50 border-t border-available-border">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl">
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-label-md text-on-surface font-medium mb-1.5">Merchant UPI ID</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={upiId}
+                                onChange={(e) => setUpiId(e.target.value)}
+                                placeholder="e.g. merchant@bank"
+                                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors pr-10"
+                              />
+                              {upiId && (
+                                <span className="absolute right-3 top-2.5 text-[#2E7D32]">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                                  </svg>
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-body-sm text-on-surface-variant mt-1">Payments will be routed to this VPA.</p>
                           </div>
-                        )}
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-on-surface">₹ 0.00</div>
-                          <div className="text-xs text-on-surface-variant mt-0.5">
-                            Scan to pay {merchantName || "Odoo Cafe"}
+                          <div>
+                            <label className="block text-label-md text-on-surface font-medium mb-1.5">Merchant Name</label>
+                            <input
+                              type="text"
+                              value={merchantName}
+                              onChange={(e) => setMerchantName(e.target.value)}
+                              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                            />
                           </div>
-                          <div className="text-xs text-primary bg-primary/10 rounded px-2 py-0.5 mt-2 font-mono inline-block">
-                            {upiId || "—"}
+                          <div>
+                            <label className="block text-label-md text-on-surface font-medium mb-1.5">Customer Display</label>
+                            <div className="relative">
+                              <select
+                                value={customerDisplay}
+                                onChange={(e) => setCustomerDisplay(e.target.value)}
+                                className="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-2 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors pr-10"
+                              >
+                                <option>Screen 2 (Facing Customer)</option>
+                                <option>Screen 1 (Cashier)</option>
+                                <option>None</option>
+                              </select>
+                              <span className="pointer-events-none absolute right-3 top-2.5 text-on-surface-variant/60">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex gap-3 pt-1">
+                            <button
+                              onClick={() => handleSaveUpi(method)}
+                              disabled={savingUpi}
+                              className="bg-primary text-on-primary text-label-md font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                            >
+                              {savingUpi ? "Saving..." : "Save Changes"}
+                            </button>
+                            <button
+                              type="button"
+                              className="border border-available-border text-on-surface text-label-md font-semibold px-4 py-2 rounded-lg hover:bg-surface-container transition-colors"
+                            >
+                              Test Connection
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant">
+                          <h4 className="text-label-lg font-semibold text-on-surface mb-4 pb-3 border-b border-outline-variant">
+                            Live Customer Preview
+                          </h4>
+                          <div className="flex justify-center">
+                            <div className="bg-white rounded-2xl shadow-sm border border-available-border p-5 flex flex-col items-center w-[200px]">
+                              {upiId ? (
+                                <QRCodeSVG
+                                  value={`upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(merchantName || "Odoo Cafe")}&cu=INR`}
+                                  size={120}
+                                  bgColor="#ffffff"
+                                  fgColor="#1a1a1a"
+                                  level="M"
+                                  className="mb-3"
+                                />
+                              ) : (
+                                <div className="w-[120px] h-[120px] mb-3 flex items-center justify-center border-2 border-dashed border-outline-variant rounded-lg">
+                                  <span className="text-xs text-on-surface-variant/50 text-center px-2">Enter UPI ID to generate QR</span>
+                                </div>
+                              )}
+                              <div className="text-center">
+                                <div className="text-lg font-bold text-on-surface">₹ 0.00</div>
+                                <div className="text-xs text-on-surface-variant mt-0.5">Scan to pay {merchantName || "Odoo Cafe"}</div>
+                                <div className="text-xs text-primary bg-primary/10 rounded px-2 py-0.5 mt-2 font-mono inline-block">{upiId || "—"}</div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

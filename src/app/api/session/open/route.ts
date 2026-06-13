@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { create } from "@/lib/db/sessions";
+import { getIO } from "@/lib/socket";
 
 export async function POST(req: NextRequest) {
   const role = req.headers.get("x-user-role");
@@ -14,15 +15,15 @@ export async function POST(req: NextRequest) {
 
   try {
     const session = await create(userId);
+
+    try {
+      getIO().to("kds").emit("session:opened", { sessionId: session.id });
+    } catch {
+      // socket not initialized in test environments
+    }
+
     return NextResponse.json(
-      {
-        data: {
-          session: {
-            id: session.id,
-            openedAt: session.openedAt,
-          },
-        },
-      },
+      { data: { session: { id: session.id, openedAt: session.openedAt } } },
       { status: 201 }
     );
   } catch (err: any) {

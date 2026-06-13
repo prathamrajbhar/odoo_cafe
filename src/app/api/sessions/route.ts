@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
         id: s.id,
         openedAt: s.openedAt,
         closedAt: s.closedAt,
+        closingSaleAmount: s.closingSaleAmount ? Number(s.closingSaleAmount) : null,
         openedBy: s.openedBy.name,
       })),
     },

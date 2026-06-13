@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Button from "@/components/shared/Button";
 import { api } from "@/lib/api";
 import { toast } from "@/lib/toast";
@@ -17,6 +16,7 @@ interface Session {
 interface Props {
   lastSession: Session | null;
   activeSession: Session | null;
+  onSessionChange?: () => void;
 }
 
 function fmt(dateStr: string) {
@@ -31,8 +31,7 @@ function fmtCurrency(amount: number | null) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
 }
 
-export const SessionControl: React.FC<Props> = ({ lastSession, activeSession }) => {
-  const router = useRouter();
+export const SessionControl: React.FC<Props> = ({ lastSession, activeSession, onSessionChange }) => {
   const [loading, setLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [summary, setSummary] = useState<any>(null);
@@ -42,7 +41,7 @@ export const SessionControl: React.FC<Props> = ({ lastSession, activeSession }) 
     try {
       await api.post("/session/open");
       toast.success("Session opened");
-      router.push("/pos");
+      onSessionChange?.();
     } catch (err: any) {
       toast.error(err.message || "Failed to open session");
     } finally {
@@ -55,9 +54,10 @@ export const SessionControl: React.FC<Props> = ({ lastSession, activeSession }) 
     setLoading(true);
     try {
       const res: any = await api.post("/session/close");
-      setSummary(res.data);
+      setSummary(res.data?.summary);
       setShowSummary(true);
       toast.success("Session closed");
+      onSessionChange?.();
     } catch (err: any) {
       toast.error(err.message || "Failed to close session");
     } finally {
@@ -131,15 +131,6 @@ export const SessionControl: React.FC<Props> = ({ lastSession, activeSession }) 
         ) : (
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={() => router.push("/pos")}
-                leftIcon={<span className="material-symbols-outlined">open_in_new</span>}
-                className="px-8"
-              >
-                Go to POS
-              </Button>
               <Button
                 variant="outline"
                 size="lg"

@@ -183,11 +183,10 @@ export const PromotionList: React.FC<Props> = ({ promotions, products, onRefresh
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-md ${
-                        p.isActive
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-md ${p.isActive
                           ? "bg-[#E8F5E9] text-[#1B5E20] border border-[#C8E6C9]"
                           : "bg-surface-container-high text-on-surface-variant border border-outline-variant"
-                      }`}
+                        }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${p.isActive ? "bg-success" : "bg-outline"}`} />
                       {p.isActive ? "Active" : "Inactive"}
@@ -329,14 +328,12 @@ export const PromotionList: React.FC<Props> = ({ promotions, products, onRefresh
               role="switch"
               aria-checked={form.isActive}
               onClick={() => set("isActive", !form.isActive)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 ${
-                form.isActive ? "bg-primary" : "bg-surface-container-highest"
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 ${form.isActive ? "bg-primary" : "bg-surface-container-highest"
+                }`}
             >
               <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                  form.isActive ? "translate-x-5" : "translate-x-1"
-                }`}
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${form.isActive ? "translate-x-5" : "translate-x-1"
+                  }`}
               />
             </button>
           </div>

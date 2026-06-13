@@ -39,6 +39,7 @@ export default function SessionPage() {
     <SessionControl
       lastSession={lastSession}
       activeSession={activeSession}
+      onSessionChange={fetchSession}
     />
   );
 }
