@@ -8,18 +8,24 @@ import { toast } from "@/lib/toast";
 export default function ReportsPage() {
   const [initialData, setInitialData] = useState<any>(null);
   const [employees, setEmployees] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchInitial = useCallback(async () => {
     try {
-      const [reportRes, usersRes]: any[] = await Promise.all([
-        api.get("/reports?period=TODAY"),
+      const [reportRes, usersRes, sessionsRes, productsRes]: any[] = await Promise.all([
+        api.get("/reports?period=today"),
         api.get("/users"),
+        api.get("/sessions"),
+        api.get("/products"),
       ]);
       setInitialData(reportRes.data ?? null);
       setEmployees(
         (usersRes.data?.users ?? []).filter((u: any) => u.status === "ACTIVE")
       );
+      setSessions(sessionsRes.data?.sessions ?? []);
+      setProducts(productsRes.data?.products ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to load reports");
     } finally {
@@ -43,5 +49,5 @@ export default function ReportsPage() {
     );
   }
 
-  return <Reports initialData={initialData} employees={employees} />;
+  return <Reports initialData={initialData} employees={employees} sessions={sessions} products={products} />;
 }

@@ -1,18 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Modal from "@/components/shared/Modal";
 import Button from "@/components/shared/Button";
 import Input from "@/components/shared/Input";
 import { api } from "@/lib/api";
 import { toast } from "@/lib/toast";
-
-interface Table {
-  id: string;
-  number: number;
-  seats: number;
-  isActive: boolean;
-}
+import { FloorCanvas, Table } from "./FloorCanvas";
+import { PropertiesPanel } from "./PropertiesPanel";
+import { SidebarTools } from "./SidebarTools";
 
 interface Floor {
   id: string;
@@ -26,58 +22,242 @@ interface Props {
 }
 
 export const FloorTableManager: React.FC<Props> = ({ floors, onRefresh }) => {
-  const [expandedFloors, setExpandedFloors] = useState<Set<string>>(
-    new Set(floors.map((f) => f.id))
-  );
+  const [selectedFloorId, setSelectedFloorId] = useState<string | null>(null);
+  const [localTables, setLocalTables] = useState<Table[]>([]);
+  const localTablesRef = useRef<Table[]>([]);
+  const [deletedTableIds, setDeletedTableIds] = useState<string[]>([]);
+  const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(100);
+  const [saving, setSaving] = useState(false);
 
-  // Floor state
+  const [history, setHistory] = useState<Table[][]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const historyRef = useRef({ history: [] as Table[][], index: -1 });
+
+  // Floor modal
   const [floorModal, setFloorModal] = useState(false);
-  const [editingFloor, setEditingFloor] = useState<Floor | null>(null);
+  const [editingFloorId, setEditingFloorId] = useState<string | null>(null);
   const [floorName, setFloorName] = useState("");
   const [savingFloor, setSavingFloor] = useState(false);
-  const [deletingFloorId, setDeletingFloorId] = useState<string | null>(null);
 
-  // Table state
-  const [tableModal, setTableModal] = useState<{ floorId: string; table?: Table } | null>(null);
-  const [tableNumber, setTableNumber] = useState("");
-  const [tableSeats, setTableSeats] = useState("");
-  const [tableActive, setTableActive] = useState(true);
-  const [savingTable, setSavingTable] = useState(false);
-  const [deletingTableId, setDeletingTableId] = useState<string | null>(null);
-  const [togglingTableId, setTogglingTableId] = useState<string | null>(null);
+  // Keep ref in sync for drag callbacks
+  useEffect(() => {
+    localTablesRef.current = localTables;
+  }, [localTables]);
 
-  const toggleFloor = (id: string) =>
-    setExpandedFloors((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); } else { next.add(id); }
-      return next;
+  // Default to first floor
+  useEffect(() => {
+    if (floors.length > 0 && !selectedFloorId) {
+      setSelectedFloorId(floors[0].id);
+    }
+    // If selected floor was deleted, reset
+    if (selectedFloorId && !floors.find((f) => f.id === selectedFloorId)) {
+      setSelectedFloorId(floors.length > 0 ? floors[0].id : null);
+    }
+  }, [floors, selectedFloorId]);
+
+  // Sync tables when floor changes — auto-spread tables that are stacked at same position
+  useEffect(() => {
+    if (!selectedFloorId) return;
+    const floor = floors.find((f) => f.id === selectedFloorId);
+    const raw = (floor?.tables ?? []).map((t) => ({
+      ...t,
+      x: t.x ?? 100,
+      y: t.y ?? 100,
+      width: t.width ?? 80,
+      height: t.height ?? 80,
+      shape: t.shape ?? "SQUARE",
+    }));
+
+    // Detect stacked tables (same x/y) and auto-layout them
+    const seen = new Set<string>();
+    let needsSpread = false;
+    for (const t of raw) {
+      const key = `${t.x},${t.y}`;
+      if (seen.has(key)) { needsSpread = true; break; }
+      seen.add(key);
+    }
+
+    let tables: Table[];
+    if (needsSpread) {
+      const COLS = 6;
+      const CELL_W = 110;
+      const CELL_H = 110;
+      const OFFSET_X = 60;
+      const OFFSET_Y = 90;
+      tables = raw.map((t, i) => ({
+        ...t,
+        x: OFFSET_X + (i % COLS) * CELL_W,
+        y: OFFSET_Y + Math.floor(i / COLS) * CELL_H,
+      }));
+    } else {
+      tables = raw;
+    }
+
+    setLocalTables(tables);
+    localTablesRef.current = tables;
+    setDeletedTableIds([]);
+    setSelectedTableId(null);
+    setHistory([tables]);
+    setHistoryIndex(0);
+    historyRef.current = { history: [tables], index: 0 };
+  }, [selectedFloorId, floors]);
+
+  const pushHistory = useCallback((tables: Table[]) => {
+    const { history: h, index: i } = historyRef.current;
+    const next = [...h.slice(0, i + 1), tables];
+    historyRef.current = { history: next, index: next.length - 1 };
+    setHistory(next);
+    setHistoryIndex(next.length - 1);
+  }, []);
+
+  const handleUpdateTablePosition = useCallback((id: string, x: number, y: number) => {
+    setLocalTables((prev) => {
+      const updated = prev.map((t) => (t.id === id ? { ...t, x, y } : t));
+      localTablesRef.current = updated;
+      return updated;
     });
+  }, []);
 
-  // Floor handlers
-  const openNewFloor = () => {
-    setEditingFloor(null);
-    setFloorName("");
-    setFloorModal(true);
+  const handleDragEnd = useCallback(() => {
+    pushHistory(localTablesRef.current);
+  }, [pushHistory]);
+
+  const handleUpdateTableProperties = useCallback(
+    (id: string, properties: Partial<Table>) => {
+      setLocalTables((prev) => {
+        const updated = prev.map((t) => (t.id === id ? { ...t, ...properties } : t));
+        localTablesRef.current = updated;
+        pushHistory(updated);
+        return updated;
+      });
+    },
+    [pushHistory]
+  );
+
+  const handleAddTableOfShape = (shape: "SQUARE" | "ROUND") => {
+    if (!selectedFloorId) return;
+    const current = localTablesRef.current;
+    const nextNum = current.reduce((max, t) => Math.max(max, t.number), 0) + 1;
+
+    // Auto-place: find a spot that doesn't overlap any existing table
+    const GRID = 100;
+    const findFreePos = () => {
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 6; col++) {
+          const cx = col * GRID + 80;
+          const cy = row * GRID + 90;
+          const overlaps = current.some(
+            (t) => Math.abs(t.x - cx) < 80 && Math.abs(t.y - cy) < 80
+          );
+          if (!overlaps) return { x: cx, y: cy };
+        }
+      }
+      return { x: 80, y: 90 };
+    };
+
+    const pos = findFreePos();
+    const newTable: Table = {
+      id: `temp-${Date.now()}`,
+      number: nextNum,
+      seats: 4,
+      isActive: true,
+      x: pos.x,
+      y: pos.y,
+      width: 80,
+      height: 80,
+      shape,
+    };
+    const updated = [...current, newTable];
+    setLocalTables(updated);
+    localTablesRef.current = updated;
+    setSelectedTableId(newTable.id);
+    pushHistory(updated);
   };
 
-  const openEditFloor = (f: Floor) => {
-    setEditingFloor(f);
-    setFloorName(f.name);
-    setFloorModal(true);
+  const handleDeleteTable = useCallback(
+    (id: string) => {
+      if (!id.startsWith("temp-")) {
+        setDeletedTableIds((prev) => [...prev, id]);
+      }
+      setLocalTables((prev) => {
+        const updated = prev.filter((t) => t.id !== id);
+        localTablesRef.current = updated;
+        pushHistory(updated);
+        return updated;
+      });
+      setSelectedTableId(null);
+    },
+    [pushHistory]
+  );
+
+  const handleUndo = () => {
+    const { history: h, index: i } = historyRef.current;
+    if (i <= 0) return;
+    const nextIndex = i - 1;
+    historyRef.current.index = nextIndex;
+    setHistoryIndex(nextIndex);
+    setLocalTables(h[nextIndex]);
+    localTablesRef.current = h[nextIndex];
+  };
+
+  const handleRedo = () => {
+    const { history: h, index: i } = historyRef.current;
+    if (i >= h.length - 1) return;
+    const nextIndex = i + 1;
+    historyRef.current.index = nextIndex;
+    setHistoryIndex(nextIndex);
+    setLocalTables(h[nextIndex]);
+    localTablesRef.current = h[nextIndex];
+  };
+
+  const handleSaveLayout = async () => {
+    if (!selectedFloorId) return;
+    setSaving(true);
+    try {
+      await Promise.all(deletedTableIds.map((id) => api.delete(`/tables/${id}`)));
+      await Promise.all(
+        localTablesRef.current.map((table) => {
+          const payload = {
+            number: table.number,
+            seats: table.seats,
+            x: table.x,
+            y: table.y,
+            width: table.width,
+            height: table.height,
+            shape: table.shape,
+            isActive: table.isActive,
+            floorId: selectedFloorId,
+          };
+          return table.id.startsWith("temp-")
+            ? api.post("/tables", payload)
+            : api.put(`/tables/${table.id}`, payload);
+        })
+      );
+      toast.success("Layout saved");
+      onRefresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save layout");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSaveFloor = async () => {
-    if (!floorName.trim()) { toast.error("Floor name is required"); return; }
+    if (!floorName.trim()) return;
     setSavingFloor(true);
     try {
-      if (editingFloor) {
-        await api.put(`/floors/${editingFloor.id}`, { name: floorName.trim() });
-        toast.success("Floor updated");
+      if (editingFloorId) {
+        await api.put(`/floors/${editingFloorId}`, { name: floorName.trim() });
+        toast.success("Floor renamed");
       } else {
-        await api.post("/floors", { name: floorName.trim() });
+        const res: any = await api.post("/floors", { name: floorName.trim() });
+        if (res.data?.floor?.id) setSelectedFloorId(res.data.floor.id);
         toast.success("Floor created");
       }
       setFloorModal(false);
+      setFloorName("");
+      setEditingFloorId(null);
       onRefresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to save floor");
@@ -86,246 +266,189 @@ export const FloorTableManager: React.FC<Props> = ({ floors, onRefresh }) => {
     }
   };
 
-  const handleDeleteFloor = async (f: Floor) => {
-    if (!confirm(`Delete floor "${f.name}" and all its tables?`)) return;
-    setDeletingFloorId(f.id);
+  const handleDeleteFloor = async (floorId: string) => {
+    const floor = floors.find((f) => f.id === floorId);
+    if (!floor) return;
+    if (!confirm(`Delete floor "${floor.name}" and all its tables?`)) return;
     try {
-      await api.delete(`/floors/${f.id}`);
+      await api.delete(`/floors/${floorId}`);
       toast.success("Floor deleted");
+      if (selectedFloorId === floorId) {
+        setSelectedFloorId(null);
+      }
       onRefresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete floor");
-    } finally {
-      setDeletingFloorId(null);
     }
   };
 
-  // Table handlers
-  const openNewTable = (floorId: string) => {
-    setTableModal({ floorId });
-    setTableNumber("");
-    setTableSeats("");
-    setTableActive(true);
+  const openEditFloor = (id: string, name: string) => {
+    setEditingFloorId(id);
+    setFloorName(name);
+    setFloorModal(true);
   };
 
-  const openEditTable = (floorId: string, t: Table) => {
-    setTableModal({ floorId, table: t });
-    setTableNumber(String(t.number));
-    setTableSeats(String(t.seats));
-    setTableActive(t.isActive);
-  };
-
-  const handleSaveTable = async () => {
-    if (!tableModal) return;
-    if (!tableNumber) { toast.error("Table number is required"); return; }
-    if (!tableSeats) { toast.error("Seat count is required"); return; }
-
-    setSavingTable(true);
-    const payload = {
-      number: parseInt(tableNumber),
-      seats: parseInt(tableSeats),
-      isActive: tableActive,
-      floorId: tableModal.floorId,
-    };
-
-    try {
-      if (tableModal.table) {
-        await api.put(`/tables/${tableModal.table.id}`, payload);
-        toast.success("Table updated");
-      } else {
-        await api.post("/tables", payload);
-        toast.success("Table created");
-      }
-      setTableModal(null);
-      onRefresh();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save table");
-    } finally {
-      setSavingTable(false);
-    }
-  };
-
-  const handleDeleteTable = async (t: Table) => {
-    if (!confirm(`Delete Table ${t.number}?`)) return;
-    setDeletingTableId(t.id);
-    try {
-      await api.delete(`/tables/${t.id}`);
-      toast.success("Table deleted");
-      onRefresh();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete table");
-    } finally {
-      setDeletingTableId(null);
-    }
-  };
-
-  const handleToggleTable = async (t: Table) => {
-    setTogglingTableId(t.id);
-    try {
-      await api.patch(`/tables/${t.id}`, { isActive: !t.isActive });
-      onRefresh();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update table");
-    } finally {
-      setTogglingTableId(null);
-    }
-  };
+  const activeTable = localTables.find((t) => t.id === selectedTableId) ?? null;
+  const hasChanges = historyIndex > 0 || deletedTableIds.length > 0;
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
 
   return (
-    <>
+    <div className="w-full h-full flex flex-col overflow-hidden bg-surface">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-available-border pb-5 mb-6">
+      <header className="bg-surface-container-lowest border-b border-outline-variant px-6 py-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 z-10 shrink-0">
         <div>
-          <h1 className="text-headline-lg text-primary font-bold">Floor Plan Management</h1>
-          <p className="text-body-sm text-on-surface-variant mt-1">Configure restaurant floors and table layouts.</p>
+          <h1 className="text-headline-md font-bold text-on-surface leading-tight">
+            Floor Plan Management
+          </h1>
+          <p className="text-body-sm text-on-surface-variant mt-0.5">
+            Design and manage your restaurant layout.
+          </p>
         </div>
-        <Button
-          variant="primary"
-          onClick={openNewFloor}
-          leftIcon={<span className="material-symbols-outlined text-[18px]">add</span>}
-        >
-          New Floor
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Undo / Redo */}
+          <button
+            onClick={handleUndo}
+            disabled={!canUndo}
+            title="Undo"
+            className="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 7v6h6" /><path d="M3 13C5.5 7.5 11 4 17 4a9 9 0 010 18H3" />
+            </svg>
+          </button>
+          <button
+            onClick={handleRedo}
+            disabled={!canRedo}
+            title="Redo"
+            className="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 7v6h-6" /><path d="M21 13C18.5 7.5 13 4 7 4a9 9 0 000 18h18" />
+            </svg>
+          </button>
+
+          <div className="w-px h-7 bg-outline-variant mx-1" />
+
+          {selectedFloorId && (
+            <>
+              <button
+                onClick={() => handleAddTableOfShape("SQUARE")}
+                className="flex items-center gap-1.5 px-3.5 py-2 border border-outline-variant rounded-lg text-label-md text-on-surface hover:bg-surface-container transition-colors font-semibold"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add Table
+              </button>
+              <button
+                onClick={handleSaveLayout}
+                disabled={saving || !hasChanges}
+                className="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary rounded-lg text-label-md font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                {saving ? "Saving..." : "Save Layout"}
+              </button>
+            </>
+          )}
+        </div>
+      </header>
+
+      {/* Body */}
+      <div className="flex flex-1 overflow-hidden relative">
+        <SidebarTools
+          floors={floors}
+          selectedFloorId={selectedFloorId}
+          onSelectFloor={setSelectedFloorId}
+          onAddFloor={() => {
+            setEditingFloorId(null);
+            setFloorName("");
+            setFloorModal(true);
+          }}
+          onEditFloor={openEditFloor}
+          onDeleteFloor={handleDeleteFloor}
+          onAddTableOfShape={handleAddTableOfShape}
+        />
+
+        {/* Canvas */}
+        <div className="flex-1 flex flex-col relative overflow-hidden bg-surface-container-low/30">
+          {selectedFloorId ? (
+            <>
+              <FloorCanvas
+                tables={localTables}
+                selectedTableId={selectedTableId}
+                onSelectTable={setSelectedTableId}
+                onUpdateTablePosition={handleUpdateTablePosition}
+                onDragEnd={handleDragEnd}
+                zoom={zoom}
+              />
+
+              {/* Zoom controls */}
+              <div className="absolute bottom-6 right-6 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl shadow-md overflow-hidden z-20">
+                <button
+                  onClick={() => setZoom((z) => Math.min(200, z + 10))}
+                  className="p-2.5 text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors flex items-center justify-center"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </button>
+                <div className="w-full h-px bg-outline-variant" />
+                <button
+                  onClick={() => setZoom(100)}
+                  className="px-2 py-1.5 text-xs font-mono text-on-surface hover:bg-surface-container text-center transition-colors"
+                >
+                  {zoom}%
+                </button>
+                <div className="w-full h-px bg-outline-variant" />
+                <button
+                  onClick={() => setZoom((z) => Math.max(50, z - 10))}
+                  className="p-2.5 text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors flex items-center justify-center"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4.5 12h15" />
+                  </svg>
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-on-surface-variant/40" aria-hidden="true">
+                  <polygon points="2 3 6 3 6 21 2 21" /><polygon points="10 3 14 3 14 21 10 21" /><polygon points="18 3 22 3 22 21 18 21" />
+                </svg>
+              </div>
+              <p className="text-body-sm text-on-surface-variant">
+                No floor selected. Create one in the sidebar to start designing.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <PropertiesPanel
+          table={activeTable}
+          onUpdateTableProperties={handleUpdateTableProperties}
+          onDeleteTable={handleDeleteTable}
+        />
       </div>
 
-      {/* Floors */}
-      {floors.length === 0 ? (
-        <div className="bg-surface-container-lowest border border-available-border rounded-xl p-12 text-center">
-          <span className="material-symbols-outlined text-[48px] text-on-surface-variant/40 mb-3 block">layers</span>
-          <p className="text-body-sm text-on-surface-variant italic">No floors yet. Click "New Floor" to create one.</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {floors.map((floor) => {
-            const expanded = expandedFloors.has(floor.id);
-            return (
-              <div key={floor.id} className="bg-surface-container-lowest border border-available-border rounded-xl shadow-sm overflow-hidden">
-                {/* Floor header */}
-                <div
-                  className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-surface-container-low/50 transition-colors"
-                  onClick={() => toggleFloor(floor.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary text-[20px]">layers</span>
-                    <span className="text-label-lg font-bold text-on-surface">{floor.name}</span>
-                    <span className="text-label-md text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">
-                      {floor.tables.length} table{floor.tables.length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); openEditFloor(floor); }}
-                      className="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded transition-colors"
-                      title="Edit floor"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDeleteFloor(floor); }}
-                      disabled={deletingFloorId === floor.id}
-                      className="p-1.5 text-on-surface-variant hover:bg-error-container/30 hover:text-danger rounded transition-colors disabled:opacity-50"
-                      title="Delete floor"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                    <span className="material-symbols-outlined text-on-surface-variant text-[20px] ml-1">
-                      {expanded ? "expand_less" : "expand_more"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tables */}
-                {expanded && (
-                  <div className="border-t border-available-border">
-                    {/* Table list */}
-                    {floor.tables.length > 0 && (
-                      <table className="w-full text-left border-collapse">
-                        <thead className="bg-surface-container-low">
-                          <tr>
-                            <th className="px-6 py-3 text-label-md text-on-surface-variant font-bold uppercase tracking-wide">Table #</th>
-                            <th className="px-6 py-3 text-label-md text-on-surface-variant font-bold uppercase tracking-wide">Seats</th>
-                            <th className="px-6 py-3 text-label-md text-on-surface-variant font-bold uppercase tracking-wide">Status</th>
-                            <th className="px-6 py-3 text-label-md text-on-surface-variant font-bold uppercase tracking-wide text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-available-border">
-                          {floor.tables.map((t) => (
-                            <tr key={t.id} className="hover:bg-surface-container-low/30 transition-colors">
-                              <td className="px-6 py-3 font-semibold text-on-surface">Table {t.number}</td>
-                              <td className="px-6 py-3 text-body-sm text-on-surface-variant">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="material-symbols-outlined text-[16px]">person</span>
-                                  {t.seats}
-                                </div>
-                              </td>
-                              <td className="px-6 py-3">
-                                <button
-                                  onClick={() => handleToggleTable(t)}
-                                  disabled={togglingTableId === t.id}
-                                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 focus:outline-none ${
-                                    t.isActive ? "bg-primary" : "bg-surface-container-highest"
-                                  }`}
-                                  title={t.isActive ? "Deactivate" : "Activate"}
-                                >
-                                  <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                                      t.isActive ? "translate-x-4" : "translate-x-0.5"
-                                    }`}
-                                  />
-                                </button>
-                              </td>
-                              <td className="px-6 py-3 text-right">
-                                <div className="flex justify-end gap-1">
-                                  <button
-                                    onClick={() => openEditTable(floor.id, t)}
-                                    className="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded transition-colors"
-                                  >
-                                    <span className="material-symbols-outlined text-[18px]">edit</span>
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteTable(t)}
-                                    disabled={deletingTableId === t.id}
-                                    className="p-1.5 text-on-surface-variant hover:bg-error-container/30 hover:text-danger rounded transition-colors disabled:opacity-50"
-                                  >
-                                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-
-                    {/* Add table row */}
-                    <div className="px-6 py-3 border-t border-dashed border-outline-variant">
-                      <button
-                        onClick={() => openNewTable(floor.id)}
-                        className="flex items-center gap-2 text-label-md text-primary hover:text-primary/80 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">add</span>
-                        Add Table
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Floor Modal */}
+      {/* Floor modal */}
       <Modal
         isOpen={floorModal}
-        onClose={() => setFloorModal(false)}
-        title={editingFloor ? "Edit Floor" : "New Floor"}
+        onClose={() => { setFloorModal(false); setFloorName(""); setEditingFloorId(null); }}
+        title={editingFloorId ? "Rename Floor" : "New Floor"}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setFloorModal(false)} disabled={savingFloor}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setFloorModal(false); setFloorName(""); setEditingFloorId(null); }} disabled={savingFloor}>
+              Cancel
+            </Button>
             <Button variant="primary" onClick={handleSaveFloor} isLoading={savingFloor}>
-              {editingFloor ? "Save" : "Create Floor"}
+              {editingFloorId ? "Save" : "Create Floor"}
             </Button>
           </>
         }
@@ -339,64 +462,7 @@ export const FloorTableManager: React.FC<Props> = ({ floors, onRefresh }) => {
           autoFocus
         />
       </Modal>
-
-      {/* Table Modal */}
-      <Modal
-        isOpen={!!tableModal}
-        onClose={() => setTableModal(null)}
-        title={tableModal?.table ? "Edit Table" : "New Table"}
-        size="sm"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setTableModal(null)} disabled={savingTable}>Cancel</Button>
-            <Button variant="primary" onClick={handleSaveTable} isLoading={savingTable}>
-              {tableModal?.table ? "Save" : "Create Table"}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input
-            label="Table Number"
-            type="number"
-            min="1"
-            placeholder="e.g. 5"
-            value={tableNumber}
-            onChange={(e) => setTableNumber(e.target.value)}
-            required
-          />
-          <Input
-            label="Seats"
-            type="number"
-            min="1"
-            placeholder="e.g. 4"
-            value={tableSeats}
-            onChange={(e) => setTableSeats(e.target.value)}
-            required
-          />
-          <div className="flex items-center justify-between pt-2 border-t border-available-border">
-            <div>
-              <div className="text-label-md text-on-surface font-semibold">Active</div>
-              <div className="text-body-sm text-on-surface-variant">Table appears in POS</div>
-            </div>
-            <button
-              role="switch"
-              aria-checked={tableActive}
-              onClick={() => setTableActive((v) => !v)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                tableActive ? "bg-primary" : "bg-surface-container-highest"
-              }`}
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                  tableActive ? "translate-x-5" : "translate-x-1"
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      </Modal>
-    </>
+    </div>
   );
 };
 

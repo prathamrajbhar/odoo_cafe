@@ -143,6 +143,11 @@ model Table {
   floorId   String   @map("floor_id")
   number    Int
   seats     Int
+  x         Int      @default(100)
+  y         Int      @default(100)
+  width     Int      @default(80)
+  height    Int      @default(80)
+  shape     String   @default("SQUARE")
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

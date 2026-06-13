@@ -60,7 +60,6 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onRefres
         <table className="w-full text-left border-collapse min-w-[560px]">
           <thead>
             <tr className="border-b border-available-border select-none">
-              <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase w-16">Drag</th>
               <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase">Category Name</th>
               <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase">Color Tag</th>
               <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase text-right">Actions</th>
@@ -69,27 +68,13 @@ export const CategoryList: React.FC<CategoryListProps> = ({ categories, onRefres
           <tbody className="divide-y divide-available-border">
             {categories.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-body-sm text-on-surface-variant/60 italic">
+                <td colSpan={3} className="px-6 py-12 text-center text-body-sm text-on-surface-variant/60 italic">
                   No categories yet. Click &quot;New Category&quot; to add one.
                 </td>
               </tr>
             ) : (
               categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-surface-container-low/50 transition-colors">
-                  {/* Drag handle */}
-                  <td className="px-6 py-4 align-middle w-16">
-                    <span className="text-on-surface-variant/30 cursor-grab select-none inline-flex">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                        <circle cx="5" cy="3.5" r="1.4" />
-                        <circle cx="11" cy="3.5" r="1.4" />
-                        <circle cx="5" cy="8" r="1.4" />
-                        <circle cx="11" cy="8" r="1.4" />
-                        <circle cx="5" cy="12.5" r="1.4" />
-                        <circle cx="11" cy="12.5" r="1.4" />
-                      </svg>
-                    </span>
-                  </td>
-
                   {/* Name */}
                   <td className="px-6 py-4 align-middle">
                     <span className="text-body-md text-on-surface">{cat.name}</span>

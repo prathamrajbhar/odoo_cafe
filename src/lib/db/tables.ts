@@ -5,6 +5,11 @@ const tableSelect = {
   floorId: true,
   number: true,
   seats: true,
+  x: true,
+  y: true,
+  width: true,
+  height: true,
+  shape: true,
   isActive: true,
   floor: { select: { id: true, name: true } },
 } as const;
@@ -144,12 +149,12 @@ export async function getByFloor(floorId: string) {
 }
 
 export async function create(
-  floorIdOrData: string | { floorId: string; number: number; seats: number; isActive?: boolean },
+  floorIdOrData: string | { floorId: string; number: number; seats: number; x?: number; y?: number; width?: number; height?: number; shape?: string; isActive?: boolean },
   number?: number,
   seats?: number,
   isActive?: boolean
 ) {
-  let tableData: { floorId: string; number: number; seats: number; isActive: boolean };
+  let tableData: { floorId: string; number: number; seats: number; x?: number; y?: number; width?: number; height?: number; shape?: string; isActive: boolean };
 
   if (typeof floorIdOrData === "string") {
     tableData = {
@@ -163,6 +168,11 @@ export async function create(
       floorId: floorIdOrData.floorId,
       number: floorIdOrData.number,
       seats: floorIdOrData.seats,
+      x: floorIdOrData.x,
+      y: floorIdOrData.y,
+      width: floorIdOrData.width,
+      height: floorIdOrData.height,
+      shape: floorIdOrData.shape,
       isActive: floorIdOrData.isActive !== undefined ? floorIdOrData.isActive : true,
     };
   }
@@ -201,7 +211,7 @@ export async function create(
 
 export async function update(
   id: string,
-  numberOrData?: number | { number?: number; seats?: number; isActive?: boolean },
+  numberOrData?: number | { number?: number; seats?: number; x?: number; y?: number; width?: number; height?: number; shape?: string; isActive?: boolean },
   seats?: number,
   isActive?: boolean
 ) {
@@ -210,7 +220,7 @@ export async function update(
     throw new Error("Table not found");
   }
 
-  let updateData: { number?: number; seats?: number; isActive?: boolean } = {};
+  let updateData: { number?: number; seats?: number; x?: number; y?: number; width?: number; height?: number; shape?: string; isActive?: boolean } = {};
 
   if (numberOrData !== undefined) {
     if (typeof numberOrData === "number") {

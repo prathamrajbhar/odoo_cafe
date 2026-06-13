@@ -17,12 +17,22 @@ export const tableCreateSchema = z.object({
   floorId: z.string().uuid("Invalid floor ID"),
   number: z.number().int().positive("Table number must be positive"),
   seats: z.number().int().positive("Seats must be positive"),
+  x: z.number().int().nonnegative().optional(),
+  y: z.number().int().nonnegative().optional(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+  shape: z.string().optional(),
   isActive: z.boolean().default(true).optional(),
 });
 
 export const tableUpdateSchema = z.object({
   number: z.number().int().positive("Table number must be positive").optional(),
   seats: z.number().int().positive("Seats must be positive").optional(),
+  x: z.number().int().nonnegative().optional(),
+  y: z.number().int().nonnegative().optional(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+  shape: z.string().optional(),
   isActive: z.boolean().optional(),
 });
 

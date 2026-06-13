@@ -25,5 +25,10 @@ export default function FloorsPage() {
 
   if (isLoading) return <SkeletonTable rows={3} cols={4} />;
 
-  return <FloorTableManager floors={floors} onRefresh={fetchFloors} />;
+  // Escape the admin layout's padding container so the floor editor fills the viewport
+  return (
+    <div className="-mx-4 md:-mx-6 -my-6 md:-my-8 h-[calc(100vh-64px)] md:h-screen overflow-hidden">
+      <FloorTableManager floors={floors} onRefresh={fetchFloors} />
+    </div>
+  );
 }
