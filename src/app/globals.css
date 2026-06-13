@@ -53,7 +53,7 @@
   --available-border: #dee2e6;
 
   /* Typography */
-  --font-inter: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {

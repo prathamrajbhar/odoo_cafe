@@ -29,6 +29,28 @@ export interface ProductListProps {
   onRefresh: () => void;
 }
 
+const getReadableColor = (hex: string): string => {
+  let c = hex.replace(/^#/, "");
+  if (c.length === 3) {
+    c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+  }
+  if (c.length !== 6) return hex;
+
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  if (luminance > 0.65) {
+    const dr = Math.floor(r * 0.45);
+    const dg = Math.floor(g * 0.45);
+    const db = Math.floor(b * 0.45);
+    return `#${dr.toString(16).padStart(2, "0")}${dg.toString(16).padStart(2, "0")}${db.toString(16).padStart(2, "0")}`;
+  }
+  return hex;
+};
+
 export const ProductList: React.FC<ProductListProps> = ({
   products,
   onEdit,
@@ -221,7 +243,8 @@ export const ProductList: React.FC<ProductListProps> = ({
               </tr>
             ) : (
               paginatedProducts.map((product) => {
-                const catColor = product.category?.colorHex || "#57344f";
+                const rawCatColor = product.category?.colorHex || "#57344f";
+                const catColor = getReadableColor(rawCatColor);
                 const isRowLoading = isArchivingId === product.id;
                 const isSelected = selectedIds.includes(product.id);
 
