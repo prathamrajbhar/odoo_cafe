@@ -1,10 +1,12 @@
 import { Server as HttpServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
-let io: SocketIOServer | null = null;
+const globalForSocket = global as unknown as {
+  io: SocketIOServer;
+};
 
 export function initSocketIO(httpServer: HttpServer): SocketIOServer {
-  io = new SocketIOServer(httpServer, {
+  const io = new SocketIOServer(httpServer, {
     cors: { origin: "*" },
   });
 
@@ -17,11 +19,12 @@ export function initSocketIO(httpServer: HttpServer): SocketIOServer {
     });
   });
 
+  globalForSocket.io = io;
   console.log("[socket.io] server initialized with kds room");
   return io;
 }
 
 export function getIO(): SocketIOServer {
-  if (!io) throw new Error("Socket.io not initialized — call initSocketIO first");
-  return io;
+  if (!globalForSocket.io) throw new Error("Socket.io not initialized — call initSocketIO first");
+  return globalForSocket.io;
 }

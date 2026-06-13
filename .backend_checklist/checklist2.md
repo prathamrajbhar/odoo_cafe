@@ -537,32 +537,32 @@
 ## **Module 14: Custom Server & Socket.io**
 
 ### Custom HTTP Server (`server.ts`)
-- [ ] Create Node.js HTTP server
-- [ ] Mount Next.js request handler
-- [ ] Attach Socket.io to same server
-- [ ] Export handler for production
+- [x] Create Node.js HTTP server
+- [x] Mount Next.js request handler
+- [x] Attach Socket.io to same server
+- [x] Export handler for production
 
 ### Socket.io Server (`/lib/socket.ts`)
-- [ ] Create Socket.io instance attached to HTTP server
-- [ ] Configure `kds` room (public, no auth)
-- [ ] On connection: auto-join to `kds` room
-- [ ] Implement `ticket:new` event emission
-- [ ] Implement `ticket:updated` event emission
-- [ ] Error handling + reconnection support
+- [x] Create Socket.io instance attached to HTTP server
+- [x] Configure `kds` room (public, no auth)
+- [x] On connection: auto-join to `kds` room
+- [x] Implement `ticket:new` event emission
+- [x] Implement `ticket:updated` event emission
+- [x] Error handling + reconnection support
 
 ### Event Emissions
-- [ ] From `/api/orders` → POST create: emit `ticket:new`
-- [ ] From `/api/kds/tickets/[id]/advance`: emit `ticket:updated`
-- [ ] From `/api/kds/tickets/[id]/items/[itemId]/toggle`: emit `ticket:updated`
-- [ ] Emit to `io.to('kds')` room (all KDS clients)
+- [x] From `/api/orders` → POST create: emit `ticket:new`
+- [x] From `/api/kds/tickets/[id]/advance`: emit `ticket:updated`
+- [x] From `/api/kds/tickets/[id]/items/[itemId]/toggle`: emit `ticket:updated`
+- [x] Emit to `io.to('kds')` room (all KDS clients)
 
 ### Test Coverage
-- [ ] Server starts with `npm run dev`
-- [ ] Socket.io connects on KDS page
-- [ ] Events received on client
-- [ ] Multiple clients receive same event
-- [ ] No auth required for KDS
-- [ ] Reconnection works
+- [x] Server starts with `npm run dev`
+- [x] Socket.io connects on KDS page
+- [x] Events received on client
+- [x] Multiple clients receive same event
+- [x] No auth required for KDS
+- [x] Reconnection works
 
 ---
 
