@@ -15,7 +15,8 @@ export async function GET(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ data: { order } });
+  const { orderLines, ...rest } = order;
+  return NextResponse.json({ data: { order: { ...rest, lines: orderLines } } });
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {

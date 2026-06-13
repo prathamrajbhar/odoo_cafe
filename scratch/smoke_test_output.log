@@ -1,0 +1,28 @@
+🚀 Starting E2E API Smoke Test...
+
+--- 🔐 AUTH MODULE ---
+Signup (User): 201 - {"data":{"role":"ADMIN","name":"Test Admin"}}
+Login Test Admin: 200 - Success
+
+--- 📦 RESOURCE MANAGEMENT MODULE ---
+Create Category: 201 - {"data":{"category":{"id":"ae7293e0-68c4-4705-8bae-4c78e790fcc1","name":"Category 1781351979764","colorHex":"#FF0000","createdAt":"2026-06-13T11:59:40.617Z","updatedAt":"2026-06-13T11:59:40.617Z"}}}
+Create Product: 201 - {"data":{"product":{"id":"5be87731-d4a0-4c9c-a613-ffee509e2931","name":"Product 1781351979764","price":"10.5","taxRate":5,"description":null,"isArchived":false,"category":{"id":"ae7293e0-68c4-4705-8bae-4c78e790fcc1","name":"Category 1781351979764","colorHex":"#FF0000"}}}}
+Create Floor: 201 - {"data":{"floor":{"id":"8f7cc6b8-827a-4ae9-b268-dff3a152a58b","name":"Floor 1781351979764","createdAt":"2026-06-13T11:59:40.785Z","updatedAt":"2026-06-13T11:59:40.785Z"}}}
+Create Table: 201 - {"data":{"table":{"id":"29693ebe-abfa-429f-98d9-cd1dc560e1b5","floorId":"8f7cc6b8-827a-4ae9-b268-dff3a152a58b","number":38,"seats":4,"isActive":true,"createdAt":"2026-06-13T11:59:40.845Z","updatedAt":"2026-06-13T11:59:40.845Z","floor":{"id":"8f7cc6b8-827a-4ae9-b268-dff3a152a58b","name":"Floor 1781351979764","createdAt":"2026-06-13T11:59:40.785Z","updatedAt":"2026-06-13T11:59:40.785Z"}}}}
+Create Customer: 201 - {"data":{"customer":{"id":"ad7e41b3-0330-433b-8b8b-91be3e9d14e7","name":"Customer 1781351979764","email":null,"phone":null,"createdAt":"2026-06-13T11:59:40.904Z","updatedAt":"2026-06-13T11:59:40.904Z"}}}
+
+--- 🛒 POS & ORDERS MODULE ---
+Open Session: 201 - {"data":{"session":{"id":"0667d643-f728-43de-990c-3484f13356af","openedAt":"2026-06-13T11:59:40.967Z"}}}
+Create Order: 201 - {"data":{"order":{"id":"1129fe2c-9740-4d15-9308-8be38aac7f9b","orderNumber":"ORD-0002","sessionId":"0667d643-f728-43de-990c-3484f13356af","tableId":"29693ebe-abfa-429f-98d9-cd1dc560e1b5","customerId":null,"employeeId":"ab6944fe-557a-4c08-997d-b4482eb22fd7","status":"DRAFT","subtotal":"21","taxAmount":"1.05","discountAmount":"2.1","total":"19.95","createdAt":"2026-06-13T11:59:41.180Z","updatedAt":"2026-06-13T11:59:41.180Z","lines":[{"id":"973ab4b9-a2b9-4569-9b7c-18c6b91841b3","orderId":"1129fe2c-9740-4d15-9308-8be38aac7f9b","productId":"5be87731-d4a0-4c9c-a613-ffee509e2931","qty":2,"unitPrice":"10.5","lineTotal":"21","appliedPromoId":null,"createdAt":"2026-06-13T11:59:41.181Z"}],"kdsTicketId":"57bef2f7-c2ea-4f21-bb20-a5d84f4f991a","kdsItems":[{"id":"561561dc-0705-4a71-8aff-25bb1769a950","ticketId":"57bef2f7-c2ea-4f21-bb20-a5d84f4f991a","orderLineId":"973ab4b9-a2b9-4569-9b7c-18c6b91841b3","isStruckThrough":false}]}}}
+Pay Order: 200 - {"data":{"order":{"status":"PAID"},"receipt":{"orderNumber":"ORD-0002","date":"2026-06-13T11:59:41.431Z","customer":null,"subtotal":21,"taxAmount":1.05,"discountAmount":2.1,"total":19.95,"method":"CASH","changeDue":10.05,"reference":null,"paidAt":"2026-06-13T11:59:41.431Z","items":[{"name":"Product 1781351979764","qty":2,"unitPrice":10.5,"lineTotal":21}]}}}
+
+--- 🎟️ PROMOTIONS MODULE ---
+Create Promotion: 201 - {"data":{"promotion":{"id":"4b8ccf53-a483-4305-944d-f8014f831be0","name":"Promo 1781351979764","promoType":"ORDER_BASED","code":null,"productId":null,"minQty":null,"minOrderAmount":"10","discountValue":"10","discountType":"PERCENT","isActive":true,"createdAt":"2026-06-13T11:59:41.491Z"}}}
+
+--- 📊 REPORTS MODULE ---
+Fetch Report JSON: 200 - {"data":{"kpis":{"totalOrders":2,"totalOrdersChange":100,"revenue":42,"revenueChange":100,"avgOrder":21,"avgOrderChange":100},"salesTrend":[{"time":"0...
+Export Report PDF: 200 - {"message":"Binary data received (7020 bytes)"}
+
+--- 🧹 CLEANUP MODULE ---
+Close Session: 200 - {"data":{"summary":{"totalOrders":1,"totalRevenue":19.95,"openedAt":"2026-06-13T11:59:40.967Z","closedAt":"2026-06-13T11:59:41.882Z"}}}
+Logout: 200 - {"data":{"success":true}}

@@ -11,5 +11,5 @@ export async function GET(req: NextRequest) {
   await seedPaymentMethods();
 
   const methods = await getAll();
-  return NextResponse.json({ data: { paymentMethods: methods } });
+  return NextResponse.json({ data: { methods } });
 }

@@ -24,7 +24,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
   try {
     const updated = await update(id, parsed.data);
-    return NextResponse.json({ data: { paymentMethod: updated } });
+    return NextResponse.json({ data: { method: updated } });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
