@@ -220,7 +220,7 @@ export async function create(data: {
       status: "TO_COOK",
       items,
     });
-  } catch (err) {
+  } catch {
     // skip socket warning if not initialized
   }
 

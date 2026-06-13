@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { update, getById } from "@/lib/db/paymentMethods";
+import { update } from "@/lib/db/paymentMethods";
 import { z } from "zod";
 
 const updatePaymentMethodSchema = z.object({

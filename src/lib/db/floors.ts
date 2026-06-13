@@ -98,7 +98,7 @@ export async function update(id: string, nameOrData: string | { name?: string })
 }
 
 export async function deleteFloor(id: string) {
-  const [_, deletedFloor] = await prisma.$transaction([
+  const [, deletedFloor] = await prisma.$transaction([
     prisma.table.deleteMany({ where: { floorId: id } }),
     prisma.floor.delete({ where: { id } }),
   ]);

@@ -1,0 +1,60 @@
+/* POS 3-column structure and custom touchscreen optimizations */
+
+.pos-grid-container {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(320px, 440px) 320px;
+  gap: 16px;
+  height: calc(100vh - 64px);
+  padding: 16px;
+  background-color: var(--surface);
+}
+
+@media (max-width: 1024px) {
+  .pos-grid-container {
+    grid-template-columns: 1fr 340px;
+  }
+  .pos-payment-column {
+    display: none; /* Collapsed/Overlay payment on smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .pos-grid-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow-y: auto;
+  }
+}
+
+.pos-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--available-border);
+  border-radius: var(--radius-lg);
+}
+
+/* Color tabs style details */
+.pos-category-tab {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.pos-category-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  border-radius: var(--radius-full) var(--radius-full) 0 0;
+  background-color: currentColor;
+  transition: width 0.2s ease;
+}
+
+.pos-category-tab.active::after {
+  width: 60%;
+}
