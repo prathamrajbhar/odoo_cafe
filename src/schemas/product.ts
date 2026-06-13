@@ -15,6 +15,7 @@ export const productCreateSchema = z.object({
   taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)], {
     errorMap: () => ({ message: "Tax rate must be 5, 18, or 28" })
   }),
+  stock: z.number({ invalid_type_error: "Stock must be a number" }).int("Stock must be a whole number").min(0, "Stock cannot be negative").default(0),
   description: z.string().optional().nullable(),
 });
 
@@ -25,10 +26,14 @@ export const productUpdateSchema = z.object({
   taxRate: z.union([z.literal(5), z.literal(18), z.literal(28)], {
     errorMap: () => ({ message: "Tax rate must be 5, 18, or 28" })
   }).optional(),
+  stock: z.number({ invalid_type_error: "Stock must be a number" }).int("Stock must be a whole number").min(0, "Stock cannot be negative").optional(),
   description: z.string().optional().nullable(),
 });
 
-// Alias for compatibility
+export const productRestockSchema = z.object({
+  quantity: z.number({ required_error: "Quantity is required" }).int("Quantity must be a whole number").min(1, "Quantity must be at least 1"),
+});
+
 export const createProductSchema = productCreateSchema;
 export const updateProductSchema = productUpdateSchema;
 

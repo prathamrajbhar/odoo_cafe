@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hashPassword } from "@/lib/bcrypt";
-import { signToken } from "@/lib/jwt";
+import { signAccessToken, signRefreshToken } from "@/lib/jwt";
 import { signupSchema } from "@/schemas/auth";
 import { getUserByEmail, createUser, countUsers } from "@/lib/db/users";
+import { createRefreshToken } from "@/lib/db/refreshTokens";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -24,8 +25,15 @@ export async function POST(req: NextRequest) {
 
   const user = await createUser({ name, email, passwordHash, role });
 
-  const token = await signToken({ userId: user.id, role: user.role });
+  const payload = { userId: user.id, role: user.role };
+  const accessToken = signAccessToken(payload);
+  const refreshToken = signRefreshToken(payload);
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  await createRefreshToken(user.id, refreshToken, expiresAt);
+
   const res = NextResponse.json({ data: { role: user.role, name: user.name } }, { status: 201 });
-  res.cookies.set("token", token, { httpOnly: true, path: "/", maxAge: 60 * 60 * 8 });
+  res.cookies.set("access_token", accessToken, { httpOnly: true, path: "/", maxAge: 60 * 15 });
+  res.cookies.set("refresh_token", refreshToken, { httpOnly: true, path: "/", maxAge: 60 * 60 * 24 * 7 });
   return res;
 }

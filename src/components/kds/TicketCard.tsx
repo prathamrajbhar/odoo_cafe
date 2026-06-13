@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface KDSItem {
   id: string;
@@ -35,41 +35,10 @@ const HEADER_CLASS: Record<KDSTicket["status"], string> = {
   COMPLETED: "stage-completed",
 };
 
-function useElapsed(createdAt: string) {
-  const [elapsed, setElapsed] = useState("");
-
-  useEffect(() => {
-    function update() {
-      const seconds = Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000);
-      if (seconds < 60) {
-        setElapsed(`${seconds}s`);
-      } else {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        setElapsed(`${m}m ${s}s`);
-      }
-    }
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, [createdAt]);
-
-  return elapsed;
-}
-
-function elapsedWarningClass(createdAt: string, status: KDSTicket["status"]): string {
-  if (status === "COMPLETED") return "";
-  const minutes = (Date.now() - new Date(createdAt).getTime()) / 60000;
-  if (minutes >= 15) return " alert-danger";
-  if (minutes >= 8) return " alert-warning";
-  return "";
-}
-
 export function TicketCard({ ticket, onAdvance, onToggleItem }: Props) {
-  const elapsed = useElapsed(ticket.createdAt);
   const [advancing, setAdvancing] = useState(false);
 
-  const headerClass = `kds-ticket-header ${HEADER_CLASS[ticket.status]}${elapsedWarningClass(ticket.createdAt, ticket.status)}`;
+  const headerClass = `kds-ticket-header ${HEADER_CLASS[ticket.status]}`;
 
   const handleCardClick = async () => {
     if (advancing || ticket.status === "COMPLETED") return;
@@ -88,7 +57,6 @@ export function TicketCard({ ticket, onAdvance, onToggleItem }: Props) {
         <span className="text-label-lg">#{ticket.orderNumber}</span>
         <div className="flex items-center gap-2">
           <span className="text-label-md opacity-80">{STATUS_LABEL[ticket.status]}</span>
-          <span className="text-label-md font-mono opacity-75">{elapsed}</span>
           {advancing && (
             <span className="w-3 h-3 border-2 border-white/60 border-t-white rounded-full animate-spin" />
           )}
@@ -102,7 +70,6 @@ export function TicketCard({ ticket, onAdvance, onToggleItem }: Props) {
             key={item.id}
             className="flex items-center justify-between px-4 py-3 hover:bg-surface-container transition-colors"
             onClick={(e) => {
-              // stop propagation so item click doesn't also advance the ticket
               e.stopPropagation();
               onToggleItem(ticket.id, item.id);
             }}

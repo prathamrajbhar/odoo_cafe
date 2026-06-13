@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { usePOS, AppliedPromo } from "@/context/POSContext";
 import { api } from "@/lib/api";
+import { toast } from "@/lib/toast";
 
 interface Promotion {
   id: string;
@@ -77,16 +78,44 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
   const {
     cartLines, updateQty, removeFromCart, setActiveModal,
     setAppliedPromos, appliedPromos, subtotal, taxAmount, discountAmount, total,
-    customerName,
+    customerName, sessionId, activeTable, customerId, couponCode, clearCart,
   } = usePOS();
 
   const [promotions, setPromotions] = React.useState<Promotion[]>([]);
+  const [sendingToKitchen, setSendingToKitchen] = useState(false);
 
   useEffect(() => {
     api.get<{ data: { promotions: Promotion[] } }>("/promotions").then((res) => {
       setPromotions(res.data.promotions.filter((p) => p.promoType !== "COUPON"));
     }).catch(() => { });
   }, []);
+
+  const handleSendToKitchen = useCallback(async () => {
+    if (cartLines.length === 0) { toast.error("Cart is empty"); return; }
+    if (!sessionId) { toast.error("No active session"); return; }
+
+    setSendingToKitchen(true);
+    try {
+      await api.post("/orders", {
+        sessionId,
+        tableId: activeTable?.id ?? null,
+        customerId: customerId ?? null,
+        couponCode: couponCode ?? null,
+        lines: cartLines.map((l) => ({
+          productId: l.productId,
+          qty: l.qty,
+          unitPrice: l.unitPrice,
+          appliedPromoId: appliedPromos.find((p) => p.scope === "LINE" && p.productId === l.productId)?.promoId ?? null,
+        })),
+      });
+      clearCart();
+      toast.success("Order sent to kitchen!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to send to kitchen");
+    } finally {
+      setSendingToKitchen(false);
+    }
+  }, [cartLines, sessionId, activeTable, customerId, couponCode, appliedPromos, clearCart]);
 
   const runPromoEval = useCallback(() => {
     if (cartLines.length === 0) {
@@ -126,6 +155,8 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
           customerName={customerName}
           onCustomer={() => setActiveModal("customer")}
           onDiscount={() => setActiveModal("discount")}
+          onSendToKitchen={handleSendToKitchen}
+          sendingToKitchen={sendingToKitchen}
         />
       </div>
     );
@@ -243,6 +274,8 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
         customerName={customerName}
         onCustomer={() => setActiveModal("customer")}
         onDiscount={() => setActiveModal("discount")}
+        onSendToKitchen={handleSendToKitchen}
+        sendingToKitchen={sendingToKitchen}
       />
     </div>
   );
@@ -256,10 +289,13 @@ interface CartFooterProps {
   customerName: string | null;
   onCustomer: () => void;
   onDiscount: () => void;
+  onSendToKitchen: () => void;
+  sendingToKitchen: boolean;
 }
 
 const CartFooter: React.FC<CartFooterProps> = ({
-  subtotal, taxAmount, discountAmount, total, customerName, onCustomer, onDiscount,
+  subtotal, taxAmount, discountAmount, total, onCustomer, onDiscount,
+  onSendToKitchen, sendingToKitchen,
 }) => (
   <div className="shrink-0 border-t border-outline-variant bg-surface-container-low p-3">
     {/* Totals */}
@@ -284,6 +320,22 @@ const CartFooter: React.FC<CartFooterProps> = ({
       </div>
     </div>
 
+    {/* Send to Kitchen */}
+    <button
+      onClick={onSendToKitchen}
+      disabled={sendingToKitchen}
+      className="w-full mb-2.5 py-3 rounded-xl bg-secondary text-on-secondary font-bold text-label-md flex items-center justify-center gap-2 hover:bg-secondary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98] shadow-sm"
+    >
+      {sendingToKitchen ? (
+        <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        </svg>
+      )}
+      {sendingToKitchen ? "Sending..." : "Send to Kitchen"}
+    </button>
+
     {/* Action buttons */}
     <div className="grid grid-cols-3 gap-2">
       <button
@@ -293,7 +345,7 @@ const CartFooter: React.FC<CartFooterProps> = ({
         <svg className="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5a3 3 0 11-6 0 3 3 0 016 0zM12 11.25a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H12.75a.75.75 0 01-.75-.75v-.008zM19 15.75c0-1.242-1.008-2.25-2.25-2.25h-4.5c-1.242 0-2.25 1.008-2.25 2.25v2.25h9v-2.25z" />
         </svg>
-        <span className="text-[10px] font-bold">{customerName ? "Customer" : "Customer"}</span>
+        <span className="text-[10px] font-bold">Customer</span>
       </button>
       <button
         onClick={onDiscount}

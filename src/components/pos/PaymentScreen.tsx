@@ -42,7 +42,7 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 }) => {
   const {
     activeModal, setActiveModal, currentOrderId,
-    total, customerName, clearCart,
+    total, customerName, clearCart, setActiveTable,
   } = usePOS();
 
   const [amountTendered, setAmountTendered] = useState("");
@@ -52,6 +52,7 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
   const [emailModal, setEmailModal] = useState(false);
   const [email, setEmail] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSuccess, setEmailSuccess] = useState(false);
 
   const isOpen = activeModal === "payment";
   const changeDue = method === "CASH" && amountTendered
@@ -113,17 +114,28 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
     clearCart();
     setReceipt(null);
     onClearExternalReceipt?.();
-    setActiveModal("floor");
+    setActiveTable?.(null);
+    setActiveModal(null);
   };
 
   const handleSendEmail = async () => {
     if (!email.trim()) { toast.error("Enter an email address"); return; }
+    if (!currentOrderId) { toast.error("No active order"); return; }
     setSendingEmail(true);
-    // Email sending is a stub — receipt data is available in `receipt`
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success(`Receipt sent to ${email}`);
-    setSendingEmail(false);
-    setEmailModal(false);
+    try {
+      await api.post(`/orders/${currentOrderId}/email-receipt`, {
+        email: email.trim(),
+        method: receipt?.method || method,
+        changeDue: receipt?.changeDue ?? changeDue,
+        reference: reference.trim() || null,
+      });
+      toast.success(`Receipt sent to ${email}`);
+      setEmailSuccess(true);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to send receipt email");
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const handleDownloadPDF = () => {
@@ -211,7 +223,13 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
     <>
       <Modal
         isOpen={isOpen}
-        onClose={() => !receipt && setActiveModal(null)}
+        onClose={() => {
+          if (receipt) {
+            handleNewOrder();
+          } else {
+            setActiveModal(null);
+          }
+        }}
         title={receipt ? "Payment Complete" : `Pay via ${method}`}
         size="md"
       >
@@ -272,7 +290,10 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
                 Export PDF
               </button>
               <button
-                onClick={() => setEmailModal(true)}
+                onClick={() => {
+                  setEmailSuccess(false);
+                  setEmailModal(true);
+                }}
                 className="flex items-center justify-center gap-1 py-3 rounded-xl border border-outline-variant text-on-surface hover:bg-surface-container transition-colors text-[11px] font-bold cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[16px]">email</span>
@@ -395,27 +416,48 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
         title="Send Receipt by Email"
         size="sm"
       >
-        <div className="space-y-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="customer@example.com"
-            className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-body-md focus:outline-none focus:border-primary transition-colors"
-            autoFocus
-          />
-          <button
-            onClick={handleSendEmail}
-            disabled={sendingEmail || !email.trim()}
-            className="w-full py-3 rounded-xl bg-primary text-on-primary font-bold text-label-md hover:bg-primary-container hover:text-on-primary-container transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {sendingEmail
-              ? <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-              : <span className="material-symbols-outlined text-[18px]">send</span>
-            }
-            Send
-          </button>
-        </div>
+        {emailSuccess ? (
+          <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+            <div className="w-16 h-16 bg-success-container/30 rounded-full flex items-center justify-center animate-pulse">
+              <span className="material-symbols-outlined text-success text-[40px]">check_circle</span>
+            </div>
+            <div>
+              <p className="text-title-lg font-bold text-on-surface">Sent Successfully!</p>
+              <p className="text-body-sm text-on-surface-variant mt-2">
+                A realistic thermal receipt has been sent to:<br />
+                <span className="font-semibold text-primary break-all">{email}</span>
+              </p>
+            </div>
+            <button
+              onClick={() => setEmailModal(false)}
+              className="w-full mt-2 py-3 rounded-xl bg-primary text-on-primary font-bold text-label-md hover:bg-primary-container hover:text-on-primary-container transition-all"
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="customer@example.com"
+              className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-body-md focus:outline-none focus:border-primary transition-colors"
+              autoFocus
+            />
+            <button
+              onClick={handleSendEmail}
+              disabled={sendingEmail || !email.trim()}
+              className="w-full py-3 rounded-xl bg-primary text-on-primary font-bold text-label-md hover:bg-primary-container hover:text-on-primary-container transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {sendingEmail
+                ? <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                : <span className="material-symbols-outlined text-[18px]">send</span>
+              }
+              Send
+            </button>
+          </div>
+        )}
       </Modal>
     </>
   );

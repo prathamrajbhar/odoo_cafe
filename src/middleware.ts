@@ -36,6 +36,16 @@ async function verifyJwt(token: string, secret: string): Promise<{ userId: strin
   return { userId: payload.userId, role: payload.role };
 }
 
+function clearAuthAndRedirect(req: NextRequest, isApiRoute: boolean) {
+  if (isApiRoute) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const res = NextResponse.redirect(new URL("/login", req.url));
+  res.cookies.delete("access_token");
+  res.cookies.delete("refresh_token");
+  return res;
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -44,73 +54,52 @@ export async function middleware(req: NextRequest) {
   }
 
   const isApiRoute = pathname.startsWith("/api/");
-  const token = req.cookies.get("token")?.value;
+  const accessToken = req.cookies.get("access_token")?.value;
+  const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  if (!token) {
-    if (isApiRoute) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  let payload = accessToken
+    ? await verifyJwt(accessToken, process.env.JWT_SECRET as string)
+    : null;
 
-  const payload = await verifyJwt(token, process.env.JWT_SECRET as string);
-
+  // Access token missing or expired — try refresh
   if (!payload) {
-    if (isApiRoute) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-    const res = NextResponse.redirect(new URL("/login", req.url));
-    res.cookies.delete("token");
-    return res;
-  }
+    if (!refreshToken) return clearAuthAndRedirect(req, isApiRoute);
 
-  // Fetch fresh user status and role from the database to check if disabled or if role has changed
-  let userStatus = "ACTIVE";
-  let userRole = payload.role;
-
-  try {
-    const statusRes = await fetch(`${req.nextUrl.origin}/api/auth/status`, {
-      headers: {
-        Cookie: `token=${token}`,
-      },
+    const refreshRes = await fetch(`${req.nextUrl.origin}/api/auth/refresh`, {
+      method: "POST",
+      headers: { Cookie: `refresh_token=${refreshToken}` },
     });
 
-    if (!statusRes.ok) {
-      if (isApiRoute) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      const res = NextResponse.redirect(new URL("/login", req.url));
-      res.cookies.delete("token");
-      return res;
-    }
+    if (!refreshRes.ok) return clearAuthAndRedirect(req, isApiRoute);
 
-    const { data } = await statusRes.json();
-    userStatus = data.status;
-    userRole = data.role;
-  } catch (error) {
-    console.error("Failed to verify user status in middleware:", error);
-    if (isApiRoute) {
-      return NextResponse.json({ error: "Authentication check failed" }, { status: 500 });
-    }
-    const res = NextResponse.redirect(new URL("/login", req.url));
-    res.cookies.delete("token");
-    return res;
-  }
+    // Extract the new access token from the refresh response cookie
+    const setCookieHeader = refreshRes.headers.get("set-cookie") ?? "";
+    const newAccessMatch = setCookieHeader.match(/access_token=([^;]+)/);
+    const newRefreshMatch = setCookieHeader.match(/refresh_token=([^;]+)/);
 
-  if (userStatus === "DISABLED") {
-    if (isApiRoute) {
-      return NextResponse.json({ error: "Account disabled" }, { status: 403 });
+    if (!newAccessMatch) return clearAuthAndRedirect(req, isApiRoute);
+
+    const newAccessToken = newAccessMatch[1];
+    payload = await verifyJwt(newAccessToken, process.env.JWT_SECRET as string);
+    if (!payload) return clearAuthAndRedirect(req, isApiRoute);
+
+    // Forward with new tokens set
+    const reqHeaders = new Headers(req.headers);
+    reqHeaders.set("x-user-id", payload.userId);
+    reqHeaders.set("x-user-role", payload.role);
+    const response = isApiRoute
+      ? NextResponse.next({ request: { headers: reqHeaders } })
+      : NextResponse.next();
+    response.cookies.set("access_token", newAccessToken, { httpOnly: true, path: "/", maxAge: 60 * 15 });
+    if (newRefreshMatch) {
+      response.cookies.set("refresh_token", newRefreshMatch[1], { httpOnly: true, path: "/", maxAge: 60 * 60 * 24 * 7 });
     }
-    const res = NextResponse.redirect(new URL("/login", req.url));
-    res.cookies.delete("token");
-    return res;
+    return response;
   }
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    if (userRole !== "ADMIN") {
-      if (isApiRoute) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
+    if (payload.role !== "ADMIN") {
+      if (isApiRoute) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       return NextResponse.redirect(new URL("/pos", req.url));
     }
   }
@@ -118,7 +107,7 @@ export async function middleware(req: NextRequest) {
   if (isApiRoute) {
     const reqHeaders = new Headers(req.headers);
     reqHeaders.set("x-user-id", payload.userId);
-    reqHeaders.set("x-user-role", userRole);
+    reqHeaders.set("x-user-role", payload.role);
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
 

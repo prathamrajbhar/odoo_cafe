@@ -20,14 +20,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
   }
 
-  const { name, categoryId, price, taxRate, description } = parsed.data;
+  const { name, categoryId, price, taxRate, stock, description } = parsed.data;
 
-  // Verify category exists
   const categoryExists = await getCategoryById(categoryId);
   if (!categoryExists) {
     return NextResponse.json({ error: "Category not found" }, { status: 400 });
   }
 
-  const product = await create(name, categoryId, price, taxRate, description);
+  const product = await create({ name, categoryId, price, taxRate, stock: stock ?? 0, description });
   return NextResponse.json({ data: { product } }, { status: 201 });
 }

@@ -5,6 +5,7 @@ const productSelect = {
   name: true,
   price: true,
   taxRate: true,
+  stock: true,
   description: true,
   isArchived: true,
   category: { select: { id: true, name: true, colorHex: true } },
@@ -27,6 +28,7 @@ export function createProduct(data: {
   categoryId: string;
   price: number;
   taxRate: number;
+  stock?: number;
   description?: string | null;
 }) {
   return prisma.product.create({ data: data as any, select: productSelect });
@@ -34,13 +36,38 @@ export function createProduct(data: {
 
 export function updateProduct(
   id: string,
-  data: { name?: string; categoryId?: string; price?: number; taxRate?: number; description?: string | null }
+  data: { name?: string; categoryId?: string; price?: number; taxRate?: number; stock?: number; description?: string | null }
 ) {
   return prisma.product.update({ where: { id }, data: data as any, select: productSelect });
 }
 
 export function archiveProduct(id: string) {
   return prisma.product.update({ where: { id }, data: { isArchived: true }, select: productSelect });
+}
+
+// Decrement stock for multiple lines atomically — call inside a transaction
+export async function decrementStockForLines(
+  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+  lines: Array<{ productId: string; qty: number }>
+) {
+  for (const line of lines) {
+    const product = await tx.product.findUnique({ where: { id: line.productId }, select: { stock: true, name: true } });
+    if (!product) throw new Error(`Product ${line.productId} not found`);
+    if (product.stock < line.qty) throw new Error(`Insufficient stock for "${product.name}" (available: ${product.stock}, requested: ${line.qty})`);
+    await tx.product.update({
+      where: { id: line.productId },
+      data: { stock: { decrement: line.qty } },
+    });
+  }
+}
+
+// Add stock (restock from admin panel)
+export function restockProduct(id: string, quantity: number) {
+  return prisma.product.update({
+    where: { id },
+    data: { stock: { increment: quantity } },
+    select: productSelect,
+  });
 }
 
 // Checklist-specific exports
@@ -65,7 +92,7 @@ export function getByCategory(categoryId: string) {
 }
 
 export function create(
-  nameOrData: string | { name: string; categoryId: string; price: number; taxRate: number; description?: string | null },
+  nameOrData: string | { name: string; categoryId: string; price: number; taxRate: number; stock?: number; description?: string | null },
   categoryId?: string,
   price?: number,
   taxRate?: number,
@@ -86,7 +113,7 @@ export function create(
 
 export function update(
   id: string,
-  dataOrName?: { name?: string; categoryId?: string; price?: number; taxRate?: number; description?: string | null } | string,
+  dataOrName?: { name?: string; categoryId?: string; price?: number; taxRate?: number; stock?: number; description?: string | null } | string,
   categoryId?: string,
   price?: number,
   taxRate?: number,
@@ -113,4 +140,3 @@ async function _delete(id: string) {
   return prisma.product.delete({ where: { id } });
 }
 export { _delete as delete };
-

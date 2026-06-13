@@ -23,7 +23,6 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
 
-  // Verify category exists if being updated
   if (parsed.data.categoryId) {
     const categoryExists = await getCategoryById(parsed.data.categoryId);
     if (!categoryExists) {

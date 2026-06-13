@@ -21,6 +21,7 @@ export interface Product {
   categoryId: string;
   price: string | number;
   taxRate: number;
+  stock: number;
   description: string | null;
 }
 
@@ -47,6 +48,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const [categoryId, setCategoryId] = useState("");
   const [price, setPrice] = useState("");
   const [taxRate, setTaxRate] = useState<string>("5");
+  const [stock, setStock] = useState("0");
   const [description, setDescription] = useState("");
 
   const [errors, setErrors] = useState<{
@@ -54,33 +56,33 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     categoryId?: string;
     price?: string;
     taxRate?: string;
+    stock?: string;
     description?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  // Load values when editing
   useEffect(() => {
     if (productToEdit) {
       setName(productToEdit.name);
       setCategoryId(productToEdit.categoryId);
       setPrice(productToEdit.price.toString());
       setTaxRate(productToEdit.taxRate.toString());
+      setStock((productToEdit.stock ?? 0).toString());
       setDescription(productToEdit.description || "");
     } else {
       setName("");
       setCategoryId(categories[0]?.id || "");
       setPrice("");
       setTaxRate("5");
+      setStock("0");
       setDescription("");
     }
     setErrors({});
   }, [productToEdit, categories, isOpen]);
 
-  const handleInlineCategorySuccess = (newCategory: any) => {
-    // Refresh the categories list in the parent
+  const handleInlineCategorySuccess = (newCategory: { id: string }) => {
     onRefreshCategories();
-    // Auto-select the newly created category
     setCategoryId(newCategory.id);
   };
 
@@ -89,15 +91,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     setIsLoading(true);
     setErrors({});
 
-    // Parse values for validation
     const parsedPrice = parseFloat(price);
     const parsedTax = parseInt(taxRate);
+    const parsedStock = parseInt(stock);
 
     const payload = {
       name,
       categoryId,
       price: isNaN(parsedPrice) ? undefined : parsedPrice,
       taxRate: isNaN(parsedTax) ? undefined : (parsedTax as 5 | 18 | 28),
+      stock: isNaN(parsedStock) ? 0 : parsedStock,
       description: description || null,
     };
 
@@ -125,8 +128,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       }
       onSuccess();
       onClose();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save product");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to save product");
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +153,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         }
       >
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {/* Name */}
           <Input
             label="Product Name"
             placeholder="e.g. Double Espresso, Butter Croissant"
@@ -161,7 +163,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             required
           />
 
-          {/* Category Dropdown Selector */}
           <div className="flex gap-2 items-end w-full">
             <div className="flex-1">
               <Select
@@ -184,8 +185,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             </button>
           </div>
 
-          {/* Price & Tax Rate */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Input
               label="Price (INR)"
               type="number"
@@ -197,22 +197,31 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               disabled={isLoading}
               required
             />
-
             <Select
               label="Tax Rate (GST)"
               options={[
-                { value: "5", label: "5% (Standard Cafe)" },
+                { value: "5", label: "5% (Standard)" },
                 { value: "18", label: "18% (Beverages)" },
-                { value: "28", label: "28% (Luxury items)" },
+                { value: "28", label: "28% (Luxury)" },
               ]}
               value={taxRate}
               onChange={(e) => setTaxRate(e.target.value)}
               error={errors.taxRate}
               disabled={isLoading}
             />
+            <Input
+              label="Initial Stock (qty)"
+              type="number"
+              step="1"
+              min="0"
+              placeholder="0"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              error={errors.stock}
+              disabled={isLoading}
+            />
           </div>
 
-          {/* Description */}
           <div className="flex flex-col gap-1.5 w-full">
             <label className="text-label-md text-on-surface-variant font-semibold select-none">
               Description (Optional)
@@ -231,7 +240,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         </form>
       </Modal>
 
-      {/* Inline Category Creation Modal */}
       <CategoryForm
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}

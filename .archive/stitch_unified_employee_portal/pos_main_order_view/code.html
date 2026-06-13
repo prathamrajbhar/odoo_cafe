@@ -1,0 +1,365 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Odoo POS - Main Order View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#eeb7d4",
+                        "on-primary-fixed-variant": "#633a52",
+                        "on-tertiary-container": "#97b383",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#310f25",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#00201f",
+                        "status-pink": "#FFDDE1",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#817479",
+                        "surface-tint": "#7d516a",
+                        "text-main": "#4C4C4C",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#364d27",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed": "#0b2002",
+                        "sidebar-dark": "#2C2C2C",
+                        "surface-container-high": "#e7e8e9",
+                        "background": "#f8f9fa",
+                        "secondary-fixed-dim": "#60d9d5",
+                        "on-secondary-fixed-variant": "#00504e",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "outline-variant": "#d2c2c9",
+                        "on-secondary-container": "#006e6c",
+                        "on-surface": "#191c1d",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-container": "#2e4520",
+                        "surface-container-highest": "#e1e3e4",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ceebb8",
+                        "on-primary-container": "#d09bb8",
+                        "surface-card": "#FFFFFF",
+                        "border-subtle": "#E4E4E4",
+                        "secondary": "#006a68",
+                        "tertiary": "#192e0c",
+                        "surface-dim": "#d9dadb",
+                        "on-surface-variant": "#4f4449",
+                        "primary": "#411c33",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#b3cf9e",
+                        "primary-container": "#5a324a",
+                        "surface-container": "#edeeef",
+                        "primary-fixed": "#ffd8eb",
+                        "secondary-container": "#7cf2ee",
+                        "inverse-primary": "#eeb7d4",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#7ff5f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-page": "24px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "gutter": "16px",
+                        "touch-target-min": "44px",
+                        "sidebar-width": "240px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "numpad-digit": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-display": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "numpad-digit": ["24px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "headline-display": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d2c2c9;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<div class="flex flex-col h-screen">
+<!-- TopAppBar (Based on Shared Components) -->
+<header class="flex justify-between items-center h-16 w-full px-margin-page bg-white border-b border-border-subtle z-50">
+<div class="flex items-center gap-8">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Odoo POS</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:bg-surface-container transition-colors duration-200 font-body-md text-body-md" href="#">Orders</a>
+<a class="text-on-surface-variant hover:bg-surface-container transition-colors duration-200 font-body-md text-body-md" href="#">Sessions</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center mr-4 gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container transition-all"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container transition-all"><span class="material-symbols-outlined">search</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container transition-all"><span class="material-symbols-outlined">table_restaurant</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container transition-all"><span class="material-symbols-outlined">add_circle</span></button>
+</div>
+<button class="flex items-center gap-2 px-4 h-10 border border-outline rounded-lg text-primary font-bold hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">schedule</span>
+<span class="font-label-sm text-label-sm">Clock</span>
+</button>
+<button class="bg-primary-container text-on-primary text-white px-6 h-10 rounded-lg font-bold hover:opacity-90 transition-all">
+                    Register
+                </button>
+<div class="ml-2 w-10 h-10 rounded-full overflow-hidden border border-border-subtle">
+<img alt="Employee Avatar" data-alt="A professional headshot of a hospitality manager wearing a clean, modern uniform. The lighting is soft and neutral, reflecting a high-end corporate restaurant environment. The background is slightly blurred with warm interior tones, matching the maroon and cream aesthetic of the Odoo POS branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVNRZ7Lg5glDnxW_U6v_xQlxAjWLtTxsSFAjkKeld1E4RuGvKSQ7QlBhKCUR-cJWlFiV-DOcIPXV7-Fg6i3Eo1ktYQewNd_S6c8TDCZ83-pTh_3W-ngAdLFQ7SYCAFo5Y9tP5SmvKRPoyU6drZkj6yTb4N1pTokm1dS68La-0o9Zd_6NxXE3wDxMOPT51cRBaR5EjYRuTzexldacLpbPnORg9XGijKiOphLFzsfeaL7J5HOwJliCXQ">
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<!-- Column 1: Products & Categories -->
+<section class="w-7/12 flex flex-col bg-surface border-r border-border-subtle">
+<!-- Category Tabs -->
+<div class="p-4 bg-white border-b border-border-subtle">
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-6 py-2 bg-primary text-white rounded-full whitespace-nowrap font-label-sm text-label-sm">All Products</button>
+<button class="px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full whitespace-nowrap hover:bg-surface-container-highest transition-all font-label-sm text-label-sm">Burgers</button>
+<button class="px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full whitespace-nowrap hover:bg-surface-container-highest transition-all font-label-sm text-label-sm">Drinks</button>
+<button class="px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full whitespace-nowrap hover:bg-surface-container-highest transition-all font-label-sm text-label-sm">Desserts</button>
+<button class="px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full whitespace-nowrap hover:bg-surface-container-highest transition-all font-label-sm text-label-sm">Sides</button>
+<button class="px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full whitespace-nowrap hover:bg-surface-container-highest transition-all font-label-sm text-label-sm">Combos</button>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="flex-1 overflow-y-auto p-gutter custom-scrollbar">
+<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+<!-- Product Card 1 -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A gourmet cheeseburger with melting cheddar, fresh lettuce, and ripe tomatoes on a toasted brioche bun. The image is captured in a high-contrast, professional food photography style with warm studio lighting. The background is a clean, neutral gray that emphasizes the vibrant colors of the burger, fitting a premium SaaS POS interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQzrJ_s9f_2kpJcKtP48V0I1NKlLF3Y5U2lRBGeHNCjNJX4YeSGoPTiLR_OgDiArj83uw4dLN-oR7XF8_9VtrK9jlH1qUW0d6KpTNR6wMFS0EOEbKjrOi6ptImTbRxa7Rmd4FbwDkBmB1qZte68_I9OpwOprTPNGJYJqCGxNQpyPJmm1PZIaLl1Pf_Nc9NZ9tMRXz7fr1-5UaYDD61-8FcOthmegTKECVseN7_H9nnJTwdX3Nh9UtF">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Classic Cheeseburger</p>
+<p class="font-bold text-primary mt-1">$12.50</p>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A vibrant fresh orange juice glass with condensation on the side and a straw. The scene is brightly lit with a clean, high-key white background. The colors are saturated and crisp, evoking a sense of refreshing quality and professional commercial appeal for a restaurant management software." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdNFaxCDBqbbg40ClD_uzOwqi4mjrCiuaPZ6IO62nF2OhJxDio1lZKa1rEaLrkPwIKIBLTNDVpXZJkb0r6Q6IU-sAxDDH_2bfLpjd0tMvQIh9zhHj1qSwQG7BPu-eNQ_jHXc-y9Kt0dHJWK5TRguZqFxw6v4xOG2R3IgW4a8fOnd9m9E0BzNFnmNVUJe0LCv5PytDfszyjp9hd9RG-5TRPk8fNPdC9PmUqPLS5EAhr0gYz7go-wF0C">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Fresh Orange Juice</p>
+<p class="font-bold text-primary mt-1">$4.50</p>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A stack of golden brown donuts with various glazed toppings including chocolate and vanilla sprinkles. The lighting is soft and appetizing, highlighting the texture of the glaze. The composition is clean and centered, designed to look perfect in a modern retail point-of-sale catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPQEbLvkJ3liSfxezIrkxtmQS1ESfGncLHgugWKutP9xkuWRDkjadg0eF5CuY0mpDsow3QZ0RPGRHyB-g8VBr4vz5ublcgxLjR_FM69DFqWhetkEZpriWh8ErHL9ohZvLZxJVi9ebf8Ha7QcXLqgoxMUPsqvUO81OWj-RGd-KMcIsnG2rS5JfCdu2ax74-OfWvSdyqfRkOE8ipmJkP_lQ-BBol8Uw_LZZZyLH8eLAyf_E7k8sKbhfw">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Glazed Donut Box</p>
+<p class="font-bold text-primary mt-1">$8.00</p>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A slice of pepperoni pizza with bubbling cheese and fresh basil on top. The crust is charred slightly in a wood-fired oven style. The image is professional and sharp, with a focus on the rich colors of the tomato sauce and pepperoni against a clean white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm6HpyKYBFVyHqdw1QBIv22mIgpvYmaA1lyP5zivi8XoyOWGP65ppGQZ65CuOnprRAlCVhN0tdoGVDLdb32W1l1RLD2t1m6vLdHGTKdXykBOAa90KSRbvqMfU-VMnf4MYYEaIIi8uPJysZwaGniZupvL-YXlcZ1yeNbmVdSgNmmY8pydbF7ZBPSOiEcIFjmiAqbB9trrXI_8J_tTPitzDjrzdLLp1DRnMTuypRxavNgXhz7OY9ibGW">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Pepperoni Slice</p>
+<p class="font-bold text-primary mt-1">$5.25</p>
+</div>
+</div>
+<!-- Repeat Cards -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A healthy green bowl with quinoa, avocado, and fresh greens. The photo is taken from a top-down angle, highlighting the fresh, clean aesthetic. The background is a soft beige linen texture, giving a high-end health-conscious restaurant feel for the UI interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBudirgD2vPUoEqB--ynCXn9BC6mbEm9SroWxp6cLRHDQhLATmA4vO8TYQDsvadbdlmPacK9xB5C-UJCLxGq6pGa0pV8dWPTyLimwMdkbsfsJ9UeDfs0fsYCr3S1a4yAuCNv0-puXFbiqlWEgd-JpqTmccjrG_8IuXIXPaqUdAytuJObgoLJiZgs6mWk9YKY1cyry4DwwJdYzB0kr-7gFy7pML2YBhoF-VTwofJdpKQK4-I2YLZhKu">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Quinoa Power Bowl</p>
+<p class="font-bold text-primary mt-1">$14.00</p>
+</div>
+</div>
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden group cursor-pointer active:scale-95 transition-all">
+<div class="h-32 bg-surface-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="A creamy chocolate milkshake topped with whipped cream and a cherry. The glass is frosted with cold, and the scene is professionally styled with high-end café aesthetics. The lighting is directional, creating soft shadows and a sense of depth in the white studio space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT_rO0bm3w0TbSnzJhBye_xLa2xBvyYWhjt-P7jIC31zAPCeFbtOq5E3U1cwp-wPNRMFFAgJ9AfUBKMmBjJRgNbiokbH0ZYsehmuNmqkyP7lYYGZI94yOqxA-h63DOmK8YVsNB2RrSv1nMt4Ows8UCZo-9kii7X4QIBSmo_93VlZX4tNQbxBtA13wvAF6LGJ1_aGCbBCWjweOhVWJ_VIdMZzdN3KzUaPzTkymOs8Z1jJv-E8lgv5zs">
+</div>
+<div class="p-3">
+<p class="font-body-md text-body-md text-on-surface truncate">Chocolate Shake</p>
+<p class="font-bold text-primary mt-1">$6.50</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Column 2: Cart List -->
+<section class="w-2.5/12 flex flex-col bg-white border-r border-border-subtle">
+<div class="p-4 border-b border-border-subtle flex justify-between items-center">
+<span class="font-headline-md text-headline-md">Current Order</span>
+<span class="bg-surface-container-high px-2 py-1 rounded text-label-sm font-label-sm">#1204</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Cart Item -->
+<div class="p-4 border-b border-border-subtle hover:bg-surface transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="font-medium text-body-md text-on-surface">Classic Cheeseburger</span>
+<span class="font-bold text-primary">$25.00</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded border border-border-subtle flex items-center justify-center hover:bg-surface-container active:bg-surface-dim"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="w-8 text-center font-bold">2</span>
+<button class="w-8 h-8 rounded border border-border-subtle flex items-center justify-center hover:bg-surface-container active:bg-surface-dim"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<span class="text-label-sm text-on-surface-variant">$12.50 ea</span>
+</div>
+</div>
+<div class="p-4 border-b border-border-subtle hover:bg-surface transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="font-medium text-body-md text-on-surface">Fresh Orange Juice</span>
+<span class="font-bold text-primary">$4.50</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded border border-border-subtle flex items-center justify-center hover:bg-surface-container active:bg-surface-dim"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="w-8 text-center font-bold">1</span>
+<button class="w-8 h-8 rounded border border-border-subtle flex items-center justify-center hover:bg-surface-container active:bg-surface-dim"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<span class="text-label-sm text-on-surface-variant">$4.50 ea</span>
+</div>
+</div>
+</div>
+<!-- Totals & Actions -->
+<div class="p-4 bg-surface-container-lowest border-t border-border-subtle">
+<div class="space-y-2 mb-4">
+<div class="flex justify-between text-on-surface-variant font-body-md">
+<span>Subtotal</span>
+<span>$29.50</span>
+</div>
+<div class="flex justify-between text-on-surface-variant font-body-md">
+<span>GST 5%</span>
+<span>$1.47</span>
+</div>
+<div class="flex justify-between text-primary font-bold text-headline-md pt-2 border-t border-border-subtle">
+<span>Total</span>
+<span>$30.97</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex flex-col items-center justify-center gap-1 p-2 rounded-lg border border-border-subtle hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">person_add</span>
+<span class="text-label-sm font-label-sm">Customer</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 p-2 rounded-lg border border-border-subtle hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">loyalty</span>
+<span class="text-label-sm font-label-sm">Discount</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 p-2 rounded-lg bg-secondary-container text-on-secondary-container hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">send</span>
+<span class="text-label-sm font-label-sm">Send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Column 3: Payment Panel -->
+<section class="w-2.5/12 flex flex-col bg-surface-container-low">
+<div class="p-6">
+<div class="bg-white border border-border-subtle rounded-xl p-6 text-right mb-6">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-1">Amount Due</p>
+<p class="text-headline-display font-headline-display text-primary">$30.97</p>
+</div>
+<!-- Payment Methods -->
+<div class="grid grid-cols-3 gap-3 mb-6">
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-white border border-primary text-primary font-bold shadow-sm">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-sm">Cash</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-white border border-border-subtle text-on-surface-variant hover:border-primary transition-all">
+<span class="material-symbols-outlined">qr_code</span>
+<span class="text-label-sm">UPI</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-white border border-border-subtle text-on-surface-variant hover:border-primary transition-all">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="text-label-sm">Card</span>
+</button>
+</div>
+<!-- Numpad -->
+<div class="grid grid-cols-3 gap-2 flex-1">
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">1</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">2</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">3</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">4</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">5</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">6</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">7</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">8</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">9</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">.</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95">0</button>
+<button class="h-16 rounded-lg bg-white border border-border-subtle flex items-center justify-center font-numpad-digit text-numpad-digit hover:bg-surface-container transition-all active:scale-95"><span class="material-symbols-outlined">backspace</span></button>
+</div>
+<button class="w-full mt-6 h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg">
+<span class="material-symbols-outlined">check_circle</span>
+                        Validate Payment
+                    </button>
+</div>
+</section>
+</main>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

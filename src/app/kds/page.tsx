@@ -38,7 +38,7 @@ const TABS: { key: Tab; label: string }[] = [
 
 export default function KdsPage() {
   const [tickets, setTickets] = useState<Map<string, KDSTicket>>(new Map());
-  const [tab, setTab] = useState<Tab>("ALL");
+  const [tab, setTab] = useState<Tab>("TO_COOK");
   const [search, setSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [connected, setConnected] = useState(false);
@@ -198,7 +198,7 @@ export default function KdsPage() {
       );
     }
 
-    return list;
+    return list.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [allTickets, tab, selectedCategories, search]);
 
   const handleCategoryToggle = useCallback((id: string) => {

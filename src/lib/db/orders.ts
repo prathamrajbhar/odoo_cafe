@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { applyPromos } from "@/lib/promo";
 import { getIO } from "@/lib/socket";
+import { decrementStockForLines } from "@/lib/db/products";
 
 export function getBySession(sessionId: string) {
   return prisma.order.findMany({
@@ -143,6 +144,9 @@ export async function create(data: {
 
   // 6. DB Transaction
   const order = await prisma.$transaction(async (tx) => {
+    // Decrement stock for all lines — throws if any product is out of stock
+    await decrementStockForLines(tx, lines.map((l) => ({ productId: l.productId, qty: l.qty })));
+
     const ord = await tx.order.create({
       data: {
         orderNumber,

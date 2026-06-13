@@ -15,6 +15,7 @@ interface Product {
   name: string;
   price: number;
   taxRate: number;
+  stock: number;
   category: Category;
   description: string | null;
 }
@@ -40,7 +41,6 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "Aloo Tikki": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&auto=format&fit=crop&q=80",
   "Veg Sandwich": "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=500&auto=format&fit=crop&q=80",
   "Pav Bhaji": "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500&auto=format&fit=crop&q=80",
-  "Bread Pakora": "", // Stays empty to test the placeholder state beautifully
   "Dal Tadka": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80",
   "Paneer Butter Masala": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80",
   "Chole Bhature": "https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=500&auto=format&fit=crop&q=80",
@@ -53,6 +53,31 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "Gajar Halwa": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&auto=format&fit=crop&q=80",
   "Rasgulla": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&auto=format&fit=crop&q=80",
 };
+
+function StockIndicator({ stock }: { stock: number }) {
+  if (stock === 0) {
+    return (
+      <span className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-error text-white text-[10px] font-bold shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+        Out
+      </span>
+    );
+  }
+  if (stock <= 5) {
+    return (
+      <span className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning text-black text-[10px] font-bold shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-black/40" />
+        {stock} left
+      </span>
+    );
+  }
+  return (
+    <span className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/90 text-white text-[10px] font-bold shadow-sm">
+      <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+      {stock}
+    </span>
+  );
+}
 
 export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) => {
   const { addToCart } = usePOS();
@@ -67,10 +92,8 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
       api.get<{ data: { categories: Category[] } }>("/categories"),
       api.get<{ data: { products: Product[] } }>("/products"),
     ]).then(([catRes, prodRes]) => {
-      const cats = catRes.data?.categories ?? [];
-      const prods = prodRes.data?.products ?? [];
-      setCategories(cats);
-      setProducts(prods);
+      setCategories(catRes.data?.categories ?? []);
+      setProducts(prodRes.data?.products ?? []);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -81,6 +104,7 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
   });
 
   const handleAdd = (product: Product) => {
+    if (product.stock === 0) return;
     addToCart({
       productId: product.id,
       name: product.name,
@@ -118,12 +142,9 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 p-1 rounded-full text-on-surface-variant/70 hover:bg-surface-container-highest hover:text-on-surface active:scale-95 transition-all duration-150 cursor-pointer flex items-center justify-center"
-              aria-label="Clear search"
+              className="absolute right-3 p-1 rounded-full text-on-surface-variant/70 hover:bg-surface-container-highest hover:text-on-surface active:scale-95 transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                close
-              </span>
+              <span className="material-symbols-outlined text-[18px]">close</span>
             </button>
           )}
         </div>
@@ -133,10 +154,11 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
       <div className="flex gap-2.5 px-4 pb-3 pt-1.5 overflow-x-auto shrink-0 bg-surface-container-lowest border-b border-outline-variant scrollbar-none">
         <button
           onClick={() => setSelectedCategoryId(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all duration-200 cursor-pointer ${selectedCategoryId === null
+          className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${
+            selectedCategoryId === null
               ? "bg-primary text-on-primary shadow-sm"
               : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface active:scale-95"
-            }`}
+          }`}
         >
           All Products
         </button>
@@ -144,15 +166,12 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
           <button
             key={cat.id}
             onClick={() => setSelectedCategoryId(cat.id)}
-            style={
+            style={selectedCategoryId === cat.id ? { backgroundColor: cat.colorHex, color: "#fff" } : {}}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all cursor-pointer ${
               selectedCategoryId === cat.id
-                ? { backgroundColor: cat.colorHex, color: "#fff" }
-                : {}
-            }
-            className={`shrink-0 px-4 py-1.5 rounded-full text-label-md font-semibold transition-all duration-200 cursor-pointer ${selectedCategoryId === cat.id
                 ? "shadow-sm"
                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface active:scale-95"
-              }`}
+            }`}
           >
             {cat.name}
           </button>
@@ -167,36 +186,41 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
               {searchQuery ? "search_off" : "inventory_2"}
             </span>
             <p className="text-body-md">
-              {searchQuery
-                ? `No results found for "${searchQuery}"`
-                : "No products in this category"}
+              {searchQuery ? `No results for "${searchQuery}"` : "No products in this category"}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredProducts.map((product) => {
               const imageUrl = PRODUCT_IMAGES[product.name];
+              const outOfStock = product.stock === 0;
+              const lowStock = product.stock > 0 && product.stock <= 5;
+
               return (
                 <button
                   key={product.id}
                   onClick={() => handleAdd(product)}
-                  className="group flex flex-col items-start bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden text-left hover:border-primary hover:shadow-md active:scale-[0.97] transition-all duration-200 cursor-pointer w-full"
+                  disabled={outOfStock}
+                  className={`group flex flex-col items-start bg-surface-container-lowest border rounded-2xl overflow-hidden text-left transition-all duration-200 w-full ${
+                    outOfStock
+                      ? "opacity-50 cursor-not-allowed border-outline-variant/40"
+                      : lowStock
+                      ? "border-warning/60 hover:border-warning hover:shadow-md active:scale-[0.97] cursor-pointer"
+                      : "border-outline-variant hover:border-primary hover:shadow-md active:scale-[0.97] cursor-pointer"
+                  }`}
                 >
-                  {/* Product Image or Placeholder */}
+                  {/* Image */}
                   <div className="relative w-full aspect-video bg-surface-container flex items-center justify-center overflow-hidden border-b border-outline-variant/40">
                     {imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={imageUrl}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className={`w-full h-full object-cover transition-transform duration-300 ${!outOfStock ? "group-hover:scale-105" : ""}`}
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center w-full h-full p-2 bg-surface-container-low text-center">
-                        <span
-                          className="material-symbols-outlined text-[24px] mb-1 opacity-70"
-                          style={{ color: product.category.colorHex }}
-                        >
+                        <span className="material-symbols-outlined text-[24px] mb-1 opacity-70" style={{ color: product.category.colorHex }}>
                           restaurant
                         </span>
                         <span className="text-[11px] font-medium text-on-surface-variant leading-tight max-w-[90%] truncate">
@@ -204,14 +228,26 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ onProductSelect }) =
                         </span>
                       </div>
                     )}
+
+                    {/* Stock indicator badge */}
+                    <StockIndicator stock={product.stock} />
+
+                    {/* Out-of-stock overlay */}
+                    {outOfStock && (
+                      <div className="absolute inset-0 bg-surface/60 flex items-center justify-center">
+                        <span className="text-[11px] font-bold text-on-surface-variant/80 bg-surface-container px-2 py-1 rounded-full">
+                          Unavailable
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Product Info */}
                   <div className="p-3 w-full flex flex-col justify-between flex-1">
-                    <span className="text-label-md font-semibold text-on-surface leading-tight line-clamp-2 min-h-[2.5rem]">
+                    <span className={`text-label-md font-semibold leading-tight line-clamp-2 min-h-[2.5rem] ${outOfStock ? "text-on-surface-variant" : "text-on-surface"}`}>
                       {product.name}
                     </span>
-                    <span className="text-body-md text-primary font-black mt-1.5">
+                    <span className={`text-body-md font-black mt-1.5 ${outOfStock ? "text-on-surface-variant/60" : "text-primary"}`}>
                       ₹{Number(product.price).toFixed(2)}
                     </span>
                   </div>
