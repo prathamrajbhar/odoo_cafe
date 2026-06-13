@@ -373,74 +373,74 @@
 ## **Module 11: Orders (CORE)**
 
 ### Zod Schemas
-- [ ] `orderLineSchema` — productId, qty, unitPrice, appliedPromoId (optional)
-- [ ] `orderCreateSchema` — sessionId, tableId (optional), customerId (optional), lines[], couponCode (optional)
-- [ ] `orderPaySchema` — method (CASH/CARD/UPI), amountTendered (CASH only), reference (CARD only)
+- [x] `orderLineSchema` — productId, qty, unitPrice, appliedPromoId (optional)
+- [x] `orderCreateSchema` — sessionId, tableId (optional), customerId (optional), lines[], couponCode (optional)
+- [x] `orderPaySchema` — method (CASH/CARD/UPI), amountTendered (CASH only), reference (CARD only)
 
 ### Database Layer (`/lib/db/orders.ts`)
-- [ ] `getBySession(sessionId)` → all orders in session
-- [ ] `getById(id)` → order with all lines + customer + table
-- [ ] `generateOrderNumber()` → next ORD-0001 format
-- [ ] `create(data)` → new order (calls transaction with lines + KDS)
-- [ ] `updateStatus(id, status)` → set order status
-- [ ] `markPaid(id, method, reference?, changeDue?)` → set PAID + receipt
-- [ ] `delete(id)` → remove order (only if DRAFT)
+- [x] `getBySession(sessionId)` → all orders in session
+- [x] `getById(id)` → order with all lines + customer + table
+- [x] `generateOrderNumber()` → next ORD-0001 format
+- [x] `create(data)` → new order (calls transaction with lines + KDS)
+- [x] `updateStatus(id, status)` → set order status
+- [x] `markPaid(id, method, reference?, changeDue?)` → set PAID + receipt
+- [x] `delete(id)` → remove order (only if DRAFT)
 
 ### Database Layer (`/lib/db/orderLines.ts`)
-- [ ] `create(orderId, productId, qty, unitPrice, appliedPromoId?)` → new line
-- [ ] `getByOrder(orderId)` → all lines with product + promo
+- [x] `create(orderId, productId, qty, unitPrice, appliedPromoId?)` → new line (handled inside transaction)
+- [x] `getByOrder(orderId)` → all lines with product + promo (handled inside getById)
 
 ### Promo Re-validation
-- [ ] Server re-validates all promos before persisting order
-- [ ] Revalidation prevents client-side discount tampering
-- [ ] Revalidation uses same logic as `/api/promotions/validate`
+- [x] Server re-validates all promos before persisting order
+- [x] Revalidation prevents client-side discount tampering
+- [x] Revalidation uses same logic as `/api/promotions/validate`
 
 ### Transaction
-- [ ] Create Order record
-- [ ] Create OrderLine records
-- [ ] Create KDSTicket record
-- [ ] Create KDSTicketItem records (one per line)
-- [ ] **Emit `ticket:new` Socket.io event**
-- [ ] All in single `prisma.$transaction()` for atomicity
+- [x] Create Order record
+- [x] Create OrderLine records
+- [x] Create KDSTicket record
+- [x] Create KDSTicketItem records (one per line)
+- [x] **Emit `ticket:new` Socket.io event**
+- [x] All in single `prisma.$transaction()` for atomicity
 
 ### API Routes
-- [ ] `GET /api/orders` (Employee, query: sessionId) — list orders
-- [ ] `POST /api/orders` (Employee) — create order with transaction
-- [ ] `GET /api/orders/[id]` (Employee) — fetch order details
-- [ ] `DELETE /api/orders/[id]` (Employee) — delete DRAFT only
-- [ ] `POST /api/orders/[id]/pay` (Employee) — mark PAID + return receipt
+- [x] `GET /api/orders` (Employee, query: sessionId) — list orders
+- [x] `POST /api/orders` (Employee) — create order with transaction
+- [x] `GET /api/orders/[id]` (Employee) — fetch order details
+- [x] `DELETE /api/orders/[id]` (Employee) — delete DRAFT only
+- [x] `POST /api/orders/[id]/pay` (Employee) — mark PAID + return receipt
 
 ### Order Calculations
-- [ ] Subtotal = sum of (qty × unitPrice) for all lines
-- [ ] Tax = sum of (qty × unitPrice × taxRate%) for each line
-- [ ] Discount = sum of all applied discounts
-- [ ] Total = Subtotal + Tax - Discount
+- [x] Subtotal = sum of (qty × unitPrice) for all lines
+- [x] Tax = sum of (qty × unitPrice × taxRate%) for each line
+- [x] Discount = sum of all applied discounts
+- [x] Total = Subtotal + Tax - Discount
 
 ### Payment Methods
-- [ ] **CASH**: calculate change = amountTendered - total
-- [ ] **CARD**: store reference number
-- [ ] **UPI**: no extra fields, just mark paid
+- [x] **CASH**: calculate change = amountTendered - total
+- [x] **CARD**: store reference number
+- [x] **UPI**: no extra fields, just mark paid
 
 ### Receipt Data
-- [ ] orderNumber, date, customer, total
-- [ ] All line items with quantities + prices
-- [ ] Subtotal, tax, discount, total
-- [ ] Payment method + change/reference
-- [ ] Paid timestamp
+- [x] orderNumber, date, customer, total
+- [x] All line items with quantities + prices
+- [x] Subtotal, tax, discount, total
+- [x] Payment method + change/reference
+- [x] Paid timestamp
 
 ### Test Coverage
-- [ ] Order created in DRAFT status
-- [ ] Order number generated (ORD-0001 sequence)
-- [ ] All lines created with correct calculations
-- [ ] KDSTicket + items created
-- [ ] `ticket:new` event emitted with correct payload
-- [ ] Can only delete DRAFT orders
-- [ ] Pay order transitions to PAID
-- [ ] Receipt returned with all fields
-- [ ] CASH: change calculated correctly
-- [ ] CARD: reference stored
-- [ ] Server revalidation prevents tampering
-- [ ] Transaction atomicity (all or nothing)
+- [x] Order created in DRAFT status
+- [x] Order number generated (ORD-0001 sequence)
+- [x] All lines created with correct calculations
+- [x] KDSTicket + items created
+- [x] `ticket:new` event emitted with correct payload
+- [x] Can only delete DRAFT orders
+- [x] Pay order transitions to PAID
+- [x] Receipt returned with all fields
+- [x] CASH: change calculated correctly
+- [x] CARD: reference stored
+- [x] Server revalidation prevents tampering
+- [x] Transaction atomicity (all or nothing)
 
 ---
 
