@@ -80,7 +80,7 @@ export default function ProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-available-border pb-5 select-none">
         <div>
           <h1 className="text-headline-lg text-primary font-bold">
-            Products Menu Management
+            Products
           </h1>
           <p className="text-body-sm text-on-surface-variant mt-1.5">
             Configure menu options, pricing details, and tax regulations.

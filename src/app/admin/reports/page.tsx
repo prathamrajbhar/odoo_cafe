@@ -1,8 +1,47 @@
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import Reports from "@/components/admin/Reports";
+import { api } from "@/lib/api";
+import { toast } from "@/lib/toast";
+
 export default function ReportsPage() {
-  return (
-    <div className="p-6">
-      <h1 className="text-headline-md text-primary">Session Reports & Analytics</h1>
-      <p className="text-body-sm text-on-surface-variant mt-2">Placeholder for Phase 7</p>
-    </div>
-  );
+  const [initialData, setInitialData] = useState<any>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchInitial = useCallback(async () => {
+    try {
+      const [reportRes, usersRes]: any[] = await Promise.all([
+        api.get("/reports?period=TODAY"),
+        api.get("/users"),
+      ]);
+      setInitialData(reportRes.data ?? null);
+      setEmployees(
+        (usersRes.data?.users ?? []).filter((u: any) => u.status === "ACTIVE")
+      );
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load reports");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchInitial(); }, [fetchInitial]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-8 w-48 bg-surface-container-high rounded animate-pulse" />
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-surface-container-high rounded-xl animate-pulse" />
+          ))}
+        </div>
+        <div className="h-64 bg-surface-container-high rounded-xl animate-pulse" />
+      </div>
+    );
+  }
+
+  return <Reports initialData={initialData} employees={employees} />;
 }

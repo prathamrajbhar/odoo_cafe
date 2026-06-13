@@ -91,7 +91,7 @@ async function run() {
   const sessionRes = await request('POST', '/session/open', { initialFloat: 100 });
   log(`Open Session: ${sessionRes.status} - ${JSON.stringify(sessionRes.data)}`);
   
-  let sessionId = sessionRes.data?.data?.session?.id;
+  const sessionId = sessionRes.data?.data?.session?.id;
   if (!sessionId) {
     // If a session is already active, we can't open a new one. Try to fetch the active one.
     log(`INFO: A session might already be active.`);

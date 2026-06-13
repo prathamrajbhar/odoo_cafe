@@ -34,10 +34,10 @@ export default function CategoriesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-available-border pb-5 select-none">
         <div>
           <h1 className="text-headline-lg text-primary font-bold">
-            Product Categories
+            Categories
           </h1>
           <p className="text-body-sm text-on-surface-variant mt-1.5">
-            Manage category divisions and visual color groupings.
+            Manage product groups and display colors.
           </p>
         </div>
         <Button

@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Input from "@/components/shared/Input";
-import Button from "@/components/shared/Button";
-import { categoryUpdateSchema } from "@/schemas/category";
 import { api } from "@/lib/api";
 import { toast } from "@/lib/toast";
 
@@ -11,9 +8,7 @@ export interface Category {
   id: string;
   name: string;
   colorHex: string;
-  _count?: {
-    products: number;
-  };
+  _count?: { products: number };
 }
 
 export interface CategoryListProps {
@@ -21,201 +16,148 @@ export interface CategoryListProps {
   onRefresh: () => void;
 }
 
-export const CategoryList: React.FC<CategoryListProps> = ({
-  categories,
-  onRefresh,
-}) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editColorHex, setEditColorHex] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; colorHex?: string }>({});
-  const [isLoading, setIsLoading] = useState<string | null>(null);
+const PRESET_COLORS = [
+  { hex: "#dc3545", name: "Red" },
+  { hex: "#ffc107", name: "Yellow" },
+  { hex: "#00696e", name: "Teal" },
+  { hex: "#714b67", name: "Purple" },
+  { hex: "#28a745", name: "Green" },
+];
 
-  const startEdit = (cat: Category) => {
-    setEditingId(cat.id);
-    setEditName(cat.name);
-    setEditColorHex(cat.colorHex);
-    setErrors({});
-  };
+export const CategoryList: React.FC<CategoryListProps> = ({ categories, onRefresh }) => {
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setErrors({});
-  };
-
-  const saveEdit = async (id: string) => {
-    setIsLoading(id);
-    setErrors({});
-
-    const result = categoryUpdateSchema.safeParse({ name: editName, colorHex: editColorHex });
-    if (!result.success) {
-      const formattedErrors: typeof errors = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0] === "name") formattedErrors.name = err.message;
-        if (err.path[0] === "colorHex") formattedErrors.colorHex = err.message;
-      });
-      setErrors(formattedErrors);
-      setIsLoading(null);
-      return;
-    }
-
+  const handleColorChange = async (id: string, name: string, colorHex: string) => {
+    setSavingId(id);
     try {
-      await api.put(`/categories/${id}`, { name: editName, colorHex: editColorHex });
-      toast.success("Category updated successfully!");
-      setEditingId(null);
+      await api.put(`/categories/${id}`, { name, colorHex });
       onRefresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to update category");
     } finally {
-      setIsLoading(null);
+      setSavingId(null);
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete the category "${name}"?`)) {
-      return;
-    }
-
-    setIsLoading(id);
+    if (!confirm(`Delete category "${name}"?`)) return;
+    setDeletingId(id);
     try {
       await api.delete(`/categories/${id}`);
-      toast.success("Category deleted successfully!");
+      toast.success("Category deleted");
       onRefresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete category");
     } finally {
-      setIsLoading(null);
+      setDeletingId(null);
     }
   };
 
   return (
-    <div className="w-full overflow-x-auto border border-available-border bg-surface-container-lowest rounded-lg shadow-sm">
-      <table className="w-full text-left border-collapse min-w-[600px]">
-        <thead>
-          <tr className="bg-surface-container-low border-b border-available-border text-label-md text-on-surface-variant select-none">
-            <th className="px-6 py-4 font-bold tracking-wide text-xs">Swatch</th>
-            <th className="px-6 py-4 font-bold tracking-wide text-xs">Category Name</th>
-            <th className="px-6 py-4 font-bold tracking-wide text-xs">Hex Code</th>
-            <th className="px-6 py-4 font-bold tracking-wide text-xs text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-available-border">
-          {categories.length === 0 ? (
-            <tr>
-              <td colSpan={4} className="px-6 py-12 text-center text-body-sm text-on-surface-variant/75 italic">
-                No categories available. Click &quot;New Category&quot; to add one.
-              </td>
+    <div className="w-full border border-available-border bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[560px]">
+          <thead>
+            <tr className="border-b border-available-border select-none">
+              <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase w-16">Drag</th>
+              <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase">Category Name</th>
+              <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase">Color Tag</th>
+              <th className="px-6 py-4 text-xs font-semibold tracking-widest text-on-surface-variant/60 uppercase text-right">Actions</th>
             </tr>
-          ) : (
-            categories.map((cat) => {
-              const isEditing = editingId === cat.id;
-              const isRowLoading = isLoading === cat.id;
-
-              return (
-                <tr
-                  key={cat.id}
-                  className={`text-body-sm text-on-surface hover:bg-surface-container-low/50 transition-colors duration-150
-                    ${isEditing ? "bg-primary/5 hover:bg-primary/5" : ""}
-                  `}
-                >
-                  {/* Swatch Column */}
-                  <td className="px-6 py-4.5 align-middle w-24">
-                    {isEditing ? (
-                      <div
-                        className="h-9 w-9 rounded-default border border-available-border"
-                        style={{ backgroundColor: editColorHex }}
-                      />
-                    ) : (
-                      <div
-                        className="h-9 w-9 rounded-default border border-available-border shadow-sm"
-                        style={{ backgroundColor: cat.colorHex }}
-                      />
-                    )}
+          </thead>
+          <tbody className="divide-y divide-available-border">
+            {categories.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-6 py-12 text-center text-body-sm text-on-surface-variant/60 italic">
+                  No categories yet. Click &quot;New Category&quot; to add one.
+                </td>
+              </tr>
+            ) : (
+              categories.map((cat) => (
+                <tr key={cat.id} className="hover:bg-surface-container-low/50 transition-colors">
+                  {/* Drag handle */}
+                  <td className="px-6 py-4 align-middle w-16">
+                    <span className="text-on-surface-variant/30 cursor-grab select-none inline-flex">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <circle cx="5" cy="3.5" r="1.4" />
+                        <circle cx="11" cy="3.5" r="1.4" />
+                        <circle cx="5" cy="8" r="1.4" />
+                        <circle cx="11" cy="8" r="1.4" />
+                        <circle cx="5" cy="12.5" r="1.4" />
+                        <circle cx="11" cy="12.5" r="1.4" />
+                      </svg>
+                    </span>
                   </td>
 
-                  {/* Name Column */}
-                  <td className="px-6 py-4.5 align-middle">
-                    {isEditing ? (
-                      <Input
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        error={errors.name}
-                        className="max-w-xs"
-                        disabled={isRowLoading}
-                      />
-                    ) : (
-                      <span className="font-semibold text-body-md text-on-surface">
-                        {cat.name}
-                      </span>
-                    )}
+                  {/* Name */}
+                  <td className="px-6 py-4 align-middle">
+                    <span className="text-body-md text-on-surface">{cat.name}</span>
                   </td>
 
-                  {/* Hex Color Column */}
-                  <td className="px-6 py-4.5 align-middle">
-                    {isEditing ? (
-                      <Input
-                        value={editColorHex}
-                        onChange={(e) => setEditColorHex(e.target.value)}
-                        error={errors.colorHex}
-                        className="max-w-xs font-mono"
-                        disabled={isRowLoading}
-                      />
-                    ) : (
-                      <code className="text-body-sm font-mono bg-surface-container px-2 py-1 rounded text-on-surface-variant">
-                        {cat.colorHex}
-                      </code>
-                    )}
+                  {/* Color dots */}
+                  <td className="px-6 py-4 align-middle">
+                    <div className="flex items-center gap-2">
+                      {PRESET_COLORS.map((color) => {
+                        const isSelected = cat.colorHex.toLowerCase() === color.hex.toLowerCase();
+                        return (
+                          <button
+                            key={color.hex}
+                            type="button"
+                            title={color.name}
+                            disabled={savingId === cat.id}
+                            onClick={() => !isSelected && handleColorChange(cat.id, cat.name, color.hex)}
+                            className={`w-6 h-6 rounded-full transition-transform focus:outline-none disabled:cursor-wait
+                              ${isSelected
+                                ? "ring-2 ring-offset-1 ring-on-surface/40 scale-110"
+                                : "hover:scale-110 cursor-pointer"
+                              }
+                            `}
+                            style={{ backgroundColor: color.hex }}
+                          />
+                        );
+                      })}
+                    </div>
                   </td>
 
-                  {/* Actions Column */}
-                  <td className="px-6 py-4.5 align-middle text-right w-64">
-                    {isEditing ? (
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={cancelEdit}
-                          disabled={isRowLoading}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => saveEdit(cat.id)}
-                          isLoading={isRowLoading}
-                        >
-                          Save
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => startEdit(cat)}
-                          disabled={isLoading !== null}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(cat.id, cat.name)}
-                          disabled={isLoading !== null}
-                          className="text-danger hover:text-danger/95 hover:bg-error-container/20"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    )}
+                  {/* Actions */}
+                  <td className="px-6 py-4 align-middle text-right">
+                    <div className="flex items-center gap-0.5 justify-end">
+                      <button
+                        type="button"
+                        title="Delete category"
+                        disabled={deletingId === cat.id}
+                        onClick={() => handleDelete(cat.id, cat.name)}
+                        className="p-2 rounded-lg text-on-surface-variant/50 hover:text-danger hover:bg-error-container/20 transition-colors disabled:opacity-40"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer */}
+      <div className="px-6 py-3 border-t border-available-border flex items-center justify-between">
+        <span className="text-body-sm text-on-surface-variant">
+          {categories.length} {categories.length === 1 ? "Category" : "Categories"} total
+        </span>
+        <span className="text-body-sm text-secondary flex items-center gap-1.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+          </svg>
+          All changes saved
+        </span>
+      </div>
     </div>
   );
 };

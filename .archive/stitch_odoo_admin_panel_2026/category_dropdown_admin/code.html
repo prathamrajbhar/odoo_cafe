@@ -1,0 +1,347 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>New Product - Odoo POS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "available-border": "#DEE2E6",
+                        "surface-bright": "#f8f9fa",
+                        "on-secondary-fixed": "#002022",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#ffd7f1",
+                        "error-container": "#ffdad6",
+                        "secondary": "#00696e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#92eff5",
+                        "surface-variant": "#e1e3e4",
+                        "error": "#ba1a1a",
+                        "surface-container": "#edeeef",
+                        "primary": "#57344f",
+                        "outline-variant": "#d1c3ca",
+                        "surface-container-low": "#f3f4f5",
+                        "danger": "#DC3545",
+                        "on-tertiary-fixed": "#112000",
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "primary-container": "#714b67",
+                        "primary-fixed-dim": "#e9b8d9",
+                        "tertiary-container": "#4b5d33",
+                        "tertiary-fixed-dim": "#b9ce9a",
+                        "on-tertiary-fixed-variant": "#3b4c24",
+                        "on-tertiary-container": "#c0d5a0",
+                        "available-bg": "#FFFFFF",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#79526f",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#5f3b56",
+                        "background": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "tertiary": "#34451e",
+                        "on-surface-variant": "#4e444a",
+                        "on-surface": "#191c1d",
+                        "occupied-text": "#D63384",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-container": "#f0bfe0",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-background": "#191c1d",
+                        "on-secondary-fixed-variant": "#004f53",
+                        "tertiary-fixed": "#d5eab4",
+                        "secondary-fixed": "#95f1f8",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#006e73",
+                        "outline": "#80747a",
+                        "inverse-primary": "#e9b8d9",
+                        "warning": "#FFC107",
+                        "secondary-fixed-dim": "#78d5db",
+                        "success": "#28A745",
+                        "on-primary-fixed": "#2f1029",
+                        "occupied-pink": "#FFF0F3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "mono-label": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "mono-label": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md h-screen overflow-hidden flex bg-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="font-headline-sm text-headline-sm font-bold text-primary">Odoo POS Admin</div>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Products</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="point_of_sale">point_of_sale</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-variant ml-2 overflow-hidden border border-outline-variant">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling man in a business casual shirt, set against a neutral grey background. The lighting is soft and even, typical of corporate portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgcUul7Y1r41dbDE6xbGSKuom-osfiXtO1Qv4fopgOMB8g1ENtnpeTlfFsYgQk6Axpf-Tdc7Io0gI2U4-JzxBH8HipM8IZUSjVkVg-IKptLH8qP5LxnUDByu5yaQWxbv1Wwck35Rc2G4JkcZ-KibLE6YKkQEyPbCS9wHTooYbx17X_MRPRhYZJ9MdKf181lUdZk1eQkWqhLY-Ez3Si4P0wUjS2YRH3hKj5CPu1KYjHf6wyOzRjQ0mzSxOvrjIEKXD7nm9gHdeo6AA">
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-4 px-2 bg-surface-container-low border-r border-outline-variant z-40 hidden md:flex">
+<div class="px-4 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-lg">
+                    MK
+                </div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">Main Kitchen</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Admin Terminal</div>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary text-on-primary py-2 rounded font-label-lg text-label-lg transition-colors hover:opacity-90 active:scale-95 duration-150">
+                Launch POS
+            </button>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary-container text-on-primary-container font-bold transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="inventory_2">inventory_2</span>
+                Products
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="category">category</span>
+                Categories
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="receipt_long">receipt_long</span>
+                Orders
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="payments">payments</span>
+                Payments
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+                Configuration
+            </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="help">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-64 mt-16 p-margin-desktop overflow-y-auto bg-surface-bright">
+<!-- Action Bar -->
+<div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant bg-surface-container-lowest p-4 rounded-lg shadow-sm">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded font-label-lg text-label-lg hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg" data-icon="add_box">add_box</span>
+                    New
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded font-label-lg text-label-lg transition-colors border border-outline-variant ml-2">
+                    Discard
+                </button>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded border border-outline-variant">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Form Container -->
+<div class="bg-surface-container-lowest border border-available-border rounded-lg p-6 max-w-4xl shadow-sm">
+<!-- Product Title Section -->
+<div class="mb-8 flex gap-6 items-start">
+<div class="w-32 h-32 border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant rounded bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors shrink-0">
+<span class="material-symbols-outlined text-4xl mb-2" data-icon="add_photo_alternate">add_photo_alternate</span>
+<span class="font-body-sm text-body-sm">Add Image</span>
+</div>
+<div class="flex-1 space-y-4">
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1">Product Name</label>
+<input autofocus="" class="w-full border-0 border-b-2 border-outline-variant bg-transparent px-0 py-2 font-headline-md text-headline-md focus:ring-0 focus:border-primary transition-colors text-on-surface placeholder:text-surface-dim" placeholder="e.g. Masala Tea" type="text">
+</div>
+<div class="flex gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-5 h-5" type="checkbox">
+<span class="font-body-md text-body-md text-on-surface">Can be Sold</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-5 h-5" type="checkbox">
+<span class="font-body-md text-body-md text-on-surface">Can be Purchased</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-5 h-5" type="checkbox">
+<span class="font-body-md text-body-md text-on-surface">Available in POS</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="border-b border-outline-variant mb-6 flex gap-6">
+<button class="pb-2 font-label-lg text-label-lg text-primary border-b-2 border-primary font-bold">General Information</button>
+<button class="pb-2 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface">Attributes &amp; Variants</button>
+<button class="pb-2 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface">Sales</button>
+<button class="pb-2 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface">Purchase</button>
+<button class="pb-2 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface">Inventory</button>
+</div>
+<!-- Form Grid -->
+<div class="grid grid-cols-2 gap-x-12 gap-y-6">
+<!-- Left Column -->
+<div class="space-y-6">
+<!-- Product Type -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Product Type</label>
+<select class="w-2/3 border-0 border-b border-outline-variant bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 focus:border-primary">
+<option>Storable Product</option>
+<option>Consumable</option>
+<option>Service</option>
+</select>
+</div>
+<!-- Category (With Dropdown State) -->
+<div class="flex items-start relative">
+<label class="w-1/3 pt-2 font-label-md text-label-md text-on-surface-variant font-bold">Category</label>
+<div class="w-2/3 relative">
+<div class="flex flex-wrap gap-2 p-1 border-b-2 border-primary min-h-[36px] items-center bg-surface-container-low rounded-t">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest px-2 py-1 rounded text-body-sm font-body-sm">
+                                    Drink
+                                    <button class="hover:text-error">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</span>
+<input class="border-0 bg-transparent p-0 focus:ring-0 font-body-md text-body-md flex-1 min-w-[50px] outline-none" type="text" value="Food">
+</div>
+<!-- Dropdown Menu -->
+<div class="absolute left-0 top-full mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded shadow-[0_4px_12px_rgba(0,0,0,0.1)] z-10 py-1">
+<ul class="max-h-48 overflow-y-auto">
+<li class="px-3 py-2 font-body-md text-body-md hover:bg-surface-container cursor-pointer text-on-surface">Food</li>
+<li class="px-3 py-2 font-body-md text-body-md hover:bg-surface-container cursor-pointer text-on-surface">Food / Starters</li>
+<li class="px-3 py-2 font-body-md text-body-md hover:bg-surface-container cursor-pointer text-on-surface">Food / Main Course</li>
+</ul>
+<div class="border-t border-outline-variant mt-1 px-3 py-2">
+<button class="w-full text-left font-label-md text-label-md text-primary font-bold hover:bg-surface-container-low px-2 py-1 rounded transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+                                        Create &amp; Edit...
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Internal Reference -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Internal Reference</label>
+<input class="w-2/3 border-0 border-b border-outline-variant bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 focus:border-primary" type="text">
+</div>
+<!-- Barcode -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Barcode</label>
+<input class="w-2/3 border-0 border-b border-outline-variant bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 focus:border-primary" type="text">
+</div>
+</div>
+<!-- Right Column -->
+<div class="space-y-6">
+<!-- Sales Price -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Sales Price</label>
+<div class="w-2/3 flex items-center border-0 border-b border-outline-variant">
+<span class="text-on-surface-variant pr-2">₹</span>
+<input class="w-full border-0 bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 text-right" type="text" value="65.00">
+</div>
+</div>
+<!-- Customer Taxes -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Customer Taxes</label>
+<select class="w-2/3 border-0 border-b border-outline-variant bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 focus:border-primary">
+<option>5% GST</option>
+<option>18% GST</option>
+<option>Tax Exempt</option>
+</select>
+</div>
+<!-- Cost -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">Cost</label>
+<div class="w-2/3 flex items-center border-0 border-b border-outline-variant">
+<span class="text-on-surface-variant pr-2">₹</span>
+<input class="w-full border-0 bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 text-right" type="text" value="0.00">
+</div>
+</div>
+<!-- POS Category -->
+<div class="flex items-center">
+<label class="w-1/3 font-label-md text-label-md text-on-surface-variant font-bold">POS Category</label>
+<select class="w-2/3 border-0 border-b border-outline-variant bg-transparent px-0 py-1 font-body-md text-body-md focus:ring-0 focus:border-primary">
+<option>Beverages</option>
+<option>Snacks</option>
+<option>Meals</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="mt-8">
+<label class="block font-label-md text-label-md text-on-surface-variant font-bold mb-2">Internal Notes</label>
+<textarea class="w-full border border-outline-variant rounded bg-transparent p-3 font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary min-h-[100px]" placeholder="e.g. Burger with cheese..."></textarea>
+</div>
+</div>
+</main>
+</body></html>

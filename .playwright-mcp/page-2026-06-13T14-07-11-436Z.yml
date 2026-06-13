@@ -1,0 +1,33 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Odoo POS" [level=1] [ref=e5]
+      - paragraph [ref=e6]: High-Performance Hospitality
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Email
+        - generic [ref=e11]:
+          - generic:
+            - img
+          - textbox "Email" [ref=e12]:
+            - /placeholder: Enter your email
+      - generic [ref=e13]:
+        - generic [ref=e14]: Password
+        - generic [ref=e15]:
+          - generic:
+            - img
+          - textbox "Password" [ref=e16]:
+            - /placeholder: Enter your password
+          - button "Show password" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+      - button "Sign In" [ref=e23]:
+        - generic [ref=e24]: Sign In
+        - img [ref=e26]
+      - generic [ref=e28]:
+        - link "Forgot Password?" [ref=e29] [cursor=pointer]:
+          - /url: "#"
+        - link "Sign Up" [ref=e30] [cursor=pointer]:
+          - /url: /signup
+    - paragraph [ref=e32]: © 2026 Odoo Cafe S.A. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e38] [cursor=pointer]:
+    - img [ref=e39]

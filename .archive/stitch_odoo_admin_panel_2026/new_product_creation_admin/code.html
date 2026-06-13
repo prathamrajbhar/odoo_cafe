@@ -1,0 +1,423 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>New Product Create - Odoo POS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e7e8e9",
+                      "secondary": "#00696e",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-bright": "#f8f9fa",
+                      "surface-container-low": "#f3f4f5",
+                      "surface-dim": "#d9dadb",
+                      "on-secondary-container": "#006e73",
+                      "secondary-fixed": "#95f1f8",
+                      "secondary-container": "#92eff5",
+                      "tertiary-fixed": "#d5eab4",
+                      "tertiary-fixed-dim": "#b9ce9a",
+                      "on-surface": "#191c1d",
+                      "outline": "#80747a",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#c0d5a0",
+                      "warning": "#FFC107",
+                      "tertiary": "#34451e",
+                      "occupied-pink": "#FFF0F3",
+                      "available-border": "#DEE2E6",
+                      "occupied-text": "#D63384",
+                      "on-tertiary": "#ffffff",
+                      "surface": "#f8f9fa",
+                      "on-secondary-fixed-variant": "#004f53",
+                      "on-surface-variant": "#4e444a",
+                      "primary": "#57344f",
+                      "secondary-fixed-dim": "#78d5db",
+                      "tertiary-container": "#4b5d33",
+                      "on-error": "#ffffff",
+                      "available-bg": "#FFFFFF",
+                      "on-tertiary-fixed-variant": "#3b4c24",
+                      "surface-tint": "#79526f",
+                      "background": "#f8f9fa",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e1e3e4",
+                      "primary-fixed": "#ffd7f1",
+                      "inverse-primary": "#e9b8d9",
+                      "inverse-surface": "#2e3132",
+                      "on-primary-fixed": "#2f1029",
+                      "success": "#28A745",
+                      "on-background": "#191c1d",
+                      "on-secondary-fixed": "#002022",
+                      "primary-container": "#714b67",
+                      "surface-container-lowest": "#ffffff",
+                      "danger": "#DC3545",
+                      "surface-variant": "#e1e3e4",
+                      "on-primary-container": "#f0bfe0",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#e9b8d9",
+                      "on-tertiary-fixed": "#112000",
+                      "inverse-on-surface": "#f0f1f2",
+                      "outline-variant": "#d1c3ca",
+                      "on-primary-fixed-variant": "#5f3b56",
+                      "surface-container": "#edeeef"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "24px",
+                      "gutter": "16px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "mono-label": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "26px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-label": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.03em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .input-underline {
+            border: none;
+            border-bottom: 1px solid #DEE2E6;
+            border-radius: 0;
+            padding-left: 0;
+            padding-right: 0;
+            background-color: transparent;
+        }
+        .input-underline:focus {
+            box-shadow: none;
+            border-color: #57344f;
+            border-width: 0 0 2px 0;
+        }
+        /* Custom Swatch Colors for Modal */
+        .swatch-mint { background-color: #A7F3D0; }
+        .swatch-pink { background-color: #FBCFE8; }
+        .swatch-purple { background-color: #E9D5FF; }
+        .swatch-yellow { background-color: #FEF08A; }
+        .swatch-blue { background-color: #BFDBFE; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md h-screen overflow-hidden flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flat no shadows text-primary dark:text-inverse-primary font-body-md text-body-md">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary">Odoo POS Admin</span>
+</div>
+<!-- Search placeholder for structure if needed based on "on_left" logic, but design usually puts it center/left. Keeping simple for now -->
+<div class="flex-1 mx-8 hidden md:block">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-primary text-body-sm" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">point_of_sale</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden ml-2 cursor-pointer border border-outline-variant">
+<img alt="Admin User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7-VSZ1NmoIkNx7YQBaAOnK4rxUxjTJbdyvhacAeQzcpB7jez199ZkmD7z9R1QAsNqdT8oZ5hOOUHHZdzx_0oirdzebCAdgwXveh7j3rISTkQ8FeXKSOKnaHoyKQfp2HGQVX60NfwkUEV_lx2ktBV_1TN-PIvM8fgLpFGtnWTFiJYdzq4VSOZkVyF_m2GJZeTKSo5RgRktT1J6j-OrlWPsNznjei07AaRg5i152nEISkgO7JZW8DV9Gh3IRFmH9__tKr59HU-nNQM">
+</div>
+</div>
+</header>
+<div class="flex flex-1 mt-16 h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-4 px-2 bg-surface-container-low dark:bg-surface-container-high border-r border-outline-variant dark:border-outline flat no shadows text-primary dark:text-inverse-primary font-label-lg text-label-lg z-40 hidden md:flex">
+<div class="px-4 mb-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">storefront</span>
+</div>
+<div>
+<h2 class="font-label-lg text-label-lg font-bold text-on-surface">Main Kitchen</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Admin Terminal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container font-bold cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="">Products</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-all cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="">Configuration</span>
+</a>
+</nav>
+<div class="mt-auto px-2">
+<button class="w-full py-2 mb-4 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:opacity-90 transition-opacity">Launch POS</button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="font-body-sm text-body-sm">Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-body-sm text-body-sm">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 bg-surface p-margin-desktop overflow-y-auto">
+<!-- Page Header -->
+<div class="flex items-center justify-between mb-8 pb-4 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Products</h1>
+<span class="font-label-md text-label-md bg-surface-container-high text-on-surface-variant px-2 py-1 rounded">New</span>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface text-on-surface border border-outline rounded-lg font-label-lg text-label-lg hover:bg-surface-container-low transition-colors">Discard</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-surface-tint transition-colors shadow-sm">Save</button>
+</div>
+</div>
+<!-- Form Container -->
+<div class="bg-surface-container-lowest border border-available-border rounded-xl p-8 shadow-sm max-w-4xl">
+<div class="flex items-center gap-2 mb-6 text-primary">
+<span class="material-symbols-outlined">add_box</span>
+<h2 class="font-headline-md text-headline-md">New Product</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+<!-- Left Column -->
+<div class="space-y-8">
+<!-- Product Name -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="product_name">Product Name</label>
+<input class="w-full input-underline text-body-lg text-on-surface focus:ring-0" id="product_name" placeholder="e.g. Masala Tea" type="text">
+</div>
+<!-- Category -->
+<div class="relative group">
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">Category</label>
+<div class="flex items-center gap-2 flex-wrap pb-1 border-b border-outline-variant focus-within:border-primary focus-within:border-b-2 transition-colors">
+<!-- Existing Tag -->
+<span class="inline-flex items-center gap-1 px-3 py-1 bg-[#FDE68A] text-[#92400E] rounded-full font-label-md text-label-md">
+                                    Drink
+                                    <button class="hover:text-black hover:bg-black/10 rounded-full w-4 h-4 flex items-center justify-center"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+<!-- Input for new tag -->
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-body-md p-0 min-w-[100px]" onblur="setTimeout(() =&gt; document.getElementById('category-helper').classList.add('hidden'), 200)" onfocus="document.getElementById('category-helper').classList.remove('hidden')" placeholder="Add..." type="text">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">expand_more</span>
+</div>
+<!-- Helper Annotation mimicking the sketch -->
+<div class="absolute -left-32 top-10 text-danger font-mono-label text-mono-label hidden md:flex items-center gap-2 animate-pulse" id="category-helper">
+
+<span class="material-symbols-outlined text-xl">arrow_right_alt</span>
+</div>
+<!-- Dropdown / Auto-suggest (Hidden by default, shown on focus conceptually) -->
+<div class="absolute w-full mt-1 bg-surface border border-outline-variant rounded shadow-lg z-10 hidden group-focus-within:block">
+<div class="p-2 hover:bg-surface-container-low cursor-pointer flex justify-between items-center text-body-md" onclick="document.getElementById('category-modal').classList.remove('hidden')">
+<span class="">Create &amp; Edit "Food"</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
+</div>
+<div class="px-2 py-1 text-label-md text-danger border-t border-outline-variant mt-1">If not available show an option to create a product category</div>
+</div>
+</div>
+<!-- Product Description -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="product_desc">Product Description</label>
+<textarea class="w-full input-underline text-body-md text-on-surface focus:ring-0 resize-none" id="product_desc" placeholder="e.g. Burger with cheese" rows="3"></textarea>
+</div>
+</div>
+<!-- Right Column -->
+<div class="space-y-6 bg-surface-container-low/50 p-8 rounded-xl border border-outline-variant/50">
+<!-- Prices -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="price">Sales Price</label>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all"><span class="text-body-lg font-bold text-primary mr-2">₹</span><input class="w-full bg-transparent border-none p-0 text-headline-sm font-bold text-on-surface focus:ring-0" id="price" type="number" value="65"></div>
+</div>
+<!-- Tax -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="tax">Customer Taxes</label>
+<div class="relative"><button type="button" class="w-full flex items-center justify-between bg-surface-container-lowest text-body-md text-on-surface px-4 py-3 rounded-lg border border-outline-variant hover:border-primary focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+  <span class="">5%</span>
+  <span class="material-symbols-outlined text-outline">expand_more</span>
+</button></div>
+
+</div>
+<!-- Internal Reference (Bonus standard field) -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="ref">Internal Reference</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all" id="ref" placeholder="SKU or Barcode" type="text">
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Create & Edit Category Modal overlay -->
+<div class="fixed inset-0 bg-[#000000] bg-opacity-40 z-[100] hidden flex items-center justify-center p-4" id="category-modal">
+<!-- Modal Content -->
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-available-border flex flex-col">
+<!-- Modal Header -->
+<div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Category</h3>
+<button class="text-on-surface-variant hover:text-danger hover:bg-surface-container-low p-1 rounded-full transition-colors" onclick="document.getElementById('category-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-6 space-y-6">
+<!-- Category Name Input -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-1" for="cat_name">Category Name</label>
+<input class="w-full input-underline text-body-lg text-on-surface focus:ring-0" id="cat_name" placeholder="e.g. Food" type="text" value="Food">
+</div>
+<!-- Color Selection -->
+<div>
+<label class="block font-label-lg text-label-lg text-danger mb-2">Color</label>
+<div class="flex gap-3">
+<button class="w-8 h-8 rounded-full swatch-mint border-2 border-transparent hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary-container outline-none transition-all"></button>
+<button class="w-8 h-8 rounded-full swatch-pink border-2 border-transparent hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary-container outline-none transition-all"></button>
+<button class="w-8 h-8 rounded-full swatch-purple border-2 border-transparent hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary-container outline-none transition-all"></button>
+<button class="w-8 h-8 rounded-full swatch-yellow border-2 border-outline hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-container outline-none transition-all ring-2 ring-offset-1 ring-primary"></button>
+<button class="w-8 h-8 rounded-full swatch-blue border-2 border-transparent hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary-container outline-none transition-all"></button>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-4 border-t border-outline-variant bg-surface-container-low flex justify-start gap-3 rounded-b-xl">
+<button class="px-5 py-2 bg-primary-container text-on-primary-container rounded-lg font-label-lg text-label-lg hover:opacity-90 transition-opacity font-bold">Save</button>
+<button class="px-5 py-2 bg-surface text-on-surface border border-outline-variant rounded-lg font-label-lg text-label-lg hover:bg-surface-container-highest transition-colors" onclick="document.getElementById('category-modal').classList.add('hidden')">Discard</button>
+</div>
+</div>
+</div>
+
+
+</body></html>
