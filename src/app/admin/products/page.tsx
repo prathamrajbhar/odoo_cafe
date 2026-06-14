@@ -58,7 +58,8 @@ export default function ProductsPage() {
       
       const matchesCategory =
         !filters.categoryId ||
-        product.categoryId === filters.categoryId;
+        product.categoryId === filters.categoryId ||
+        product.category?.id === filters.categoryId;
 
       return matchesSearch && matchesCategory;
     });

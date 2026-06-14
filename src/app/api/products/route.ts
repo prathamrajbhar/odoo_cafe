@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { productCreateSchema } from "@/schemas/product";
 import { getAll, create } from "@/lib/db/products";
 import { getById as getCategoryById } from "@/lib/db/categories";
+import { getUnsplashImage } from "@/lib/unsplash";
 
 export async function GET() {
   const products = await getAll(false);
@@ -27,6 +28,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Category not found" }, { status: 400 });
   }
 
-  const product = await create({ name, categoryId, price, taxRate, stock: stock ?? 0, description });
+  const imageUrl = await getUnsplashImage(name);
+
+  const product = await create({ name, categoryId, price, taxRate, stock: stock ?? 0, description, imageUrl });
   return NextResponse.json({ data: { product } }, { status: 201 });
 }

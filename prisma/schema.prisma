@@ -97,6 +97,7 @@ model Product {
   taxRate     Int      @map("tax_rate")
   stock       Int      @default(0)
   description String?
+  imageUrl    String?  @map("image_url")
   isArchived  Boolean  @default(false) @map("is_archived")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -241,7 +242,7 @@ model OrderLine {
   appliedPromoId String?  @map("applied_promo_id")
   createdAt      DateTime @default(now()) @map("created_at")
 
-  order        Order          @relation(fields: [orderId], references: [id])
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product        @relation(fields: [productId], references: [id])
   appliedPromo Promotion?     @relation(fields: [appliedPromoId], references: [id])
   kdsItem      KdsTicketItem?
@@ -258,7 +259,7 @@ model KdsTicket {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  order Order           @relation(fields: [orderId], references: [id])
+  order Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   items KdsTicketItem[]
 
   @@map("kds_tickets")
@@ -270,8 +271,8 @@ model KdsTicketItem {
   orderLineId    String  @unique @map("order_line_id")
   isStruckThrough Boolean @default(false) @map("is_struck_through")
 
-  ticket    KdsTicket @relation(fields: [ticketId], references: [id])
-  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+  ticket    KdsTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
   @@map("kds_ticket_items")

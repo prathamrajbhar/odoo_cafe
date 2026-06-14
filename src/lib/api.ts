@@ -39,12 +39,7 @@ async function request<T>(
 
     // Auto redirect client-side requests on 401 unauthorized to login page,
     // but not for auth endpoints themselves (login/signup) — let them surface errors.
-    if (response.status === 401 && !isServer && !endpoint.includes("/auth/")) {
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      window.location.href = "/login";
-      throw new ApiError("Session expired. Redirecting to login...", 401);
-    }
-
+    const isUnauthorized = response.status === 401;
     let responseData: any = null;
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
@@ -53,9 +48,22 @@ async function request<T>(
       responseData = await response.text();
     }
 
+    const errorMsg =
+      responseData?.error || responseData?.message || response.statusText || "Request failed";
+
+    const isUserMissing =
+      errorMsg.includes("User does not exist") ||
+      errorMsg.includes("User not found");
+
+    if ((isUnauthorized || isUserMissing) && !isServer && !endpoint.includes("/auth/")) {
+      document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      window.location.href = "/login";
+      throw new ApiError("Session expired. Redirecting to login...", 401);
+    }
+
     if (!response.ok) {
-      const errorMsg =
-        responseData?.error || responseData?.message || response.statusText || "Request failed";
       throw new ApiError(errorMsg, response.status, responseData);
     }
 

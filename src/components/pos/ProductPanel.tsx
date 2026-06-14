@@ -18,6 +18,7 @@ interface Product {
   stock: number;
   category: Category;
   description: string | null;
+  imageUrl?: string | null;
 }
 
 interface ProductPanelProps {
@@ -191,7 +192,7 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({ selectedProductId, o
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredProducts.map((product) => {
-              const imageUrl = PRODUCT_IMAGES[product.name];
+              const imageUrl = product.imageUrl || PRODUCT_IMAGES[product.name];
               const outOfStock = product.stock === 0;
               const lowStock = product.stock > 0 && product.stock <= 5;
               const isSelected = selectedProductId === product.id;

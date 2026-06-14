@@ -11,6 +11,8 @@ import {
 } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { getUnsplashImage } from "../src/lib/unsplash";
 
 const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
@@ -142,81 +144,91 @@ async function main() {
   console.log("[seed] ✅ Categories created");
 
   // ── Products ──────────────────────────────────────────────────────────────────
+  const rawProductData = [
+    // Chai & Tea
+    { name: "Masala Chai",           categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Spiced tea with ginger, cardamom & milk" },
+    { name: "Adrak Chai",            categoryId: catChai.id,       price: 25,  taxRate: 5,  stock: 999, description: "Strong ginger-infused tea" },
+    { name: "Green Tea",             categoryId: catChai.id,       price: 40,  taxRate: 5,  stock: 999, description: "Darjeeling green tea" },
+    { name: "Kashmiri Kahwa",        categoryId: catChai.id,       price: 65,  taxRate: 5,  stock: 999, description: "Saffron & almond Kashmiri tea" },
+    { name: "Tulsi Chai",            categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Holy basil infused tea" },
+    { name: "Elaichi Chai",          categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Cardamom-rich tea" },
+
+    // Coffee
+    { name: "Filter Kaapi",          categoryId: catCoffee.id,     price: 45,  taxRate: 18, stock: 999, description: "South Indian drip coffee with chicory" },
+    { name: "Cappuccino",            categoryId: catCoffee.id,     price: 120, taxRate: 18, stock: 999, description: "Double espresso with steamed milk foam" },
+    { name: "Cold Coffee",           categoryId: catCoffee.id,     price: 110, taxRate: 18, stock: 999, description: "Chilled blended coffee with ice cream" },
+    { name: "Cafe Latte",            categoryId: catCoffee.id,     price: 130, taxRate: 18, stock: 999, description: "Espresso with silky steamed milk" },
+    { name: "Espresso",              categoryId: catCoffee.id,     price: 80,  taxRate: 18, stock: 999, description: "Rich single shot espresso" },
+    { name: "Iced Americano",        categoryId: catCoffee.id,     price: 100, taxRate: 18, stock: 999, description: "Espresso over ice with water" },
+
+    // Fresh Juices
+    { name: "Fresh Sugarcane Juice", categoryId: catJuices.id,     price: 40,  taxRate: 5,  stock: 999, description: "Chilled fresh-pressed sugarcane" },
+    { name: "Mango Lassi",           categoryId: catJuices.id,     price: 80,  taxRate: 5,  stock: 999, description: "Thick Alphonso mango yogurt drink" },
+    { name: "Nimbu Pani",            categoryId: catJuices.id,     price: 30,  taxRate: 5,  stock: 999, description: "Fresh lime water with black salt" },
+    { name: "Watermelon Juice",      categoryId: catJuices.id,     price: 60,  taxRate: 5,  stock: 999, description: "Seasonal fresh watermelon" },
+    { name: "Orange Juice",          categoryId: catJuices.id,     price: 70,  taxRate: 5,  stock: 999, description: "Freshly squeezed oranges" },
+    { name: "Coconut Water",         categoryId: catJuices.id,     price: 50,  taxRate: 5,  stock: 999, description: "Tender green coconut water" },
+
+    // Snacks
+    { name: "Samosa (2 pcs)",        categoryId: catSnacks.id,     price: 30,  taxRate: 5,  stock: 999, description: "Crispy potato-filled pastry with chutney" },
+    { name: "Aloo Tikki",            categoryId: catSnacks.id,     price: 50,  taxRate: 5,  stock: 999, description: "Pan-fried potato patty with tamarind chutney" },
+    { name: "Veg Sandwich",          categoryId: catSnacks.id,     price: 60,  taxRate: 5,  stock: 999, description: "Grilled with cucumber, tomato & green chutney" },
+    { name: "Pav Bhaji",             categoryId: catSnacks.id,     price: 80,  taxRate: 5,  stock: 999, description: "Spiced mixed vegetable mash with buttered pav" },
+    { name: "Bread Pakora",          categoryId: catSnacks.id,     price: 45,  taxRate: 5,  stock: 999, description: "Stuffed bread fritters with mint chutney" },
+    { name: "Bhel Puri",             categoryId: catSnacks.id,     price: 40,  taxRate: 5,  stock: 999, description: "Puffed rice with tangy tamarind chutney" },
+    { name: "Vada Pav",              categoryId: catSnacks.id,     price: 35,  taxRate: 5,  stock: 999, description: "Mumbai style spiced potato bun" },
+
+    // Breakfast
+    { name: "Masala Dosa",           categoryId: catBreakfast.id,  price: 90,  taxRate: 5,  stock: 999, description: "Crispy rice crepe with spiced potato filling" },
+    { name: "Idli Sambhar (3 pcs)",  categoryId: catBreakfast.id,  price: 70,  taxRate: 5,  stock: 999, description: "Steamed rice cakes with lentil stew" },
+    { name: "Poha",                  categoryId: catBreakfast.id,  price: 50,  taxRate: 5,  stock: 999, description: "Flattened rice with mustard seeds & curry leaves" },
+    { name: "Upma",                  categoryId: catBreakfast.id,  price: 55,  taxRate: 5,  stock: 999, description: "Semolina porridge with vegetables" },
+    { name: "Medu Vada (2 pcs)",     categoryId: catBreakfast.id,  price: 60,  taxRate: 5,  stock: 999, description: "Crispy lentil doughnuts with coconut chutney" },
+    { name: "Paratha",               categoryId: catBreakfast.id,  price: 70,  taxRate: 5,  stock: 999, description: "Whole wheat flatbread with butter & pickle" },
+
+    // Main Course
+    { name: "Dal Tadka",             categoryId: catMainCourse.id, price: 120, taxRate: 5,  stock: 999, description: "Yellow lentils tempered with cumin & garlic" },
+    { name: "Paneer Butter Masala",  categoryId: catMainCourse.id, price: 180, taxRate: 5,  stock: 999, description: "Cottage cheese in creamy tomato gravy" },
+    { name: "Chole Bhature",         categoryId: catMainCourse.id, price: 130, taxRate: 5,  stock: 999, description: "Spiced chickpea curry with fried bread" },
+    { name: "Rajma Chawal",          categoryId: catMainCourse.id, price: 110, taxRate: 5,  stock: 999, description: "Kidney bean curry with steamed basmati rice" },
+    { name: "Butter Naan",           categoryId: catMainCourse.id, price: 40,  taxRate: 5,  stock: 999, description: "Soft leavened bread with butter" },
+    { name: "Jeera Rice",            categoryId: catMainCourse.id, price: 80,  taxRate: 5,  stock: 999, description: "Fragrant basmati rice with cumin" },
+    { name: "Palak Paneer",          categoryId: catMainCourse.id, price: 170, taxRate: 5,  stock: 999, description: "Cottage cheese in creamy spinach gravy" },
+    { name: "Matar Paneer",          categoryId: catMainCourse.id, price: 160, taxRate: 5,  stock: 999, description: "Cottage cheese and peas in tomato gravy" },
+    { name: "Chicken Curry",         categoryId: catMainCourse.id, price: 200, taxRate: 5,  stock: 999, description: "Home-style chicken in spiced masala" },
+
+    // Biryani
+    { name: "Veg Dum Biryani",       categoryId: catBiryani.id,    price: 160, taxRate: 5,  stock: 999, description: "Slow-cooked aromatic basmati with vegetables" },
+    { name: "Chicken Biryani",       categoryId: catBiryani.id,    price: 220, taxRate: 5,  stock: 999, description: "Hyderabadi style dum chicken biryani" },
+    { name: "Mutton Biryani",        categoryId: catBiryani.id,    price: 280, taxRate: 5,  stock: 999, description: "Lucknowi style slow-cooked mutton biryani" },
+    { name: "Prawn Biryani",         categoryId: catBiryani.id,    price: 260, taxRate: 5,  stock: 999, description: "Coastal style prawn biryani" },
+    { name: "Egg Biryani",           categoryId: catBiryani.id,    price: 180, taxRate: 5,  stock: 999, description: "Aromatic egg biryani with raita" },
+
+    // Desserts
+    { name: "Gulab Jamun (2 pcs)",   categoryId: catDesserts.id,   price: 60,  taxRate: 5,  stock: 999, description: "Soft milk-solid dumplings in rose syrup" },
+    { name: "Kulfi",                 categoryId: catDesserts.id,   price: 70,  taxRate: 5,  stock: 999, description: "Traditional Indian ice cream — kesar pista" },
+    { name: "Gajar Halwa",           categoryId: catDesserts.id,   price: 80,  taxRate: 5,  stock: 999, description: "Slow-cooked carrot pudding with khoya & nuts" },
+    { name: "Rasgulla",              categoryId: catDesserts.id,   price: 50,  taxRate: 5,  stock: 999, description: "Spongy cottage cheese balls in light sugar syrup" },
+    { name: "Kheer",                 categoryId: catDesserts.id,   price: 65,  taxRate: 5,  stock: 999, description: "Creamy rice pudding with saffron & pistachios" },
+    { name: "Jalebi",                categoryId: catDesserts.id,   price: 55,  taxRate: 5,  stock: 999, description: "Crispy fermented wheat spirals in sugar syrup" },
+
+    // Milkshakes
+    { name: "Chocolate Milkshake",   categoryId: catMilkshakes.id, price: 100, taxRate: 18, stock: 999, description: "Thick Belgian chocolate milkshake" },
+    { name: "Strawberry Milkshake",  categoryId: catMilkshakes.id, price: 100, taxRate: 18, stock: 999, description: "Fresh strawberry milkshake" },
+    { name: "Banana Milkshake",      categoryId: catMilkshakes.id, price: 90,  taxRate: 18, stock: 999, description: "Rich banana milkshake" },
+    { name: "Oreo Milkshake",        categoryId: catMilkshakes.id, price: 120, taxRate: 18, stock: 999, description: "Creamy Oreo cookie milkshake" },
+  ];
+
+  console.log("[seed] 🖼 Fetching product images from Unsplash...");
+  const dataWithImages = await Promise.all(
+    rawProductData.map(async (p) => {
+      const imageUrl = await getUnsplashImage(p.name);
+      return { ...p, imageUrl };
+    })
+  );
+
   const products = await prisma.product.createManyAndReturn({
-    data: [
-      // Chai & Tea
-      { name: "Masala Chai",           categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Spiced tea with ginger, cardamom & milk" },
-      { name: "Adrak Chai",            categoryId: catChai.id,       price: 25,  taxRate: 5,  stock: 999, description: "Strong ginger-infused tea" },
-      { name: "Green Tea",             categoryId: catChai.id,       price: 40,  taxRate: 5,  stock: 999, description: "Darjeeling green tea" },
-      { name: "Kashmiri Kahwa",        categoryId: catChai.id,       price: 65,  taxRate: 5,  stock: 999, description: "Saffron & almond Kashmiri tea" },
-      { name: "Tulsi Chai",            categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Holy basil infused tea" },
-      { name: "Elaichi Chai",          categoryId: catChai.id,       price: 30,  taxRate: 5,  stock: 999, description: "Cardamom-rich tea" },
-
-      // Coffee
-      { name: "Filter Kaapi",          categoryId: catCoffee.id,     price: 45,  taxRate: 18, stock: 999, description: "South Indian drip coffee with chicory" },
-      { name: "Cappuccino",            categoryId: catCoffee.id,     price: 120, taxRate: 18, stock: 999, description: "Double espresso with steamed milk foam" },
-      { name: "Cold Coffee",           categoryId: catCoffee.id,     price: 110, taxRate: 18, stock: 999, description: "Chilled blended coffee with ice cream" },
-      { name: "Cafe Latte",            categoryId: catCoffee.id,     price: 130, taxRate: 18, stock: 999, description: "Espresso with silky steamed milk" },
-      { name: "Espresso",              categoryId: catCoffee.id,     price: 80,  taxRate: 18, stock: 999, description: "Rich single shot espresso" },
-      { name: "Iced Americano",        categoryId: catCoffee.id,     price: 100, taxRate: 18, stock: 999, description: "Espresso over ice with water" },
-
-      // Fresh Juices
-      { name: "Fresh Sugarcane Juice", categoryId: catJuices.id,     price: 40,  taxRate: 5,  stock: 999, description: "Chilled fresh-pressed sugarcane" },
-      { name: "Mango Lassi",           categoryId: catJuices.id,     price: 80,  taxRate: 5,  stock: 999, description: "Thick Alphonso mango yogurt drink" },
-      { name: "Nimbu Pani",            categoryId: catJuices.id,     price: 30,  taxRate: 5,  stock: 999, description: "Fresh lime water with black salt" },
-      { name: "Watermelon Juice",      categoryId: catJuices.id,     price: 60,  taxRate: 5,  stock: 999, description: "Seasonal fresh watermelon" },
-      { name: "Orange Juice",          categoryId: catJuices.id,     price: 70,  taxRate: 5,  stock: 999, description: "Freshly squeezed oranges" },
-      { name: "Coconut Water",         categoryId: catJuices.id,     price: 50,  taxRate: 5,  stock: 999, description: "Tender green coconut water" },
-
-      // Snacks
-      { name: "Samosa (2 pcs)",        categoryId: catSnacks.id,     price: 30,  taxRate: 5,  stock: 999, description: "Crispy potato-filled pastry with chutney" },
-      { name: "Aloo Tikki",            categoryId: catSnacks.id,     price: 50,  taxRate: 5,  stock: 999, description: "Pan-fried potato patty with tamarind chutney" },
-      { name: "Veg Sandwich",          categoryId: catSnacks.id,     price: 60,  taxRate: 5,  stock: 999, description: "Grilled with cucumber, tomato & green chutney" },
-      { name: "Pav Bhaji",             categoryId: catSnacks.id,     price: 80,  taxRate: 5,  stock: 999, description: "Spiced mixed vegetable mash with buttered pav" },
-      { name: "Bread Pakora",          categoryId: catSnacks.id,     price: 45,  taxRate: 5,  stock: 999, description: "Stuffed bread fritters with mint chutney" },
-      { name: "Bhel Puri",             categoryId: catSnacks.id,     price: 40,  taxRate: 5,  stock: 999, description: "Puffed rice with tangy tamarind chutney" },
-      { name: "Vada Pav",              categoryId: catSnacks.id,     price: 35,  taxRate: 5,  stock: 999, description: "Mumbai style spiced potato bun" },
-
-      // Breakfast
-      { name: "Masala Dosa",           categoryId: catBreakfast.id,  price: 90,  taxRate: 5,  stock: 999, description: "Crispy rice crepe with spiced potato filling" },
-      { name: "Idli Sambhar (3 pcs)",  categoryId: catBreakfast.id,  price: 70,  taxRate: 5,  stock: 999, description: "Steamed rice cakes with lentil stew" },
-      { name: "Poha",                  categoryId: catBreakfast.id,  price: 50,  taxRate: 5,  stock: 999, description: "Flattened rice with mustard seeds & curry leaves" },
-      { name: "Upma",                  categoryId: catBreakfast.id,  price: 55,  taxRate: 5,  stock: 999, description: "Semolina porridge with vegetables" },
-      { name: "Medu Vada (2 pcs)",     categoryId: catBreakfast.id,  price: 60,  taxRate: 5,  stock: 999, description: "Crispy lentil doughnuts with coconut chutney" },
-      { name: "Paratha",               categoryId: catBreakfast.id,  price: 70,  taxRate: 5,  stock: 999, description: "Whole wheat flatbread with butter & pickle" },
-
-      // Main Course
-      { name: "Dal Tadka",             categoryId: catMainCourse.id, price: 120, taxRate: 5,  stock: 999, description: "Yellow lentils tempered with cumin & garlic" },
-      { name: "Paneer Butter Masala",  categoryId: catMainCourse.id, price: 180, taxRate: 5,  stock: 999, description: "Cottage cheese in creamy tomato gravy" },
-      { name: "Chole Bhature",         categoryId: catMainCourse.id, price: 130, taxRate: 5,  stock: 999, description: "Spiced chickpea curry with fried bread" },
-      { name: "Rajma Chawal",          categoryId: catMainCourse.id, price: 110, taxRate: 5,  stock: 999, description: "Kidney bean curry with steamed basmati rice" },
-      { name: "Butter Naan",           categoryId: catMainCourse.id, price: 40,  taxRate: 5,  stock: 999, description: "Soft leavened bread with butter" },
-      { name: "Jeera Rice",            categoryId: catMainCourse.id, price: 80,  taxRate: 5,  stock: 999, description: "Fragrant basmati rice with cumin" },
-      { name: "Palak Paneer",          categoryId: catMainCourse.id, price: 170, taxRate: 5,  stock: 999, description: "Cottage cheese in creamy spinach gravy" },
-      { name: "Matar Paneer",          categoryId: catMainCourse.id, price: 160, taxRate: 5,  stock: 999, description: "Cottage cheese and peas in tomato gravy" },
-      { name: "Chicken Curry",         categoryId: catMainCourse.id, price: 200, taxRate: 5,  stock: 999, description: "Home-style chicken in spiced masala" },
-
-      // Biryani
-      { name: "Veg Dum Biryani",       categoryId: catBiryani.id,    price: 160, taxRate: 5,  stock: 999, description: "Slow-cooked aromatic basmati with vegetables" },
-      { name: "Chicken Biryani",       categoryId: catBiryani.id,    price: 220, taxRate: 5,  stock: 999, description: "Hyderabadi style dum chicken biryani" },
-      { name: "Mutton Biryani",        categoryId: catBiryani.id,    price: 280, taxRate: 5,  stock: 999, description: "Lucknowi style slow-cooked mutton biryani" },
-      { name: "Prawn Biryani",         categoryId: catBiryani.id,    price: 260, taxRate: 5,  stock: 999, description: "Coastal style prawn biryani" },
-      { name: "Egg Biryani",           categoryId: catBiryani.id,    price: 180, taxRate: 5,  stock: 999, description: "Aromatic egg biryani with raita" },
-
-      // Desserts
-      { name: "Gulab Jamun (2 pcs)",   categoryId: catDesserts.id,   price: 60,  taxRate: 5,  stock: 999, description: "Soft milk-solid dumplings in rose syrup" },
-      { name: "Kulfi",                 categoryId: catDesserts.id,   price: 70,  taxRate: 5,  stock: 999, description: "Traditional Indian ice cream — kesar pista" },
-      { name: "Gajar Halwa",           categoryId: catDesserts.id,   price: 80,  taxRate: 5,  stock: 999, description: "Slow-cooked carrot pudding with khoya & nuts" },
-      { name: "Rasgulla",              categoryId: catDesserts.id,   price: 50,  taxRate: 5,  stock: 999, description: "Spongy cottage cheese balls in light sugar syrup" },
-      { name: "Kheer",                 categoryId: catDesserts.id,   price: 65,  taxRate: 5,  stock: 999, description: "Creamy rice pudding with saffron & pistachios" },
-      { name: "Jalebi",                categoryId: catDesserts.id,   price: 55,  taxRate: 5,  stock: 999, description: "Crispy fermented wheat spirals in sugar syrup" },
-
-      // Milkshakes
-      { name: "Chocolate Milkshake",   categoryId: catMilkshakes.id, price: 100, taxRate: 18, stock: 999, description: "Thick Belgian chocolate milkshake" },
-      { name: "Strawberry Milkshake",  categoryId: catMilkshakes.id, price: 100, taxRate: 18, stock: 999, description: "Fresh strawberry milkshake" },
-      { name: "Banana Milkshake",      categoryId: catMilkshakes.id, price: 90,  taxRate: 18, stock: 999, description: "Rich banana milkshake" },
-      { name: "Oreo Milkshake",        categoryId: catMilkshakes.id, price: 120, taxRate: 18, stock: 999, description: "Creamy Oreo cookie milkshake" },
-    ],
+    data: dataWithImages,
   });
 
   console.log(`[seed] ✅ ${products.length} products created`);
@@ -233,27 +245,30 @@ async function main() {
   const fFloor  = await prisma.floor.create({ data: { name: "First Floor" } });
   const terrace = await prisma.floor.create({ data: { name: "Terrace" } });
 
-  const gTables = await Promise.all(
-    [
-      { number: 1, seats: 2 }, { number: 2, seats: 2 }, { number: 3, seats: 4 },
-      { number: 4, seats: 4 }, { number: 5, seats: 6 }, { number: 6, seats: 8 },
-      { number: 7, seats: 4 }, { number: 8, seats: 4 },
-    ].map((t) => prisma.table.create({ data: { ...t, floorId: gFloor.id, isActive: true } }))
-  );
+  const gTables = [];
+  for (const t of [
+    { number: 1, seats: 2 }, { number: 2, seats: 2 }, { number: 3, seats: 4 },
+    { number: 4, seats: 4 }, { number: 5, seats: 6 }, { number: 6, seats: 8 },
+    { number: 7, seats: 4 }, { number: 8, seats: 4 },
+  ]) {
+    gTables.push(await prisma.table.create({ data: { ...t, floorId: gFloor.id, isActive: true } }));
+  }
 
-  const fTables = await Promise.all(
-    [
-      { number: 9, seats: 4 }, { number: 10, seats: 4 }, { number: 11, seats: 6 },
-      { number: 12, seats: 6 }, { number: 13, seats: 2 }, { number: 14, seats: 2 },
-    ].map((t) => prisma.table.create({ data: { ...t, floorId: fFloor.id, isActive: true } }))
-  );
+  const fTables = [];
+  for (const t of [
+    { number: 9, seats: 4 }, { number: 10, seats: 4 }, { number: 11, seats: 6 },
+    { number: 12, seats: 6 }, { number: 13, seats: 2 }, { number: 14, seats: 2 },
+  ]) {
+    fTables.push(await prisma.table.create({ data: { ...t, floorId: fFloor.id, isActive: true } }));
+  }
 
-  const tTables = await Promise.all(
-    [
-      { number: 15, seats: 4 }, { number: 16, seats: 4 }, { number: 17, seats: 6 },
-      { number: 18, seats: 4 },
-    ].map((t) => prisma.table.create({ data: { ...t, floorId: terrace.id, isActive: true } }))
-  );
+  const tTables = [];
+  for (const t of [
+    { number: 15, seats: 4 }, { number: 16, seats: 4 }, { number: 17, seats: 6 },
+    { number: 18, seats: 4 },
+  ]) {
+    tTables.push(await prisma.table.create({ data: { ...t, floorId: terrace.id, isActive: true } }));
+  }
 
   const allTables = [...gTables, ...fTables, ...tTables];
 
@@ -345,33 +360,41 @@ async function main() {
   console.log("[seed] ✅ Promotions created");
 
   // ── Customers ─────────────────────────────────────────────────────────────────
-  const customers = await Promise.all([
-    prisma.customer.create({ data: { name: "Kavya Reddy",      email: "kavya.reddy@gmail.com",     phone: "9876543210" } }),
-    prisma.customer.create({ data: { name: "Amit Joshi",       email: "amit.joshi@yahoo.co.in",    phone: "9845012345" } }),
-    prisma.customer.create({ data: { name: "Neha Singh",       email: "neha.singh@outlook.com",    phone: "7890123456" } }),
-    prisma.customer.create({ data: { name: "Suresh Kumar",     phone: "9012345678" } }),
-    prisma.customer.create({ data: { name: "Meera Nair",       email: "meera.nair@gmail.com",      phone: "8765432109" } }),
-    prisma.customer.create({ data: { name: "Vikas Agarwal",    email: "vikas.agarwal@gmail.com" } }),
-    prisma.customer.create({ data: { name: "Pooja Iyer",       phone: "9543210987" } }),
-    prisma.customer.create({ data: { name: "Rahul Desai",      email: "rahul.desai@hotmail.com",   phone: "9321456789" } }),
-    prisma.customer.create({ data: { name: "Anjali Verma",     email: "anjali.verma@gmail.com",    phone: "9988776655" } }),
-    prisma.customer.create({ data: { name: "Sanjay Gupta",     phone: "9112233445" } }),
-    prisma.customer.create({ data: { name: "Rekha Pillai",     email: "rekha.pillai@gmail.com",    phone: "8899001122" } }),
-    prisma.customer.create({ data: { name: "Manoj Tiwari",     email: "manoj.tiwari@yahoo.co.in",  phone: "9765432100" } }),
-    prisma.customer.create({ data: { name: "Deepika Chopra",   email: "deepika.c@gmail.com",       phone: "8123456789" } }),
-    prisma.customer.create({ data: { name: "Kiran Bose",       phone: "7012345678" } }),
-    prisma.customer.create({ data: { name: "Ravi Shankar",     email: "ravi.shankar@gmail.com",    phone: "9456789012" } }),
-    prisma.customer.create({ data: { name: "Sunita Krishnan",  email: "sunita.k@outlook.com" } }),
-    prisma.customer.create({ data: { name: "Harish Pandey",    phone: "9234567890" } }),
-    prisma.customer.create({ data: { name: "Lalitha Menon",    email: "lalitha.menon@gmail.com",   phone: "8901234567" } }),
-    prisma.customer.create({ data: { name: "Gopal Rao",        email: "gopal.rao@yahoo.co.in",     phone: "9678901234" } }),
-    prisma.customer.create({ data: { name: "Swati Bhatt",      email: "swati.bhatt@gmail.com",     phone: "7890001234" } }),
-  ]);
+  const customers = [];
+  for (const cData of [
+    { name: "Kavya Reddy",      email: "kavya.reddy@gmail.com",     phone: "9876543210" },
+    { name: "Amit Joshi",       email: "amit.joshi@yahoo.co.in",    phone: "9845012345" },
+    { name: "Neha Singh",       email: "neha.singh@outlook.com",    phone: "7890123456" },
+    { name: "Suresh Kumar",     phone: "9012345678" },
+    { name: "Meera Nair",       email: "meera.nair@gmail.com",      phone: "8765432109" },
+    { name: "Vikas Agarwal",    email: "vikas.agarwal@gmail.com" },
+    { name: "Pooja Iyer",       phone: "9543210987" },
+    { name: "Rahul Desai",      email: "rahul.desai@hotmail.com",   phone: "9321456789" },
+    { name: "Anjali Verma",     email: "anjali.verma@gmail.com",    phone: "9988776655" },
+    { name: "Sanjay Gupta",     phone: "9112233445" },
+    { name: "Rekha Pillai",     email: "rekha.pillai@gmail.com",    phone: "8899001122" },
+    { name: "Manoj Tiwari",     email: "manoj.tiwari@yahoo.co.in",  phone: "9765432100" },
+    { name: "Deepika Chopra",   email: "deepika.c@gmail.com",       phone: "8123456789" },
+    { name: "Kiran Bose",       phone: "7012345678" },
+    { name: "Ravi Shankar",     email: "ravi.shankar@gmail.com",    phone: "9456789012" },
+    { name: "Sunita Krishnan",  email: "sunita.k@outlook.com" },
+    { name: "Harish Pandey",    phone: "9234567890" },
+    { name: "Lalitha Menon",    email: "lalitha.menon@gmail.com",   phone: "8901234567" },
+    { name: "Gopal Rao",        email: "gopal.rao@yahoo.co.in",     phone: "9678901234" },
+    { name: "Swati Bhatt",      email: "swati.bhatt@gmail.com",     phone: "7890001234" },
+  ]) {
+    customers.push(await prisma.customer.create({ data: cData }));
+  }
 
   console.log(`[seed] ✅ ${customers.length} customers created`);
 
   // ── Order helper ──────────────────────────────────────────────────────────────
-  async function createOrder(
+  const ordersToInsert: any[] = [];
+  const orderLinesToInsert: any[] = [];
+  const kdsTicketsToInsert: any[] = [];
+  const kdsTicketItemsToInsert: any[] = [];
+
+  function queueOrder(
     sessionId: string,
     tableId: string,
     employeeId: string,
@@ -392,7 +415,11 @@ async function main() {
 
     const total = Math.round((subtotal + taxAmount) * 100) / 100;
 
-    const orderData: Parameters<typeof prisma.order.create>[0]["data"] = {
+    const orderId = crypto.randomUUID();
+    const createdTime = createdAt || new Date();
+
+    ordersToInsert.push({
+      id: orderId,
       orderNumber: nextOrderNumber(),
       sessionId,
       tableId,
@@ -403,51 +430,43 @@ async function main() {
       taxAmount: Math.round(taxAmount * 100) / 100,
       discountAmount: 0,
       total,
-    };
+      createdAt: createdTime,
+      updatedAt: createdTime,
+    });
 
-    if (createdAt) {
-      (orderData as Record<string, unknown>).createdAt = createdAt;
-    }
-
-    const order = await prisma.order.create({ data: orderData });
-
-    const orderLines = await Promise.all(
-      lines.map((line) =>
-        prisma.orderLine.create({
-          data: {
-            orderId: order.id,
-            productId: line.product.id,
-            qty: line.qty,
-            unitPrice: Number(line.product.price),
-            lineTotal: Number(line.product.price) * line.qty,
-          },
-        })
-      )
-    );
+    const linesWithIds = lines.map((line) => {
+      const lineId = crypto.randomUUID();
+      orderLinesToInsert.push({
+        id: lineId,
+        orderId,
+        productId: line.product.id,
+        qty: line.qty,
+        unitPrice: Number(line.product.price),
+        lineTotal: Number(line.product.price) * line.qty,
+        createdAt: createdTime,
+      });
+      return { id: lineId };
+    });
 
     if (status !== OrderStatus.CANCELLED) {
-      const ticket = await prisma.kdsTicket.create({
-        data: {
-          orderId: order.id,
-          status: status === OrderStatus.PAID ? KDSStatus.COMPLETED : KDSStatus.TO_COOK,
-          ...(createdAt ? { createdAt } : {}),
-        },
+      const ticketId = crypto.randomUUID();
+      kdsTicketsToInsert.push({
+        id: ticketId,
+        orderId,
+        status: status === OrderStatus.PAID ? KDSStatus.COMPLETED : KDSStatus.TO_COOK,
+        createdAt: createdTime,
+        updatedAt: createdTime,
       });
 
-      await Promise.all(
-        orderLines.map((ol) =>
-          prisma.kdsTicketItem.create({
-            data: {
-              ticketId: ticket.id,
-              orderLineId: ol.id,
-              isStruckThrough: status === OrderStatus.PAID,
-            },
-          })
-        )
-      );
+      for (const ol of linesWithIds) {
+        kdsTicketItemsToInsert.push({
+          id: crypto.randomUUID(),
+          ticketId,
+          orderLineId: ol.id,
+          isStruckThrough: status === OrderStatus.PAID,
+        });
+      }
     }
-
-    return order;
   }
 
   // ── Product lookup helper ─────────────────────────────────────────────────────
@@ -625,7 +644,7 @@ async function main() {
 
       const lines = buildMealLines(mealWindow.type, table.seats);
 
-      await createOrder(
+      queueOrder(
         session.id,
         table.id,
         employee.id,
@@ -638,7 +657,7 @@ async function main() {
     }
   }
 
-  console.log(`[seed] ✅ Generated ${totalOrders} historical orders across 92 days`);
+  console.log(`[seed] ✅ Generated ${totalOrders} historical orders in-memory`);
 
   // ── Today's active session (14 June 2026) ────────────────────────────────────
   const todaySession = await prisma.session.create({
@@ -649,36 +668,36 @@ async function main() {
   });
 
   // 6 paid orders already done this morning
-  await createOrder(todaySession.id, gTables[0].id, emp1.id, customers[0].id, [
+  queueOrder(todaySession.id, gTables[0].id, emp1.id, customers[0].id, [
     { product: p("Masala Chai"),     qty: 2 },
     { product: p("Masala Dosa"),     qty: 2 },
     { product: p("Samosa (2 pcs)"), qty: 1 },
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 9, 10));
 
-  await createOrder(todaySession.id, gTables[2].id, emp2.id, customers[1].id, [
+  queueOrder(todaySession.id, gTables[2].id, emp2.id, customers[1].id, [
     { product: p("Filter Kaapi"),    qty: 2 },
     { product: p("Idli Sambhar (3 pcs)"), qty: 2 },
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 9, 30));
 
-  await createOrder(todaySession.id, fTables[0].id, emp1.id, customers[3].id, [
+  queueOrder(todaySession.id, fTables[0].id, emp1.id, customers[3].id, [
     { product: p("Cappuccino"),      qty: 3 },
     { product: p("Veg Sandwich"),    qty: 3 },
     { product: p("Gulab Jamun (2 pcs)"), qty: 2 },
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 10, 15));
 
-  await createOrder(todaySession.id, gTables[4].id, emp3.id, null, [
+  queueOrder(todaySession.id, gTables[4].id, emp3.id, null, [
     { product: p("Adrak Chai"),      qty: 4 },
     { product: p("Bread Pakora"),    qty: 2 },
     { product: p("Bhel Puri"),       qty: 2 },
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 10, 45));
 
-  await createOrder(todaySession.id, tTables[0].id, emp2.id, customers[5].id, [
+  queueOrder(todaySession.id, tTables[0].id, emp2.id, customers[5].id, [
     { product: p("Chicken Biryani"), qty: 2 },
     { product: p("Mango Lassi"),     qty: 2 },
     { product: p("Kulfi"),           qty: 2 },
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 12, 0));
 
-  await createOrder(todaySession.id, fTables[1].id, emp1.id, customers[8].id, [
+  queueOrder(todaySession.id, fTables[1].id, emp1.id, customers[8].id, [
     { product: p("Paneer Butter Masala"), qty: 2 },
     { product: p("Butter Naan"),         qty: 4 },
     { product: p("Jeera Rice"),          qty: 1 },
@@ -686,20 +705,29 @@ async function main() {
   ], OrderStatus.PAID, dateAt(2026, 6, 14, 13, 0));
 
   // 3 active DRAFT orders (currently being served)
-  await createOrder(todaySession.id, gTables[1].id, admin.id, customers[2].id, [
+  queueOrder(todaySession.id, gTables[1].id, admin.id, customers[2].id, [
     { product: p("Masala Chai"),     qty: 2 },
     { product: p("Poha"),            qty: 2 },
   ], OrderStatus.DRAFT, dateAt(2026, 6, 14, 14, 30));
 
-  await createOrder(todaySession.id, gTables[3].id, emp3.id, customers[7].id, [
+  queueOrder(todaySession.id, gTables[3].id, emp3.id, customers[7].id, [
     { product: p("Cold Coffee"),     qty: 2 },
     { product: p("Vada Pav"),        qty: 3 },
   ], OrderStatus.DRAFT, dateAt(2026, 6, 14, 14, 45));
 
-  await createOrder(todaySession.id, fTables[2].id, emp2.id, null, [
+  queueOrder(todaySession.id, fTables[2].id, emp2.id, null, [
     { product: p("Mutton Biryani"),  qty: 2 },
     { product: p("Rasgulla"),        qty: 2 },
   ], OrderStatus.DRAFT, dateAt(2026, 6, 14, 15, 0));
+
+  console.log(`[seed] 📥 Bulk inserting ${ordersToInsert.length} orders...`);
+  await prisma.order.createMany({ data: ordersToInsert });
+  console.log(`[seed] 📥 Bulk inserting ${orderLinesToInsert.length} order lines...`);
+  await prisma.orderLine.createMany({ data: orderLinesToInsert });
+  console.log(`[seed] 📥 Bulk inserting ${kdsTicketsToInsert.length} KDS tickets...`);
+  await prisma.kdsTicket.createMany({ data: kdsTicketsToInsert });
+  console.log(`[seed] 📥 Bulk inserting ${kdsTicketItemsToInsert.length} KDS ticket items...`);
+  await prisma.kdsTicketItem.createMany({ data: kdsTicketItemsToInsert });
 
   console.log("[seed] ✅ Today's active session with 9 orders (6 paid + 3 draft) created");
 
