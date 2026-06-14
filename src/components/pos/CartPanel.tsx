@@ -371,30 +371,25 @@ const CartFooter: React.FC<CartFooterProps> = ({
     </button>
 
     {/* Action buttons */}
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 gap-2">
       <button
         onClick={onCustomer}
-        className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer active:scale-95"
+        className="flex items-center justify-center gap-2 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer active:scale-95 font-bold text-label-md"
       >
-        <svg className="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5a3 3 0 11-6 0 3 3 0 016 0zM12 11.25a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H12.75a.75.75 0 01-.75-.75v-.008zM19 15.75c0-1.242-1.008-2.25-2.25-2.25h-4.5c-1.242 0-2.25 1.008-2.25 2.25v2.25h9v-2.25z" />
         </svg>
-        <span className="text-[10px] font-bold">Customer</span>
+        <span>Customer</span>
       </button>
       <button
         onClick={onDiscount}
-        className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer active:scale-95"
+        className="flex items-center justify-center gap-2 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer active:scale-95 font-bold text-label-md"
       >
-        <svg className="w-4 h-4 mb-1 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a1.43 1.43 0 002.022 0l4.319-4.319a1.43 1.43 0 000-2.022l-9.58-9.581A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 7.5h.008v.008H6V7.5z" /></svg>
-        <span className="text-[10px] font-bold">Discount</span>
-      </button>
-      <button
-        className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[#4dd0e1] text-white hover:bg-[#26c6da] transition-all cursor-pointer active:scale-95"
-      >
-        <svg className="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        <svg className="w-4 h-4 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a1.43 1.43 0 002.022 0l4.319-4.319a1.43 1.43 0 000-2.022l-9.58-9.581A2.25 2.25 0 009.568 3z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 7.5h.008v.008H6V7.5z" />
         </svg>
-        <span className="text-[10px] font-bold">Send</span>
+        <span>Discount</span>
       </button>
     </div>
   </div>

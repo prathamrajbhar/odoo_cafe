@@ -10,7 +10,7 @@ export function getBySession(sessionId: string) {
       customer: { select: { id: true, name: true } },
       table: { select: { id: true, number: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { orderNumber: "desc" },
   });
 }
 

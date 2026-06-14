@@ -222,7 +222,7 @@ export default function KdsPage() {
       );
     }
 
-    return list.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return list.slice().sort((a, b) => b.orderNumber.localeCompare(a.orderNumber));
   }, [allTickets, tab, selectedCategories, search]);
 
   const handleCategoryToggle = useCallback((id: string) => {
