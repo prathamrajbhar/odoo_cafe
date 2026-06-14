@@ -14,6 +14,15 @@ export interface CategoryFormProps {
   onSuccess: (newCategory: any) => void;
 }
 
+const PRESET_COLORS = [
+  { name: "Odoo Purple", hex: "#57344f" },
+  { name: "Secondary Teal", hex: "#00696e" },
+  { name: "Success Green", hex: "#28a745" },
+  { name: "Warning Yellow", hex: "#ffc107" },
+  { name: "Danger Red", hex: "#dc3545" },
+  { name: "Dark Purple", hex: "#714b67" },
+];
+
 export const CategoryForm: React.FC<CategoryFormProps> = ({
   isOpen,
   onClose,
@@ -23,16 +32,6 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
   const [colorHex, setColorHex] = useState("#57344f"); // Default to Odoo Purple
   const [errors, setErrors] = useState<{ name?: string; colorHex?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-
-  const swatches = [
-    { name: "Odoo Purple", hex: "#57344f" },
-    { name: "Secondary Teal", hex: "#00696e" },
-    { name: "Success Green", hex: "#28a745" },
-    { name: "Warning Yellow", hex: "#ffc107" },
-    { name: "Danger Red", hex: "#dc3545" },
-    { name: "Dark Purple", hex: "#714b67" },
-    { name: "Soft Pink", hex: "#fff0f3" },
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +75,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
             Cancel
           </Button>
           <Button variant="primary" onClick={handleSubmit} isLoading={isLoading}>
-            Create
+            Create Category
           </Button>
         </>
       }
@@ -87,28 +86,34 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           label="Category Name"
           placeholder="e.g. Cold Drinks, Pastries"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (errors.name) setErrors((p) => ({ ...p, name: undefined }));
+          }}
           error={errors.name}
           disabled={isLoading}
           required
         />
 
         {/* Color Hex Input & Swatches */}
-        <div className="space-y-2">
-          <label className="text-label-md text-on-surface-variant font-semibold select-none block">
+        <div className="space-y-2.5">
+          <label className="text-label-md text-on-surface font-semibold select-none block">
             Category Accent Color
           </label>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2.5 items-center">
             {/* Color Swatch Preview Indicator */}
             <div
-              className="h-10 w-10 rounded-default border border-available-border flex-shrink-0"
+              className="h-10 w-10 rounded-lg border border-available-border flex-shrink-0 shadow-sm transition-colors duration-200"
               style={{ backgroundColor: colorHex }}
             />
             <Input
               type="text"
               placeholder="#57344f"
               value={colorHex}
-              onChange={(e) => setColorHex(e.target.value)}
+              onChange={(e) => {
+                setColorHex(e.target.value);
+                if (errors.colorHex) setErrors((p) => ({ ...p, colorHex: undefined }));
+              }}
               error={errors.colorHex}
               disabled={isLoading}
               className="font-mono"
@@ -121,23 +126,26 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
             <span className="text-xs text-on-surface-variant/70 font-semibold block mb-2 select-none">
               Quick select:
             </span>
-            <div className="flex flex-wrap gap-2">
-              {swatches.map((swatch) => (
-                <button
-                  key={swatch.hex}
-                  type="button"
-                  onClick={() => setColorHex(swatch.hex)}
-                  title={swatch.name}
-                  className={`h-7 w-7 rounded-full border transition-transform cursor-pointer hover:scale-110 active:scale-95
-                    ${
-                      colorHex.toLowerCase() === swatch.hex.toLowerCase()
-                        ? "border-primary ring-2 ring-primary/20 scale-105"
-                        : "border-available-border"
-                    }
-                  `}
-                  style={{ backgroundColor: swatch.hex }}
-                />
-              ))}
+            <div className="flex flex-wrap gap-2.5">
+              {PRESET_COLORS.map((swatch) => {
+                const isSelected = colorHex.toLowerCase() === swatch.hex.toLowerCase();
+                return (
+                  <button
+                    key={swatch.hex}
+                    type="button"
+                    onClick={() => setColorHex(swatch.hex)}
+                    title={swatch.name}
+                    className={`h-7 w-7 rounded-full border transition-all cursor-pointer hover:scale-110 active:scale-95
+                      ${
+                        isSelected
+                          ? "border-primary ring-2 ring-primary/20 scale-105 shadow-sm"
+                          : "border-outline-variant hover:border-on-surface"
+                      }
+                    `}
+                    style={{ backgroundColor: swatch.hex }}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

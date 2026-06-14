@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { update } from "@/lib/db/paymentMethods";
+import { update, remove } from "@/lib/db/paymentMethods";
 import { z } from "zod";
 
 const updatePaymentMethodSchema = z.object({
+  name: z.string().min(1).optional(),
   isActive: z.boolean().optional(),
   upiId: z.string().nullable().optional(),
 });
@@ -19,12 +20,31 @@ export async function PUT(req: NextRequest, { params }: Params) {
   const body = await req.json().catch(() => null);
   const parsed = updatePaymentMethodSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error.errors[0].message },
+      { status: 400 }
+    );
   }
 
   try {
     const updated = await update(id, parsed.data);
     return NextResponse.json({ data: { method: updated } });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
+}
+
+export async function DELETE(req: NextRequest, { params }: Params) {
+  const role = req.headers.get("x-user-role");
+  if (role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { id } = await params;
+
+  try {
+    await remove(id);
+    return NextResponse.json({ data: { success: true } });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }

@@ -141,22 +141,32 @@ export default function KdsPage() {
 
   // ── Toggle item strikethrough ────────────────────────────────────────────
   const handleToggleItem = useCallback(async (ticketId: string, itemId: string) => {
-    // Optimistic update
+    // Optimistic update: flip item + recompute status
     setTickets((prev) => {
       const ticket = prev.get(ticketId);
       if (!ticket) return prev;
+
+      const updatedItems = ticket.items.map((i) =>
+        i.id === itemId ? { ...i, isStruckThrough: !i.isStruckThrough } : i
+      );
+
+      const allStruck = updatedItems.length > 0 && updatedItems.every((i) => i.isStruckThrough);
+      const anyStruck = updatedItems.some((i) => i.isStruckThrough);
+      const newStatus: KDSTicket["status"] = allStruck
+        ? "COMPLETED"
+        : anyStruck
+        ? "PREPARING"
+        : "TO_COOK";
+
       const next = new Map(prev);
-      next.set(ticketId, {
-        ...ticket,
-        items: ticket.items.map((i) =>
-          i.id === itemId ? { ...i, isStruckThrough: !i.isStruckThrough } : i
-        ),
-      });
+      next.set(ticketId, { ...ticket, items: updatedItems, status: newStatus });
       return next;
     });
+
     // Fire and forget — socket will confirm
     await fetch(`/api/kds/tickets/${ticketId}/items/${itemId}/toggle`, { method: "POST" });
   }, []);
+
 
   // ── Derived data ─────────────────────────────────────────────────────────
   const allTickets = useMemo(() => Array.from(tickets.values()), [tickets]);

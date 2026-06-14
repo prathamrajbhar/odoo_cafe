@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 
+
 interface KDSItem {
   id: string;
   name: string;
@@ -35,6 +36,16 @@ const HEADER_CLASS: Record<KDSTicket["status"], string> = {
   COMPLETED: "stage-completed",
 };
 
+function formatTime(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
 export function TicketCard({ ticket, onAdvance, onToggleItem }: Props) {
   const [advancing, setAdvancing] = useState(false);
 
@@ -54,9 +65,16 @@ export function TicketCard({ ticket, onAdvance, onToggleItem }: Props) {
     >
       {/* Header */}
       <div className={headerClass}>
-        <span className="text-label-lg">#{ticket.orderNumber}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-label-lg">#{ticket.orderNumber}</span>
+          <span className="text-xs opacity-70 font-normal">
+            {formatTime(ticket.createdAt)}
+          </span>
+        </div>
         <div className="flex items-center gap-2">
-          <span className="text-label-md opacity-80">{STATUS_LABEL[ticket.status]}</span>
+          <span className="text-label-md opacity-80">
+            {STATUS_LABEL[ticket.status]}
+          </span>
           {advancing && (
             <span className="w-3 h-3 border-2 border-white/60 border-t-white rounded-full animate-spin" />
           )}

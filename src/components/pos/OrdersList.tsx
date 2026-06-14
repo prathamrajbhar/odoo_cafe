@@ -31,6 +31,7 @@ export const OrdersList: React.FC = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const isOpen = activeModal === "orders";
+  const ordersModalOpen = isOpen && !selectedOrderId;
 
   const fetchOrders = useCallback(() => {
     if (!sessionId) return;
@@ -57,7 +58,7 @@ export const OrdersList: React.FC = () => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={() => setActiveModal(null)} title="Orders" size="xl">
+      <Modal isOpen={ordersModalOpen} onClose={() => setActiveModal(null)} title="Orders" size="xl">
         {/* Search */}
         <div className="relative mb-5">
           <svg className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -133,7 +134,6 @@ export const OrdersList: React.FC = () => {
         )}
       </Modal>
 
-      {/* Order detail — nested modal */}
       {selectedOrderId && (
         <OrderDetail
           orderId={selectedOrderId}

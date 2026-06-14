@@ -1,0 +1,560 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "O Odoo Cafe" [ref=e4] [cursor=pointer]:
+        - /url: /pos
+        - generic [ref=e5]: O
+        - generic [ref=e6]: Odoo Cafe
+      - button "table_restaurant Select Table" [ref=e7]:
+        - generic [ref=e8]: table_restaurant
+        - generic [ref=e9]: Select Table
+      - button "Orders" [ref=e10]:
+        - generic [ref=e11]: receipt_long
+      - button "Table view" [ref=e12]:
+        - generic [ref=e13]: grid_view
+      - button "Log Out" [ref=e14]:
+        - generic [ref=e15]: logout
+    - main [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e19]:
+          - generic [ref=e21]:
+            - generic: search
+            - textbox "Search products..." [ref=e22]
+          - generic [ref=e23]:
+            - button "All Products" [ref=e24] [cursor=pointer]
+            - button "Biryani" [ref=e25] [cursor=pointer]
+            - button "Breakfast" [ref=e26] [cursor=pointer]
+            - button "Chai & Tea" [ref=e27] [cursor=pointer]
+            - button "Coffee" [ref=e28] [cursor=pointer]
+            - button "Desserts" [ref=e29] [cursor=pointer]
+            - button "Fresh Juices" [ref=e30] [cursor=pointer]
+            - button "Main Course" [ref=e31] [cursor=pointer]
+            - button "Milkshakes" [ref=e32] [cursor=pointer]
+            - button "Snacks" [ref=e33] [cursor=pointer]
+          - generic [ref=e35]:
+            - button "Adrak Chai 998 Adrak Chai ₹25.00" [ref=e36] [cursor=pointer]:
+              - generic [ref=e37]:
+                - img "Adrak Chai" [ref=e38]
+                - generic [ref=e39]: "998"
+              - generic [ref=e41]:
+                - generic [ref=e42]: Adrak Chai
+                - generic [ref=e43]: ₹25.00
+            - button "Aloo Tikki 998 Aloo Tikki ₹50.00" [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]:
+                - img "Aloo Tikki" [ref=e46]
+                - generic [ref=e47]: "998"
+              - generic [ref=e49]:
+                - generic [ref=e50]: Aloo Tikki
+                - generic [ref=e51]: ₹50.00
+            - button "restaurant Banana Milkshake 997 Banana Milkshake ₹90.00" [ref=e52] [cursor=pointer]:
+              - generic [ref=e53]:
+                - generic [ref=e54]:
+                  - generic [ref=e55]: restaurant
+                  - generic: Banana Milkshake
+                - generic [ref=e56]: "997"
+              - generic [ref=e58]:
+                - generic [ref=e59]: Banana Milkshake
+                - generic [ref=e60]: ₹90.00
+            - button "restaurant Bhel Puri 998 Bhel Puri ₹40.00" [ref=e61] [cursor=pointer]:
+              - generic [ref=e62]:
+                - generic [ref=e63]:
+                  - generic [ref=e64]: restaurant
+                  - generic: Bhel Puri
+                - generic [ref=e65]: "998"
+              - generic [ref=e67]:
+                - generic [ref=e68]: Bhel Puri
+                - generic [ref=e69]: ₹40.00
+            - button "restaurant Bread Pakora 999 Bread Pakora ₹45.00" [ref=e70] [cursor=pointer]:
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - generic [ref=e73]: restaurant
+                  - generic: Bread Pakora
+                - generic [ref=e74]: "999"
+              - generic [ref=e76]:
+                - generic [ref=e77]: Bread Pakora
+                - generic [ref=e78]: ₹45.00
+            - button "restaurant Butter Naan 999 Butter Naan ₹40.00" [ref=e79] [cursor=pointer]:
+              - generic [ref=e80]:
+                - generic [ref=e81]:
+                  - generic [ref=e82]: restaurant
+                  - generic: Butter Naan
+                - generic [ref=e83]: "999"
+              - generic [ref=e85]:
+                - generic [ref=e86]: Butter Naan
+                - generic [ref=e87]: ₹40.00
+            - button "Cafe Latte 998 Cafe Latte ₹130.00" [ref=e88] [cursor=pointer]:
+              - generic [ref=e89]:
+                - img "Cafe Latte" [ref=e90]
+                - generic [ref=e91]: "998"
+              - generic [ref=e93]:
+                - generic [ref=e94]: Cafe Latte
+                - generic [ref=e95]: ₹130.00
+            - button "Cappuccino 998 Cappuccino ₹120.00" [ref=e96] [cursor=pointer]:
+              - generic [ref=e97]:
+                - img "Cappuccino" [ref=e98]
+                - generic [ref=e99]: "998"
+              - generic [ref=e101]:
+                - generic [ref=e102]: Cappuccino
+                - generic [ref=e103]: ₹120.00
+            - button "Chicken Biryani 999 Chicken Biryani ₹220.00" [ref=e104] [cursor=pointer]:
+              - generic [ref=e105]:
+                - img "Chicken Biryani" [ref=e106]
+                - generic [ref=e107]: "999"
+              - generic [ref=e109]:
+                - generic [ref=e110]: Chicken Biryani
+                - generic [ref=e111]: ₹220.00
+            - button "restaurant Chicken Curry 999 Chicken Curry ₹200.00" [ref=e112] [cursor=pointer]:
+              - generic [ref=e113]:
+                - generic [ref=e114]:
+                  - generic [ref=e115]: restaurant
+                  - generic: Chicken Curry
+                - generic [ref=e116]: "999"
+              - generic [ref=e118]:
+                - generic [ref=e119]: Chicken Curry
+                - generic [ref=e120]: ₹200.00
+            - button "restaurant Chocolate Milkshake 999 Chocolate Milkshake ₹100.00" [ref=e121] [cursor=pointer]:
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - generic [ref=e124]: restaurant
+                  - generic: Chocolate Milkshake
+                - generic [ref=e125]: "999"
+              - generic [ref=e127]:
+                - generic [ref=e128]: Chocolate Milkshake
+                - generic [ref=e129]: ₹100.00
+            - button "Chole Bhature 998 Chole Bhature ₹130.00" [ref=e130] [cursor=pointer]:
+              - generic [ref=e131]:
+                - img "Chole Bhature" [ref=e132]
+                - generic [ref=e133]: "998"
+              - generic [ref=e135]:
+                - generic [ref=e136]: Chole Bhature
+                - generic [ref=e137]: ₹130.00
+            - button "restaurant Coconut Water 999 Coconut Water ₹50.00" [ref=e138] [cursor=pointer]:
+              - generic [ref=e139]:
+                - generic [ref=e140]:
+                  - generic [ref=e141]: restaurant
+                  - generic: Coconut Water
+                - generic [ref=e142]: "999"
+              - generic [ref=e144]:
+                - generic [ref=e145]: Coconut Water
+                - generic [ref=e146]: ₹50.00
+            - button "Cold Coffee 999 Cold Coffee ₹110.00" [ref=e147] [cursor=pointer]:
+              - generic [ref=e148]:
+                - img "Cold Coffee" [ref=e149]
+                - generic [ref=e150]: "999"
+              - generic [ref=e152]:
+                - generic [ref=e153]: Cold Coffee
+                - generic [ref=e154]: ₹110.00
+            - button "Dal Tadka 999 Dal Tadka ₹120.00" [ref=e155] [cursor=pointer]:
+              - generic [ref=e156]:
+                - img "Dal Tadka" [ref=e157]
+                - generic [ref=e158]: "999"
+              - generic [ref=e160]:
+                - generic [ref=e161]: Dal Tadka
+                - generic [ref=e162]: ₹120.00
+            - button "restaurant Egg Biryani 999 Egg Biryani ₹180.00" [ref=e163] [cursor=pointer]:
+              - generic [ref=e164]:
+                - generic [ref=e165]:
+                  - generic [ref=e166]: restaurant
+                  - generic: Egg Biryani
+                - generic [ref=e167]: "999"
+              - generic [ref=e169]:
+                - generic [ref=e170]: Egg Biryani
+                - generic [ref=e171]: ₹180.00
+            - button "restaurant Elaichi Chai 999 Elaichi Chai ₹30.00" [ref=e172] [cursor=pointer]:
+              - generic [ref=e173]:
+                - generic [ref=e174]:
+                  - generic [ref=e175]: restaurant
+                  - generic: Elaichi Chai
+                - generic [ref=e176]: "999"
+              - generic [ref=e178]:
+                - generic [ref=e179]: Elaichi Chai
+                - generic [ref=e180]: ₹30.00
+            - button "restaurant Espresso 999 Espresso ₹80.00" [ref=e181] [cursor=pointer]:
+              - generic [ref=e182]:
+                - generic [ref=e183]:
+                  - generic [ref=e184]: restaurant
+                  - generic: Espresso
+                - generic [ref=e185]: "999"
+              - generic [ref=e187]:
+                - generic [ref=e188]: Espresso
+                - generic [ref=e189]: ₹80.00
+            - button "Filter Kaapi 999 Filter Kaapi ₹45.00" [ref=e190] [cursor=pointer]:
+              - generic [ref=e191]:
+                - img "Filter Kaapi" [ref=e192]
+                - generic [ref=e193]: "999"
+              - generic [ref=e195]:
+                - generic [ref=e196]: Filter Kaapi
+                - generic [ref=e197]: ₹45.00
+            - button "Fresh Sugarcane Juice 999 Fresh Sugarcane Juice ₹40.00" [ref=e198] [cursor=pointer]:
+              - generic [ref=e199]:
+                - img "Fresh Sugarcane Juice" [ref=e200]
+                - generic [ref=e201]: "999"
+              - generic [ref=e203]:
+                - generic [ref=e204]: Fresh Sugarcane Juice
+                - generic [ref=e205]: ₹40.00
+            - button "Gajar Halwa 999 Gajar Halwa ₹80.00" [ref=e206] [cursor=pointer]:
+              - generic [ref=e207]:
+                - img "Gajar Halwa" [ref=e208]
+                - generic [ref=e209]: "999"
+              - generic [ref=e211]:
+                - generic [ref=e212]: Gajar Halwa
+                - generic [ref=e213]: ₹80.00
+            - button "Green Tea 999 Green Tea ₹40.00" [ref=e214] [cursor=pointer]:
+              - generic [ref=e215]:
+                - img "Green Tea" [ref=e216]
+                - generic [ref=e217]: "999"
+              - generic [ref=e219]:
+                - generic [ref=e220]: Green Tea
+                - generic [ref=e221]: ₹40.00
+            - button "Gulab Jamun (2 pcs) 999 Gulab Jamun (2 pcs) ₹60.00" [ref=e222] [cursor=pointer]:
+              - generic [ref=e223]:
+                - img "Gulab Jamun (2 pcs)" [ref=e224]
+                - generic [ref=e225]: "999"
+              - generic [ref=e227]:
+                - generic [ref=e228]: Gulab Jamun (2 pcs)
+                - generic [ref=e229]: ₹60.00
+            - button "restaurant Iced Americano 999 Iced Americano ₹100.00" [ref=e230] [cursor=pointer]:
+              - generic [ref=e231]:
+                - generic [ref=e232]:
+                  - generic [ref=e233]: restaurant
+                  - generic: Iced Americano
+                - generic [ref=e234]: "999"
+              - generic [ref=e236]:
+                - generic [ref=e237]: Iced Americano
+                - generic [ref=e238]: ₹100.00
+            - button "restaurant Idli Sambhar (3 pcs) 999 Idli Sambhar (3 pcs) ₹70.00" [ref=e239] [cursor=pointer]:
+              - generic [ref=e240]:
+                - generic [ref=e241]:
+                  - generic [ref=e242]: restaurant
+                  - generic: Idli Sambhar (3 pcs)
+                - generic [ref=e243]: "999"
+              - generic [ref=e245]:
+                - generic [ref=e246]: Idli Sambhar (3 pcs)
+                - generic [ref=e247]: ₹70.00
+            - button "restaurant Jalebi 999 Jalebi ₹55.00" [ref=e248] [cursor=pointer]:
+              - generic [ref=e249]:
+                - generic [ref=e250]:
+                  - generic [ref=e251]: restaurant
+                  - generic: Jalebi
+                - generic [ref=e252]: "999"
+              - generic [ref=e254]:
+                - generic [ref=e255]: Jalebi
+                - generic [ref=e256]: ₹55.00
+            - button "restaurant Jeera Rice 999 Jeera Rice ₹80.00" [ref=e257] [cursor=pointer]:
+              - generic [ref=e258]:
+                - generic [ref=e259]:
+                  - generic [ref=e260]: restaurant
+                  - generic: Jeera Rice
+                - generic [ref=e261]: "999"
+              - generic [ref=e263]:
+                - generic [ref=e264]: Jeera Rice
+                - generic [ref=e265]: ₹80.00
+            - button "Kashmiri Kahwa 999 Kashmiri Kahwa ₹65.00" [ref=e266] [cursor=pointer]:
+              - generic [ref=e267]:
+                - img "Kashmiri Kahwa" [ref=e268]
+                - generic [ref=e269]: "999"
+              - generic [ref=e271]:
+                - generic [ref=e272]: Kashmiri Kahwa
+                - generic [ref=e273]: ₹65.00
+            - button "restaurant Kheer 999 Kheer ₹65.00" [ref=e274] [cursor=pointer]:
+              - generic [ref=e275]:
+                - generic [ref=e276]:
+                  - generic [ref=e277]: restaurant
+                  - generic: Kheer
+                - generic [ref=e278]: "999"
+              - generic [ref=e280]:
+                - generic [ref=e281]: Kheer
+                - generic [ref=e282]: ₹65.00
+            - button "Kulfi 999 Kulfi ₹70.00" [ref=e283] [cursor=pointer]:
+              - generic [ref=e284]:
+                - img "Kulfi" [ref=e285]
+                - generic [ref=e286]: "999"
+              - generic [ref=e288]:
+                - generic [ref=e289]: Kulfi
+                - generic [ref=e290]: ₹70.00
+            - button "Mango Lassi 999 Mango Lassi ₹80.00" [ref=e291] [cursor=pointer]:
+              - generic [ref=e292]:
+                - img "Mango Lassi" [ref=e293]
+                - generic [ref=e294]: "999"
+              - generic [ref=e296]:
+                - generic [ref=e297]: Mango Lassi
+                - generic [ref=e298]: ₹80.00
+            - button "Masala Chai 999 Masala Chai ₹30.00" [ref=e299] [cursor=pointer]:
+              - generic [ref=e300]:
+                - img "Masala Chai" [ref=e301]
+                - generic [ref=e302]: "999"
+              - generic [ref=e304]:
+                - generic [ref=e305]: Masala Chai
+                - generic [ref=e306]: ₹30.00
+            - button "restaurant Masala Dosa 999 Masala Dosa ₹90.00" [ref=e307] [cursor=pointer]:
+              - generic [ref=e308]:
+                - generic [ref=e309]:
+                  - generic [ref=e310]: restaurant
+                  - generic: Masala Dosa
+                - generic [ref=e311]: "999"
+              - generic [ref=e313]:
+                - generic [ref=e314]: Masala Dosa
+                - generic [ref=e315]: ₹90.00
+            - button "restaurant Matar Paneer 999 Matar Paneer ₹160.00" [ref=e316] [cursor=pointer]:
+              - generic [ref=e317]:
+                - generic [ref=e318]:
+                  - generic [ref=e319]: restaurant
+                  - generic: Matar Paneer
+                - generic [ref=e320]: "999"
+              - generic [ref=e322]:
+                - generic [ref=e323]: Matar Paneer
+                - generic [ref=e324]: ₹160.00
+            - button "restaurant Medu Vada (2 pcs) 999 Medu Vada (2 pcs) ₹60.00" [ref=e325] [cursor=pointer]:
+              - generic [ref=e326]:
+                - generic [ref=e327]:
+                  - generic [ref=e328]: restaurant
+                  - generic: Medu Vada (2 pcs)
+                - generic [ref=e329]: "999"
+              - generic [ref=e331]:
+                - generic [ref=e332]: Medu Vada (2 pcs)
+                - generic [ref=e333]: ₹60.00
+            - button "Mutton Biryani 999 Mutton Biryani ₹280.00" [ref=e334] [cursor=pointer]:
+              - generic [ref=e335]:
+                - img "Mutton Biryani" [ref=e336]
+                - generic [ref=e337]: "999"
+              - generic [ref=e339]:
+                - generic [ref=e340]: Mutton Biryani
+                - generic [ref=e341]: ₹280.00
+            - button "Nimbu Pani 999 Nimbu Pani ₹30.00" [ref=e342] [cursor=pointer]:
+              - generic [ref=e343]:
+                - img "Nimbu Pani" [ref=e344]
+                - generic [ref=e345]: "999"
+              - generic [ref=e347]:
+                - generic [ref=e348]: Nimbu Pani
+                - generic [ref=e349]: ₹30.00
+            - button "restaurant Orange Juice 999 Orange Juice ₹70.00" [ref=e350] [cursor=pointer]:
+              - generic [ref=e351]:
+                - generic [ref=e352]:
+                  - generic [ref=e353]: restaurant
+                  - generic: Orange Juice
+                - generic [ref=e354]: "999"
+              - generic [ref=e356]:
+                - generic [ref=e357]: Orange Juice
+                - generic [ref=e358]: ₹70.00
+            - button "restaurant Oreo Milkshake 999 Oreo Milkshake ₹120.00" [ref=e359] [cursor=pointer]:
+              - generic [ref=e360]:
+                - generic [ref=e361]:
+                  - generic [ref=e362]: restaurant
+                  - generic: Oreo Milkshake
+                - generic [ref=e363]: "999"
+              - generic [ref=e365]:
+                - generic [ref=e366]: Oreo Milkshake
+                - generic [ref=e367]: ₹120.00
+            - button "restaurant Palak Paneer 999 Palak Paneer ₹170.00" [ref=e368] [cursor=pointer]:
+              - generic [ref=e369]:
+                - generic [ref=e370]:
+                  - generic [ref=e371]: restaurant
+                  - generic: Palak Paneer
+                - generic [ref=e372]: "999"
+              - generic [ref=e374]:
+                - generic [ref=e375]: Palak Paneer
+                - generic [ref=e376]: ₹170.00
+            - button "Paneer Butter Masala 999 Paneer Butter Masala ₹180.00" [ref=e377] [cursor=pointer]:
+              - generic [ref=e378]:
+                - img "Paneer Butter Masala" [ref=e379]
+                - generic [ref=e380]: "999"
+              - generic [ref=e382]:
+                - generic [ref=e383]: Paneer Butter Masala
+                - generic [ref=e384]: ₹180.00
+            - button "restaurant Paratha 999 Paratha ₹70.00" [ref=e385] [cursor=pointer]:
+              - generic [ref=e386]:
+                - generic [ref=e387]:
+                  - generic [ref=e388]: restaurant
+                  - generic: Paratha
+                - generic [ref=e389]: "999"
+              - generic [ref=e391]:
+                - generic [ref=e392]: Paratha
+                - generic [ref=e393]: ₹70.00
+            - button "Pav Bhaji 999 Pav Bhaji ₹80.00" [ref=e394] [cursor=pointer]:
+              - generic [ref=e395]:
+                - img "Pav Bhaji" [ref=e396]
+                - generic [ref=e397]: "999"
+              - generic [ref=e399]:
+                - generic [ref=e400]: Pav Bhaji
+                - generic [ref=e401]: ₹80.00
+            - button "restaurant Poha 999 Poha ₹50.00" [ref=e402] [cursor=pointer]:
+              - generic [ref=e403]:
+                - generic [ref=e404]:
+                  - generic [ref=e405]: restaurant
+                  - generic: Poha
+                - generic [ref=e406]: "999"
+              - generic [ref=e408]:
+                - generic [ref=e409]: Poha
+                - generic [ref=e410]: ₹50.00
+            - button "restaurant Prawn Biryani 999 Prawn Biryani ₹260.00" [ref=e411] [cursor=pointer]:
+              - generic [ref=e412]:
+                - generic [ref=e413]:
+                  - generic [ref=e414]: restaurant
+                  - generic: Prawn Biryani
+                - generic [ref=e415]: "999"
+              - generic [ref=e417]:
+                - generic [ref=e418]: Prawn Biryani
+                - generic [ref=e419]: ₹260.00
+            - button "Rajma Chawal 999 Rajma Chawal ₹110.00" [ref=e420] [cursor=pointer]:
+              - generic [ref=e421]:
+                - img "Rajma Chawal" [ref=e422]
+                - generic [ref=e423]: "999"
+              - generic [ref=e425]:
+                - generic [ref=e426]: Rajma Chawal
+                - generic [ref=e427]: ₹110.00
+            - button "Rasgulla 999 Rasgulla ₹50.00" [ref=e428] [cursor=pointer]:
+              - generic [ref=e429]:
+                - img "Rasgulla" [ref=e430]
+                - generic [ref=e431]: "999"
+              - generic [ref=e433]:
+                - generic [ref=e434]: Rasgulla
+                - generic [ref=e435]: ₹50.00
+            - button "Samosa (2 pcs) 999 Samosa (2 pcs) ₹30.00" [ref=e436] [cursor=pointer]:
+              - generic [ref=e437]:
+                - img "Samosa (2 pcs)" [ref=e438]
+                - generic [ref=e439]: "999"
+              - generic [ref=e441]:
+                - generic [ref=e442]: Samosa (2 pcs)
+                - generic [ref=e443]: ₹30.00
+            - button "restaurant Strawberry Milkshake 999 Strawberry Milkshake ₹100.00" [ref=e444] [cursor=pointer]:
+              - generic [ref=e445]:
+                - generic [ref=e446]:
+                  - generic [ref=e447]: restaurant
+                  - generic: Strawberry Milkshake
+                - generic [ref=e448]: "999"
+              - generic [ref=e450]:
+                - generic [ref=e451]: Strawberry Milkshake
+                - generic [ref=e452]: ₹100.00
+            - button "restaurant Tulsi Chai 999 Tulsi Chai ₹30.00" [ref=e453] [cursor=pointer]:
+              - generic [ref=e454]:
+                - generic [ref=e455]:
+                  - generic [ref=e456]: restaurant
+                  - generic: Tulsi Chai
+                - generic [ref=e457]: "999"
+              - generic [ref=e459]:
+                - generic [ref=e460]: Tulsi Chai
+                - generic [ref=e461]: ₹30.00
+            - button "restaurant Upma 999 Upma ₹55.00" [ref=e462] [cursor=pointer]:
+              - generic [ref=e463]:
+                - generic [ref=e464]:
+                  - generic [ref=e465]: restaurant
+                  - generic: Upma
+                - generic [ref=e466]: "999"
+              - generic [ref=e468]:
+                - generic [ref=e469]: Upma
+                - generic [ref=e470]: ₹55.00
+            - button "restaurant Vada Pav 999 Vada Pav ₹35.00" [ref=e471] [cursor=pointer]:
+              - generic [ref=e472]:
+                - generic [ref=e473]:
+                  - generic [ref=e474]: restaurant
+                  - generic: Vada Pav
+                - generic [ref=e475]: "999"
+              - generic [ref=e477]:
+                - generic [ref=e478]: Vada Pav
+                - generic [ref=e479]: ₹35.00
+            - button "Veg Dum Biryani 999 Veg Dum Biryani ₹160.00" [ref=e480] [cursor=pointer]:
+              - generic [ref=e481]:
+                - img "Veg Dum Biryani" [ref=e482]
+                - generic [ref=e483]: "999"
+              - generic [ref=e485]:
+                - generic [ref=e486]: Veg Dum Biryani
+                - generic [ref=e487]: ₹160.00
+            - button "Veg Sandwich 999 Veg Sandwich ₹60.00" [ref=e488] [cursor=pointer]:
+              - generic [ref=e489]:
+                - img "Veg Sandwich" [ref=e490]
+                - generic [ref=e491]: "999"
+              - generic [ref=e493]:
+                - generic [ref=e494]: Veg Sandwich
+                - generic [ref=e495]: ₹60.00
+            - button "Watermelon Juice 999 Watermelon Juice ₹60.00" [ref=e496] [cursor=pointer]:
+              - generic [ref=e497]:
+                - img "Watermelon Juice" [ref=e498]
+                - generic [ref=e499]: "999"
+              - generic [ref=e501]:
+                - generic [ref=e502]: Watermelon Juice
+                - generic [ref=e503]: ₹60.00
+        - generic [ref=e504]:
+          - generic [ref=e506]:
+            - generic [ref=e507]: Current Order
+            - generic [ref=e508]: "#EDIT"
+          - generic [ref=e510] [cursor=pointer]:
+            - generic [ref=e511]:
+              - generic [ref=e512]: Chole Bhature
+              - generic [ref=e513]: ₹130.00
+            - generic [ref=e514]:
+              - generic [ref=e515]:
+                - button [ref=e516]:
+                  - img [ref=e517]
+                - spinbutton [ref=e518]: "1"
+                - button [ref=e519]:
+                  - img [ref=e520]
+              - generic [ref=e522]:
+                - generic [ref=e523]: ₹130.00 ea
+                - button "Remove item" [ref=e524]:
+                  - img [ref=e525]
+          - generic [ref=e527]:
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e530]: Subtotal
+                - generic [ref=e531]: ₹130.00
+              - generic [ref=e532]:
+                - generic [ref=e533]: GST (5%)
+                - generic [ref=e534]: ₹6.50
+              - generic [ref=e535]:
+                - generic [ref=e536]: Total
+                - generic [ref=e537]: ₹136.50
+            - button "Send to Kitchen" [ref=e538] [cursor=pointer]:
+              - img [ref=e539]
+              - text: Send to Kitchen
+            - generic [ref=e541]:
+              - button "Customer" [ref=e542] [cursor=pointer]:
+                - img [ref=e543]
+                - generic [ref=e545]: Customer
+              - button "Discount" [ref=e546] [cursor=pointer]:
+                - img [ref=e547]
+                - generic [ref=e550]: Discount
+              - button "Send" [ref=e551] [cursor=pointer]:
+                - img [ref=e552]
+                - generic [ref=e554]: Send
+        - generic [ref=e555]:
+          - generic [ref=e556]:
+            - generic [ref=e557]: Amount Due
+            - generic [ref=e559]: ₹136.50
+          - generic [ref=e561]:
+            - button "CASH" [ref=e562] [cursor=pointer]:
+              - img [ref=e563]
+              - text: CASH
+            - button "CARD" [ref=e565] [cursor=pointer]:
+              - img [ref=e566]
+              - text: CARD
+            - button "UPI" [ref=e568] [cursor=pointer]:
+              - img [ref=e569]
+              - text: UPI
+          - generic [ref=e573]:
+            - generic [ref=e574]:
+              - generic [ref=e575]:
+                - button "1" [ref=e576] [cursor=pointer]
+                - button "2" [ref=e577] [cursor=pointer]
+                - button "3" [ref=e578] [cursor=pointer]
+                - button "4" [ref=e579] [cursor=pointer]
+                - button "5" [ref=e580] [cursor=pointer]
+                - button "6" [ref=e581] [cursor=pointer]
+                - button "7" [ref=e582] [cursor=pointer]
+                - button "8" [ref=e583] [cursor=pointer]
+                - button "9" [ref=e584] [cursor=pointer]
+                - button "+/-" [ref=e585] [cursor=pointer]
+                - button "0" [ref=e586] [cursor=pointer]
+                - button "." [ref=e587] [cursor=pointer]
+              - generic [ref=e588]:
+                - button "Qty" [ref=e589] [cursor=pointer]
+                - button "% Disc" [ref=e590] [cursor=pointer]
+                - button "Price" [ref=e591] [cursor=pointer]
+                - button "Backspace" [ref=e592] [cursor=pointer]:
+                  - img [ref=e593]
+            - button "Clear Key" [ref=e595] [cursor=pointer]
+          - button "Validate Payment" [ref=e597] [cursor=pointer]:
+            - img [ref=e598]
+            - text: Validate Payment
+  - button "Open Next.js Dev Tools" [ref=e605] [cursor=pointer]:
+    - img [ref=e606]
+  - alert [ref=e609]

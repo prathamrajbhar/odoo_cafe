@@ -181,6 +181,7 @@ export const POSProvider: React.FC<{ children: ReactNode; initialSessionId: stri
       appliedPromos: [],
       orderDiscountAmount: 0,
       couponCode: null,
+      activeModal: null,
     }));
   }, []);
 

@@ -222,9 +222,9 @@ async function main() {
   console.log(`[seed] ✅ ${products.length} products created`);
 
   // ── Payment Methods ───────────────────────────────────────────────────────────
-  await prisma.paymentMethod.create({ data: { type: PaymentType.CASH, isActive: true } });
-  await prisma.paymentMethod.create({ data: { type: PaymentType.CARD, isActive: true } });
-  await prisma.paymentMethod.create({ data: { type: PaymentType.UPI, isActive: true, upiId: "odoocafe@hdfcbank" } });
+  await prisma.paymentMethod.create({ data: { type: PaymentType.CASH, name: "Cash", isActive: true } });
+  await prisma.paymentMethod.create({ data: { type: PaymentType.CARD, name: "Credit / Debit Card", isActive: true } });
+  await prisma.paymentMethod.create({ data: { type: PaymentType.UPI, name: "UPI / QR", isActive: true, upiId: "odoocafe@hdfcbank" } });
 
   console.log("[seed] ✅ Payment methods created");
 

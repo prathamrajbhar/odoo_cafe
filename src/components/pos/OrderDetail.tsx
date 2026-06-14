@@ -87,30 +87,37 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onClose, onDe
   };
 
   const handleEdit = () => {
-    if (!order) return;
-    const cartLines: CartLine[] = order.lines.map((l) => ({
-      productId: l.product?.id ?? "",
-      name: l.product?.name ?? "Unknown Product",
-      unitPrice: Number(l.unitPrice),
-      taxRate: l.product ? Number(l.product.taxRate) : 0,
-      qty: l.qty,
-      appliedPromoId: l.appliedPromo?.id ?? null,
-      promoDiscount: 0,
-    }));
-    loadOrderIntoCart(
-      cartLines,
-      order.id,
-      order.customer?.id ?? null,
-      order.customer?.name ?? null,
-      order.table ? { id: order.table.id, number: order.table.number, floorId: order.table.floorId } : null
-    );
-    onClose();
-    setActiveModal(null);
-    router.push("/pos");
+    if (!order) {
+      toast.error("Order not loaded");
+      return;
+    }
+    try {
+      const cartLines: CartLine[] = order.lines.map((l) => ({
+        productId: l.product?.id ?? "",
+        name: l.product?.name ?? "Unknown Product",
+        unitPrice: Number(l.unitPrice),
+        taxRate: l.product ? Number(l.product.taxRate) : 0,
+        qty: l.qty,
+        appliedPromoId: l.appliedPromo?.id ?? null,
+        promoDiscount: 0,
+      }));
+      loadOrderIntoCart(
+        cartLines,
+        order.id,
+        order.customer?.id ?? null,
+        order.customer?.name ?? null,
+        order.table ? { id: order.table.id, number: order.table.number, floorId: order.table.floorId } : null
+      );
+      onClose();
+      setActiveModal(null);
+      router.push("/pos");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to edit order");
+    }
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Order Detail" size="lg">
+    <Modal isOpen={true} onClose={onClose} title="Order Detail" size="lg" zIndex={60}>
       {loading ? (
         <div className="flex items-center justify-center py-16">
           <span className="material-symbols-outlined animate-spin text-primary text-[32px]">progress_activity</span>
@@ -196,6 +203,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onClose, onDe
           {order.status === "PAID" && (
             <div>
               <button
+                type="button"
                 onClick={() => {
                   if (window.confirm("Are you sure you want to delete this order?")) {
                     handleDelete();
@@ -219,6 +227,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, onClose, onDe
           {order.status === "DRAFT" && (
             <div>
               <button
+                type="button"
                 onClick={handleEdit}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-all font-semibold text-label-md"
               >

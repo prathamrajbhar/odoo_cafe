@@ -2,7 +2,14 @@ import { prisma } from "@/lib/prisma";
 
 export function listCategories() {
   return prisma.category.findMany({
-    select: { id: true, name: true, colorHex: true },
+    select: {
+      id: true,
+      name: true,
+      colorHex: true,
+      _count: {
+        select: { products: true }
+      }
+    },
     orderBy: { name: "asc" },
   });
 }

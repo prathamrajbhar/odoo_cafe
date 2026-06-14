@@ -17,10 +17,6 @@ const NAV_ITEMS = [
   { label: "Session", href: "/admin/session", icon: "point_of_sale" },
 ];
 
-const EXTERNAL_ITEMS = [
-  { label: "KDS", href: "/kds", icon: "restaurant" },
-];
-
 export const AdminNavbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -87,16 +83,7 @@ export const AdminNavbar: React.FC = () => {
 
         {/* Footer */}
         <div className="px-3 py-4 border-t border-outline-variant space-y-0.5">
-          <Link
-            href="/kds"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all"
-          >
-            <span className="material-symbols-outlined text-[20px]">restaurant</span>
-            KDS
-            <span className="material-symbols-outlined text-[14px] ml-auto opacity-50">open_in_new</span>
-          </Link>
+
           <button
             onClick={handleLogout}
             disabled={loggingOut}
@@ -160,17 +147,7 @@ export const AdminNavbar: React.FC = () => {
               })}
             </nav>
             <div className="px-3 py-4 border-t border-outline-variant space-y-0.5">
-              <Link
-                href="/kds"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all"
-              >
-                <span className="material-symbols-outlined text-[20px]">restaurant</span>
-                KDS
-                <span className="material-symbols-outlined text-[14px] ml-auto opacity-50">open_in_new</span>
-              </Link>
+
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}

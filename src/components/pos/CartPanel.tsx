@@ -226,7 +226,16 @@ export const CartPanel: React.FC<CartPanelProps> = ({ selectedProductId, onSelec
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
                   </button>
-                  <span className="w-6 text-center text-body-sm font-bold text-on-surface">{line.qty}</span>
+                  <input
+                    type="number"
+                    value={line.qty}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      updateQty(line.productId, isNaN(val) ? 0 : val);
+                    }}
+                    className="w-10 text-center text-body-sm font-bold text-on-surface bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    min="0"
+                  />
                   <button
                     onClick={() => updateQty(line.productId, line.qty + 1)}
                     className="w-6 h-6 rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer active:scale-90"
